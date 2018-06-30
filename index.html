@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BBB Video Contest</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+    <div class="fullscreen-bg">
+        <video controls loop muted autoplay controls="false" class="fullscreen-bg-video">
+            <source src="https://s3.amazonaws.com/platypus-dallas/Student+Video+Contest+2018+_+Generic.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+    <div class="button-unmute audio-ctrl"></div>
+    <div class="wrap">
+        <img src="./img/Student_vid_Contest_logo_4_generic.png" alt="BBB Video" class="logo" width="400">
+        <div class="clear"></div>
+        <div class="loc-selector-wrap">
+            <span>Choose Your Locations</span>
+            <select name="" id="location-selector" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+                <option value="">Select Location</option>
+                <option value="https://www.bbbvideocontest.org/amarillo/">Amarillo</option> 
+                <option value="https://www.bbbvideocontest.org/juarez/">Ciudad Juarez</option>                
+                <option value="https://www.bbbvideocontest.org/dallas/">Dallas</option>
+                <option value="https://www.bbbvideocontest.org/el-paso/">El Paso</option>         
+                <option value="https://www.bbbvideocontest.org/kansas-city/">Kansas City</option>                 
+                <option value="https://www.bbbvideocontest.org/silicon-valley/">Silicon Valley</option>
+                <option value="https://www.bbbvideocontest.org/tulsa/">Tulsa</option>
+		<option value="https://www.bbbvideocontest.org/utah/">Utah</option>    
+                <option value="https://www.bbbvideocontest.org/wichita-falls/">Wichita Falls</option>
+     
+   </select>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+    <script src="./js/custom.js"></script>
+</body>
+</html>
