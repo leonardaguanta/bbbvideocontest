@@ -78,12 +78,12 @@ class WPSEO_Rewrite {
 	/**
 	 * Update the query vars with the redirect var when stripcategorybase is active
 	 *
-	 * @param array $query_vars Main query vars to filter.
+	 * @param array $query_vars
 	 *
 	 * @return array
 	 */
 	function query_vars( $query_vars ) {
-		$options = WPSEO_Options::get_option( 'wpseo_permalinks' );
+		$options = WPSEO_Options::get_all();
 
 		if ( $options['stripcategorybase'] === true ) {
 			$query_vars[] = 'wpseo_category_redirect';

@@ -104,7 +104,7 @@ class WPSEO_Meta {
 				'title' => '', // Translation added later.
 				'help'  => '', // Translation added later.
 			),
-			'focuskw_text_input' => array(
+			'focuskw'        => array(
 				'type'          => 'text',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
@@ -112,19 +112,15 @@ class WPSEO_Meta {
 				'help'          => '', // Translation added later.
 				'description'   => '<div id="focuskwresults"></div>',
 			),
-			'focuskw' => array(
-				'type'  => 'hidden',
-				'title' => '',
-			),
 			'title'          => array(
-				'type'          => 'hidden',
+				'type'          => 'text',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'description'   => '', // Translation added later.
 				'help'          => '', // Translation added later.
 			),
 			'metadesc'       => array(
-				'type'          => 'hidden',
+				'type'          => 'textarea',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'class'         => 'metadesc',
@@ -132,23 +128,12 @@ class WPSEO_Meta {
 				'description'   => '', // Translation added later.
 				'help'          => '', // Translation added later.
 			),
-			'linkdex'        => array(
-				'type'          => 'hidden',
-				'title'         => 'linkdex',
-				'default_value' => '0',
-				'description'   => '',
-			),
 			'metakeywords'   => array(
 				'type'          => 'text',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'class'         => 'metakeywords',
 				'description'   => '', // Translation added later.
-			),
-			'pageanalysis'   => array(
-				'type'  => 'pageanalysis',
-				'title' => '', // Translation added later.
-				'help'  => '', // Translation added later.
 			),
 		),
 		'advanced' => array(
@@ -180,6 +165,7 @@ class WPSEO_Meta {
 					'-'            => '', // Site-wide default - translation added later.
 					'none'         => '', // Translation added later.
 					'noodp'        => '', // Translation added later.
+					'noydir'       => '', // Translation added later.
 					'noimageindex' => '', // Translation added later.
 					'noarchive'    => '', // Translation added later.
 					'nosnippet'    => '', // Translation added later.
@@ -261,7 +247,7 @@ class WPSEO_Meta {
 	 */
 	public static function init() {
 
-		$options = WPSEO_Options::get_option( 'wpseo_social' );
+		$options = WPSEO_Options::get_all();
 		foreach ( self::$social_networks as $option => $network ) {
 			if ( true === $options[ $option ] ) {
 				foreach ( self::$social_fields as $box => $type ) {
@@ -351,7 +337,7 @@ class WPSEO_Meta {
 
 
 			case 'general':
-				$options = WPSEO_Options::get_option( 'wpseo_titles' );
+				$options = get_option( 'wpseo_titles' );
 				if ( $options['usemetakeywords'] === true ) {
 					/* Adjust the link in the keywords description text string based on the post type */
 					$field_defs['metakeywords']['description'] = sprintf( $field_defs['metakeywords']['description'], '<a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=wpseo_titles#top#post_types' ) ) . '">', '</a>' );
@@ -378,7 +364,7 @@ class WPSEO_Meta {
 			case 'advanced':
 				global $post;
 
-				$options = WPSEO_Options::get_options( array( 'wpseo', 'wpseo_titles', 'wpseo_internallinks' ) );
+				$options = WPSEO_Options::get_all();
 
 				if ( ! current_user_can( 'manage_options' ) && $options['disableadvanced_meta'] ) {
 					return array();
@@ -396,12 +382,15 @@ class WPSEO_Meta {
 				$field_defs['meta-robots-noindex']['options']['0'] = sprintf( $field_defs['meta-robots-noindex']['options']['0'], ( ( isset( $options[ 'noindex-' . $post_type ] ) && $options[ 'noindex-' . $post_type ] === true ) ? 'noindex' : 'index' ) );
 
 				/* Adjust the robots advanced 'site-wide default' text string based on those settings */
-				if ( $options['noodp'] !== false ) {
+				if ( $options['noodp'] !== false || $options['noydir'] !== false ) {
 					$robots_adv = array();
-					if ( $options['noodp'] === true ) {
-						// Use translation from field def options - mind that $options and $field_def['options'] keys should be the same!
-						$robots_adv[] = $field_defs['meta-robots-adv']['options']['noodp'];
+					foreach ( array( 'noodp', 'noydir' ) as $robot ) {
+						if ( $options[ $robot ] === true ) {
+							// Use translation from field def options - mind that $options and $field_def['options'] keys should be the same!
+							$robots_adv[] = $field_defs['meta-robots-adv']['options'][ $robot ];
+						}
 					}
+					unset( $robot );
 					$robots_adv = implode( ', ', $robots_adv );
 				}
 				else {
@@ -1013,33 +1002,5 @@ class WPSEO_Meta {
 		return ( array_key_exists( $key, $_POST ) ) ? $_POST[ $key ] : '';
 	}
 
-	/**
-	 * Counts the total of all the keywords being used for posts except the given one
-	 *
-	 * @param string  $keyword The keyword to be counted.
-	 * @param integer $post_id The is of the post to which the keyword belongs.
-	 *
-	 * @return array
-	 */
-	public static function keyword_usage( $keyword, $post_id ) {
-		$get_posts = new WP_Query(
-			array(
-				'meta_key'       => '_yoast_wpseo_focuskw',
-				'meta_value'     => $keyword,
-				'post__not_in'   => array( $post_id ),
-				'fields'         => 'ids',
-				'post_type'      => 'any',
 
-				/*
-				 * We only need to return zero, one or two results:
-				 * - Zero: keyword hasn't been used before
-				 * - One: Keyword has been used once before
-				 * - Two or more: Keyword has been used twice before
-				 */
-				'posts_per_page' => 2,
-			)
-		);
-
-		return $get_posts->posts;
-	}
 } /* End of class */

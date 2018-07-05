@@ -3,7 +3,7 @@
  * Plugin Name: Elegant Themes Updater
  * Plugin URI: http://elegantthemes.com
  * Description: Enables automatic updates for all Elegant Themes products
- * Version: 1.2
+ * Version: 1.0
  * Author: Elegant Themes
  * Author URI: http://elegantthemes.com
  * License: GPLv2 or later
@@ -24,7 +24,7 @@ class ET_Automatic_Updates {
 	 *
 	 * @var string
 	 */
-	var $version = '1.2';
+	var $version = '1.0';
 
 	/**
 	 * Plugin options
@@ -362,7 +362,7 @@ class ET_Automatic_Updates {
 	 */
 	function show_api_key_setting() {
 		printf(
-			'<input name="et_automatic_updates_options[api_key]" id="et_automatic_updates_options[api_key]" type="password" value="%1$s" class="regular-text" />
+			'<input name="et_automatic_updates_options[api_key]" id="et_automatic_updates_options[api_key]" type="text" value="%1$s" class="regular-text" />
 			<p class="description">%2$s</p>',
 			( isset( $this->options['api_key'] ) ? esc_attr( $this->options['api_key'] ) : '' ),
 			__( 'Enter your <a href="https://www.elegantthemes.com/members-area/api-key.php" target="_blank">Elegant Themes API Key</a> here.', 'et_automatic_updates' )
@@ -407,8 +407,6 @@ class ET_Automatic_Updates {
 			$send_to_api['automatic_updates'] = 'on';
 			$send_to_api['username'] = urlencode( sanitize_text_field( $this->options['username'] ) );
 			$send_to_api['api_key'] = sanitize_text_field( $this->options['api_key'] );
-
-			$send_to_api = apply_filters( 'et_add_automatic_updates_data', $send_to_api );
 		}
 
 		return $send_to_api;

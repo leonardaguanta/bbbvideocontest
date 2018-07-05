@@ -1,0 +1,754 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Super Post\n"
+"POT-Creation-Date: 2014-01-27 19:27+0700\n"
+"PO-Revision-Date: 2014-01-27 19:27+0700\n"
+"Last-Translator: Selz <engineer@selz.com>\n"
+"Language-Team:  <zourbuth@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.7\n"
+"X-Poedit-KeywordsList: __;_e;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: E:\\xampp\\htdocs\\area51\\wp-content\\plugins\\super-"
+"post\n"
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:182
+msgid "Super Post Meta"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:200
+msgid "No Callback"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:201
+msgid "Lightbox"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:202
+msgid "Hide Content"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:203
+msgid "Show Content"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:204
+msgid "Redirect"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:214
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:52
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:258
+msgid "General"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:215
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:54
+msgid "Advanced"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:235
+msgid "Post Views"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:236
+msgid ""
+"The post total views, you can set this number by editing this field. This "
+"field will be added by 1 for each view."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:242
+msgid "Post Likes"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:243
+msgid ""
+"The post total likes, you can set this number by editing this field. This "
+"field will be added by 1 for each likes."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:249
+msgid "Sharing Emails"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:250
+msgid ""
+"The post sharing emails, you can set this number by editing this field. This "
+"field will be added by 1 for each sending."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:260
+msgid "Custom Styles or Scripts"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:262
+msgid "Use this option to push custom syles or script to the header."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:407
+msgid "Views: "
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:411
+msgid "Likes: "
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/meta.php:422
+msgid "Infos"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:31
+msgid "Upgrade"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:46
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:454
+msgid "Upgrade To Premium Version"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:48
+msgid ""
+"This premium version gives more abilities, features, options and premium "
+"supports for displaying your posts \n"
+"\t\t\t\t\t\t\tin a better way. You will get help soon if you have problems "
+"with the premium version. Full documentation will let \n"
+"\t\t\t\t\t\t\tyou customize this premium version easily. <br />\n"
+"\t\t\t\t\t\t\tSee the full <a href=\"http://zourbuth.com/plugins/super-post/"
+"\"><strong>Live Preview</strong></a>.\n"
+"\t\t\t\t\t\t\t<br /><br />\n"
+"\t\t\t\t\t\t\tMain key features you will get with premium version:"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:60
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:464
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:468
+msgid "Premium Supports"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:61
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:465
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:469
+msgid "A premium supports, helps and documentation."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:64
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:468
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:472
+msgid "Search Posts"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:65
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:469
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:473
+msgid "New feature for searching posts with shortcode or widget via Ajax."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:68
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:472
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:476
+msgid "Post Taxonomies"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:69
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:473
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:477
+msgid ""
+"Easy to display your post based on custom taxonomies, eq. posts from "
+"portfolio, testimonial, product etc."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:72
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:476
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:480
+msgid "Ajax Posts"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:73
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:477
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:481
+msgid "Load more posts via Ajax + animations."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:76
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:480
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:484
+msgid "Advanced Post Shares, Likes, Views and Rating"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:77
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:481
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:485
+msgid "Shares post via Facebook, Twitter, Google+ or Email."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:80
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:484
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:488
+msgid "Shortcode Editor + Widget Shortcode"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:81
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:485
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:489
+msgid "Button in your post editor. No more writing shortcodes."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:84
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:488
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:492
+msgid "Easy Templates"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:85
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:489
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:493
+msgid "Displaying your posts with more template style options."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:88
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:492
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:496
+msgid "Custom Icon"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:89
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:493
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:497
+msgid "Easy to add another icon for post date and comment."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:92
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:496
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:500
+msgid "Default Post Thumbnail"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:93
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:497
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:501
+msgid ""
+"Set a default post thumbnail for posts that do not have a thumbnail or "
+"featured image."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:96
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:500
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:504
+msgid "And more..."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/premium.php:97
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:501
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:505
+msgid "Much more option than the free version."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:53
+msgid "Share"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:55
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:266
+msgid "Premium"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:77
+msgid "Default Field"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:78
+msgid "This is a default description."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:117
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:832
+msgid " Settings"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:127
+msgid "Licenses"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:128
+msgid "Super Post Premium"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:169
+msgid "Save Changes"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:293
+msgid "Add Image"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:294
+msgid "Remove"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:579
+msgid "Post Type Meta"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:580
+msgid ""
+"Check the custom post type(s) to enable the post views, likes and ratings "
+"option. More custom post types available for <a href=\"http://goo.gl/HDhZx"
+"\"><strong>premium version</strong></a>."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:586
+msgid "Display Post Views"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:587
+msgid ""
+"Check this option for dislaying the total post views for <em>single</em> "
+"post view in the front end."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:593
+msgid "Display Post Likes"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:594
+msgid ""
+"Check this option for dislaying the total post likes for <em>single</em> "
+"post view in the front end."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:600
+msgid "Likes Success Message"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:601
+msgid "Set the success message after user likes the current post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:603
+msgid "Thaks for liking this post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:607
+msgid "Likes Error Message"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:608
+msgid "Set error message if the user already likes the current post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:610
+msgid "You have liked this post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:614
+msgid "Display Post Ratings"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:615
+msgid ""
+"Check this option for dislaying the post ratings for <em>single</em> post "
+"view in the front end."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:621
+msgid "Rating Success Message"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:622
+msgid "Set the success message after user rates the current post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:624
+msgid "Thaks for rating this post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:628
+msgid "Rating Error Message"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:629
+msgid "Set error message if the user already rates the current post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:631
+msgid "You have rated this post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:638
+msgid "Display Share Button"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:639
+msgid ""
+"Check this option to display the social share button for posts view in the "
+"front end. More custom post types available for <a href=\"http://goo.gl/HDhZx"
+"\"><strong>premium version</strong></a>."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:645
+msgid "Share Method"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:646
+msgid ""
+"Click to include oe exclude methods. Drag and drop function for arrangement "
+"available for <a href=\"http://goo.gl/HDhZx\"><strong>premium "
+"version<strong></a>"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:664
+msgid "Share Title"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:665
+msgid "Change the share title or leave empty for no title."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:667
+msgid "Share Post"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:671
+msgid "Mail Info"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:672
+msgid "The mail info displayed on the front end. Supports HTML"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:674
+msgid ""
+"Send post to email address, <strong>comma separated</strong> for multiple "
+"emails."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:678
+msgid "Mail Subject"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:679
+msgid "The mail subject. Availabel tempalte: [post-title]."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:685
+msgid "Mail Body"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:686
+msgid ""
+"The mail content. Available template: [sender-name], [sender-mail], "
+"[excerpt] and [link]"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:700
+msgid "Shortcode Lists"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:701
+msgid ""
+"Please generate your shortcode here and paste it in your content or template."
+"<br />\n"
+"\t\t\t\t\t\t\t\tUse shortcode <code>[super-post id=2]</code> in your content "
+"or<br />\n"
+"\t\t\t\t\t\t\t\t<code>&lt;?php if( function_exists( 'navmenu' ) ) navmenu"
+"('2'); ?&gt;</code><br />\n"
+"\t\t\t\t\t\t\t\twhere 2 is the given shortcode list id above."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:713
+msgid "Enable Custom"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:714
+msgid "Check this to push the style script option below"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:720
+msgid "Custom Style & Script"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:721
+msgid ""
+"Use this option to add additional styles or script with the tag included."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/settings.php:730
+msgid "Premium Features"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/share.php:149
+msgid "Your name:"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/share.php:152
+msgid "Your email address:"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/share.php:160
+msgid "Send Email"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/share.php:161
+msgid "Cancel"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/share.php:217
+#, php-format
+msgid "Email sent to <span>%1$s</span>"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/share.php:219
+msgid "Error, please try again later!"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/utility.php:64
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:224
+msgid "Load more posts"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/utility.php:106
+msgid "First"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/utility.php:121
+msgid "Last"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/utility.php:203
+msgid "No title"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:259
+msgid "Excerpts"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:260
+msgid "Thumbnails"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:261
+msgid "Comments"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:262
+msgid "Date"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:263
+msgid "Author"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:264
+msgid "Templates"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:265
+msgid "Customs"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:272
+msgid "Widget Title"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:273
+msgid "Put the title here, or leave it empty to hide the title."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:277
+msgid "Post Query"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:278
+msgid ""
+"Select the post type or custom query for post. For more queries please <a "
+"href=\"http://goo.gl/HDhZx\">get premium</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:289
+msgid "Term(s)"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:290
+msgid "Select the post type or custom query for post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:300
+msgid "Post Number"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:301
+msgid "The total post to display in a widget."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:305
+msgid "Sort Order"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:306
+msgid "The page order in ascending or descending ordering"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:319
+msgid "Show Excerpt"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:320
+msgid "Display the post excerpt."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:323
+msgid "Excerpt Lenght"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:324
+msgid "The excerpt total spaces to generate."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:328
+msgid "More Text"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:329
+msgid "Put the more text at the end of the excerpt."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:333
+msgid "Read More"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:334
+msgid "The read more text with link for the complete post content view."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:343
+msgid "Show thumbnail"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:344
+msgid "Display the standard post featured image or thumbnail."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:347
+msgid "Height"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:348
+msgid "The featured image or thumbnail height in pixels unit."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:352
+msgid "Width"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:353
+msgid "The featured image or thumbnail width in pixels unit."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:362
+msgid "Show comments number"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:363
+msgid "Display the comments for each post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:371
+msgid "Show date"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:372
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:391
+msgid "Display the post date for each post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:376
+msgid "Show Link"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:377
+msgid "Check if you want the date as a a link to the post."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:380
+msgid "Date Format"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:381
+msgid ""
+"Controls the format of the Page date set by the <b>show date</b> parameter. "
+"This parameter defaults to the date format configured in your WordPress "
+"options. See <a title=\"Formatting Date and Time\" href=\"http://codex."
+"wordpress.org/Formatting_Date_and_Time\">Formatting Date and Time</a> and "
+"the <a title=\"http://php.net/date\" class=\"external text\" href=\"http://"
+"php.net/date\">date format page on the php web site</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:390
+msgid "Show Author"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:394
+msgid "Author Link Title"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:395
+msgid "The author post link title. Use {author} for template tag."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:403
+msgid "Style"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:404
+msgid ""
+"Select widget template style here and adjust the thumbnail size. You will "
+"get more templates style with <a href=\"http://goo.gl/HDhZx\">premium "
+"version</a>."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:412
+msgid "Preview"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:432
+msgid "Intro Text"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:433
+msgid ""
+"This option will display addtional text before the widget title and HTML "
+"supports."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:438
+msgid "Outro Text"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:439
+msgid "This option will display addtional text after widget and HTML supports."
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:444
+msgid "Custom Script & Stylesheet"
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:445
+msgid ""
+"Use this box for additional widget CSS style of custom javascript. This "
+"widget selector is: "
+msgstr ""
+
+#: E:\xampp\htdocs\area51\wp-content\plugins\super-post/widget.php:456
+msgid ""
+"This premium version gives more abilities, features, options and premium "
+"supports for displaying your posts \n"
+"\t\t\t\t\t\t\t\t\t\tin a better way. You will get help soon if you have "
+"problems with the premium version. Full documentation will let \n"
+"\t\t\t\t\t\t\t\t\t\tyou customize this premium version easily. <br />\n"
+"\t\t\t\t\t\t\t\t\t\tSee the full <a href=\"http://zourbuth.com/plugins/super-"
+"post/\"><strong>Live Preview</strong></a>.\n"
+"\t\t\t\t\t\t\t\t\t\t<br /><br />\n"
+"\t\t\t\t\t\t\t\t\t\tMain key features you will get with premium version:"
+msgstr ""

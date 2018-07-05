@@ -24,13 +24,6 @@ class WPSEO_Utils {
 	private static $cache_clear = array();
 
 	/**
-	 * @var string Sitemap Cache key prefix
-	 */
-	private static $sitemap_cache_key_prefix = 'yst_sm_';
-
-	const SITEMAP_INDEX_TYPE = '1';
-
-	/**
 	 * Check whether the current user is allowed to access the configuration.
 	 *
 	 * @static
@@ -43,12 +36,15 @@ class WPSEO_Utils {
 		}
 
 		$options = get_site_option( 'wpseo_ms' );
-
-		if ( empty( $options['access'] ) || $options['access'] === 'admin' ) {
-			return current_user_can( 'manage_options' );
+		if ( $options['access'] === 'admin' && current_user_can( 'manage_options' ) ) {
+			return true;
 		}
 
-		return is_super_admin();
+		if ( $options['access'] === 'superadmin' && ! is_super_admin() ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -110,7 +106,9 @@ class WPSEO_Utils {
 	/**
 	 * Check whether a url is relative
 	 *
-	 * @param string $url URL string to check.
+	 * @static
+	 *
+	 * @param string $url
 	 *
 	 * @return bool
 	 */
@@ -142,7 +140,9 @@ class WPSEO_Utils {
 	 *
 	 * Replace line breaks, carriage returns, tabs with a space, then remove double spaces.
 	 *
-	 * @param string $string String input to standardize.
+	 * @static
+	 *
+	 * @param string $string
 	 *
 	 * @return string
 	 */
@@ -195,13 +195,42 @@ class WPSEO_Utils {
 	 * @return string
 	 */
 	public static function translate_score( $val, $css_value = true ) {
-		$seo_rank = WPSEO_Rank::from_numeric_score( $val );
-
-		if ( $css_value ) {
-			return $seo_rank->get_css_class();
+		if ( $val > 10 ) {
+			$val = round( $val / 10 );
+		}
+		switch ( $val ) {
+			case 0:
+				$score = __( 'N/A', 'wordpress-seo' );
+				$css   = 'na';
+				break;
+			case 4:
+			case 5:
+				$score = __( 'Poor', 'wordpress-seo' );
+				$css   = 'poor';
+				break;
+			case 6:
+			case 7:
+				$score = __( 'OK', 'wordpress-seo' );
+				$css   = 'ok';
+				break;
+			case 8:
+			case 9:
+			case 10:
+				$score = __( 'Good', 'wordpress-seo' );
+				$css   = 'good';
+				break;
+			default:
+				$score = __( 'Bad', 'wordpress-seo' );
+				$css   = 'bad';
+				break;
 		}
 
-		return $seo_rank->get_label();
+		if ( $css_value ) {
+			return $css;
+		}
+		else {
+			return $score;
+		}
 	}
 
 	/**
@@ -217,7 +246,9 @@ class WPSEO_Utils {
 	 * remove line breaks, tabs and extra white space,
 	 * strip octets - BUT DO NOT REMOVE (part of) VARIABLES WHICH WILL BE REPLACED.
 	 *
-	 * @param string $value String value to sanitize.
+	 * @static
+	 *
+	 * @param string $value
 	 *
 	 * @return string
 	 */
@@ -263,8 +294,10 @@ class WPSEO_Utils {
 	 *
 	 * @todo [JRF => whomever] check/improve url verification
 	 *
-	 * @param string $value             String URL value to sanitize.
-	 * @param array  $allowed_protocols Optional set of allowed protocols.
+	 * @static
+	 *
+	 * @param string $value
+	 * @param array  $allowed_protocols
 	 *
 	 * @return string
 	 */
@@ -277,7 +310,7 @@ class WPSEO_Utils {
 	 *
 	 * @static
 	 *
-	 * @param mixed $value Value to validate.
+	 * @param mixed $value
 	 *
 	 * @return bool
 	 */
@@ -364,7 +397,7 @@ class WPSEO_Utils {
 	 *
 	 * @static
 	 *
-	 * @param mixed $value Value to validate.
+	 * @param mixed $value
 	 *
 	 * @return int|bool int or false in case of failure to convert to int
 	 */
@@ -438,6 +471,9 @@ class WPSEO_Utils {
 	/**
 	 * Flush W3TC cache after succesfull update/add of taxonomy meta option
 	 *
+	 * @todo [JRF => whomever] check the above and this function to see if they should be combined or really
+	 * do something significantly different
+	 *
 	 * @static
 	 */
 	public static function flush_w3tc_cache() {
@@ -458,18 +494,12 @@ class WPSEO_Utils {
 	/**
 	 * Adds a hook that when given option is updated, the XML sitemap transient cache is cleared
 	 *
-	 * @param string $option Option name.
-	 * @param string $type   Sitemap type.
+	 * @param string $option
+	 * @param string $type
 	 */
 	public static function register_cache_clear_option( $option, $type = '' ) {
 		self::$cache_clear[ $option ] = $type;
-
-		$hook     = 'update_option';
-		$function = array( __CLASS__, 'clear_transient_cache' );
-
-		if ( ! has_action( $hook, $function ) ) {
-			add_action( $hook, $function );
-		}
+		add_action( 'update_option', array( 'WPSEO_Utils', 'clear_transient_cache' ) );
 	}
 
 	/**
@@ -478,297 +508,59 @@ class WPSEO_Utils {
 	 * @param string $option The option that's being updated.
 	 */
 	public static function clear_transient_cache( $option ) {
-		if ( array_key_exists( $option, self::$cache_clear ) ) {
-			$types = array();
-
-			if ( ! empty( self::$cache_clear[ $option ] ) ) {
-				$types[] = self::$cache_clear[ $option ];
+		if ( isset( self::$cache_clear[ $option ] ) ) {
+			if ( '' !== self::$cache_clear[ $option ] ) {
+				wpseo_invalidate_sitemap_cache( self::$cache_clear[ $option ] );
 			}
-
-			// Trigger cache clear.
-			self::clear_sitemap_cache( $types );
+			else {
+				self::clear_sitemap_cache();
+			}
 		}
 	}
 
 	/**
 	 * Clear entire XML sitemap cache
 	 *
-	 * @param array $types Set of sitemap types to invalidate cache for.
+	 * @param array $types
 	 */
-	public static function clear_sitemap_cache( array $types = array() ) {
-		// Filter out optional empty items.
-		$types = array_filter( $types );
+	public static function clear_sitemap_cache( $types = array() ) {
+		global $wpdb;
 
-		// Clear all cache.
-		if ( empty( $types ) ) {
-			self::invalidate_sitemap_cache();
-
+		if ( wp_using_ext_object_cache() ) {
 			return;
 		}
 
-		// Make sure the index cache always gets invalidated.
-		if ( ! in_array( self::SITEMAP_INDEX_TYPE, $types ) ) {
-			array_unshift( $types, self::SITEMAP_INDEX_TYPE );
+		if ( ! apply_filters( 'wpseo_enable_xml_sitemap_transient_caching', true ) ) {
+			return;
 		}
 
-		// Invalidate separate type caches.
-		foreach ( $types as $type ) {
-			self::invalidate_sitemap_cache( $type );
-		}
-	}
+		// Not sure about efficiency, but that's what code elsewhere does R.
+		$options = WPSEO_Options::get_all();
 
-	/**
-	 * Invalidate sitemap cache
-	 *
-	 * @param null|string $type The type to get the key for. Null for all cache.
-	 */
-	private static function invalidate_sitemap_cache( $type = null ) {
-		// Global validator gets cleared when not type is provided.
-		$old_validator = null;
-
-		// Get the current type validator.
-		if ( ! is_null( $type ) ) {
-			$old_validator = self::get_sitemap_cache_validator( $type );
+		if ( true !== $options['enablexmlsitemap'] ) {
+			return;
 		}
 
-		// Refresh validator.
-		self::new_sitemap_cache_validator( $type );
+		$query = "DELETE FROM $wpdb->options WHERE";
 
-		if ( ! wp_using_ext_object_cache() ) {
-			// Clean up current cache from the database.
-			self::cleanup_sitemap_database_cache( $type, $old_validator );
-		}
+		if ( ! empty( $types ) ) {
+			$first = true;
 
-		// External object cache pushes old and unretrieved items out by itself so we don't have to do anything for that.
-	}
+			foreach ( $types as $sitemap_type ) {
+				if ( ! $first ) {
+					$query .= ' OR ';
+				}
 
-	/**
-	 * Cleanup invalidated database cache
-	 *
-	 * @param null|string $type      The type of sitemap to clear cache for.
-	 * @param null|string $validator The validator to clear cache of.
-	 *
-	 * @return void
-	 */
-	private static function cleanup_sitemap_database_cache( $type = null, $validator = null ) {
-		global $wpdb;
+				$query .= " option_name LIKE '_transient_wpseo_sitemap_cache_" . $sitemap_type . "_%' OR option_name LIKE '_transient_timeout_wpseo_sitemap_cache_" . $sitemap_type . "_%'";
 
-		if ( is_null( $type ) ) {
-			// Clear all cache if no type is provided.
-			$like = sprintf( '_transient_%s%%', self::$sitemap_cache_key_prefix );
+				$first = false;
+			}
 		}
 		else {
-			if ( ! is_null( $validator ) ) {
-				// Clear all cache for provided type-validator.
-				$like = sprintf( '_transient_%%_%s', $validator );
-			}
-			else {
-				// Clear type cache for all type keys.
-				$like = sprintf( '_transient_%s%s_%%', self::$sitemap_cache_key_prefix, $type );
-			}
+			$query .= " option_name LIKE '_transient_wpseo_sitemap_%' OR option_name LIKE '_transient_timeout_wpseo_sitemap_%'";
 		}
 
-		/**
-		 * Add slashes to the LIKE "_" single character wildcard.
-		 *
-		 * We can't use `esc_like` here because we need the % in the query.
-		 */
-		$where = sprintf( "option_name LIKE '%s'", addcslashes( $like, '_' ) );
-
-		$query = sprintf( 'DELETE FROM %s WHERE %s', $wpdb->options, $where );
 		$wpdb->query( $query );
-	}
-
-	/**
-	 * Get the sitemap cache key prefix
-	 *
-	 * @return string
-	 */
-	public static function get_sitemap_cache_key_prefix() {
-		return self::$sitemap_cache_key_prefix;
-	}
-
-	/**
-	 * Get the cache key for a certain type and page
-	 *
-	 * Example key format for type "post", page 1: wpseo_sitemap_post_1:akfw3e_23azBa
-	 *
-	 * @param null|string $type The type to get the key for. Null or self::SITEMAP_INDEX_TYPE for index cache.
-	 * @param int         $page The page of cache to get the key for.
-	 *
-	 * @return string The key where the cache is stored on.
-	 */
-	public static function get_sitemap_cache_key( $type = null, $page = 1 ) {
-		// Using SITEMAP_INDEX_TYPE for sitemap index cache.
-		$type = is_null( $type ) ? self::SITEMAP_INDEX_TYPE : $type;
-
-		$global_cache_validator = self::get_sitemap_cache_validator();
-		$type_cache_validator   = self::get_sitemap_cache_validator( $type );
-
-		$prefix = self::$sitemap_cache_key_prefix;
-		$postfix = sprintf( '_%d:%s_%s', $page, $global_cache_validator, $type_cache_validator );
-
-		$type = self::get_safe_sitemap_cache_type( $type, $prefix, $postfix );
-
-		// Build key.
-		$full_key = $prefix . $type . $postfix;
-
-		return $full_key;
-	}
-
-	/**
-	 * If the type is over length make sure we compact it so we don't have any database problems
-	 *
-	 * When there are more 'extremely long' post types, changes are they have variations in either the start or ending.
-	 * Because of this, we cut out the excess in the middle which should result in less chance of collision.
-	 *
-	 * @param string $type The type of sitemap to be used.
-	 * @param string $prefix The part before the type in the cache key. Only the length is used.
-	 * @param string $postfix The part after the type in the cache key. Only the length is used.
-	 *
-	 * @return string The type with a safe length to use
-	 *
-	 * @throws OutOfRangeException When there is less than 15 characters of space for a key that is originally longer.
-	 */
-	private static function get_safe_sitemap_cache_type( $type, $prefix = '', $postfix = '' ) {
-		// Length of key should not be over 53.
-		$max_length = 53;
-		$max_length -= strlen( 'timeout_' );
-		$max_length -= strlen( $prefix );
-		$max_length -= strlen( $postfix );
-
-		if ( strlen( $type ) > $max_length ) {
-
-			if ( $max_length < 15 ) {
-				/**
-				 * If this happens the most likely cause is a 'page' that is too big.
-				 * "Normally" the max_length is 24 + strlen( page ), which is unlikely to go above 10 in the first place.
-				 *
-				 * So this would not happen unintentionally..
-				 * Either by trying to cause a high server load, finding backdoors or misconfiguration.
-				 */
-				throw new OutOfRangeException(
-					__(
-						'Trying to build a safe sitemap cache key, but the postfix and prefix combination leaves too little room to do this. You are probably requesting a page that is way out of the expected range.',
-						'wordpress-seo'
-					)
-				);
-			}
-
-			$half = ( $max_length / 2 );
-
-			$first_part = substr( $type, 0, ( ceil( $half ) - 1 ) );
-			$last_part  = substr( $type, ( 1 - floor( $half ) ) );
-
-			$type = $first_part . '..' . $last_part;
-		}
-
-		return $type;
-	}
-
-	/**
-	 * Get the cache validator for the specified type
-	 *
-	 * @param string|null $type Provide a type for a specific type validator, null for global validator.
-	 *
-	 * @return string Validator to be used to generate the cache key.
-	 */
-	public static function get_sitemap_cache_validator_key( $type = null ) {
-		if ( is_null( $type ) ) {
-			return 'wpseo_sitemap_cache_validator_global';
-		}
-
-		return sprintf( 'wpseo_sitemap_%s_cache_validator', $type );
-	}
-
-	/**
-	 * Get the current cache validator
-	 *
-	 * Without the type the global validator is returned.
-	 *  This can invalidate -all- keys in cache at once
-	 *
-	 * With the type parameter the validator for that specific
-	 *  type can be invalidated
-	 *
-	 * @param string|null $type Provide a type for a specific type validator, null for global validator.
-	 *
-	 * @return null|string The validator for the supplied type.
-	 */
-	private static function get_sitemap_cache_validator( $type = null ) {
-		$key = self::get_sitemap_cache_validator_key( $type );
-
-		$current = get_option( $key, null );
-		if ( ! is_null( $current ) ) {
-			return $current;
-		}
-
-		if ( self::new_sitemap_cache_validator( $type ) ) {
-			return self::get_sitemap_cache_validator( $type );
-		}
-
-		return null;
-	}
-
-	/**
-	 * Refresh the cache validator value
-	 *
-	 * @param string|null $type Provide a type for a specific type validator, null for global validator.
-	 *
-	 * @return bool True if validator key has been saved as option.
-	 */
-	private static function new_sitemap_cache_validator( $type = null ) {
-		$key = self::get_sitemap_cache_validator_key( $type );
-
-		// Generate new validator.
-		$microtime = microtime();
-
-		// Remove space.
-		list( $milliseconds, $seconds ) = explode( ' ', $microtime );
-
-		// Transients are purged every 24h.
-		$seconds      = ( $seconds % DAY_IN_SECONDS );
-		$milliseconds = substr( $milliseconds, 2, 5 );
-
-		// Combine seconds and milliseconds and convert to integer.
-		$validator = intval( $seconds . '' . $milliseconds, 10 );
-
-		// Apply base 61 encoding.
-		$compressed = self::convert_base10_to_base61( $validator );
-
-		return update_option( $key, $compressed );
-	}
-
-	/**
-	 * Encode to base61 format.
-	 *
-	 * This is base64 (numeric + alpha + alpha upper case) without the 0.
-	 *
-	 * @param int $input The number that has to be converted to base 61.
-	 *
-	 * @return string Base 61 converted string.
-	 *
-	 * @throws InvalidArgumentException When the input is not an integer.
-	 */
-	public static function convert_base10_to_base61( $input ) {
-		if ( ! is_int( $input ) ) {
-			throw new InvalidArgumentException( __( 'Expected an integer as input.', 'wordpress-seo' ) );
-		}
-
-		$characters = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$length     = strlen( $characters );
-
-		$index    = ( $input % $length );
-		$output   = $characters[ $index ];
-
-		$position = floor( $input / $length );
-		while ( $position ) {
-			$index    = ( $position % $length );
-			$output   = $characters[ $index ] . $output;
-
-			$position = floor( $position / $length );
-		}
-
-		return $output;
 	}
 
 	/**
@@ -860,7 +652,7 @@ class WPSEO_Utils {
 			case 'mod':
 			case 'modulus':
 				if ( $bc ) {
-					$result = bcmod( $number1, $number2 ); // String, or NULL if modulus is 0.
+					$result = bcmod( $number1, $number2, $precision ); // String, or NULL if modulus is 0.
 				}
 				elseif ( $number2 != 0 ) {
 					$result = ( $number1 % $number2 );
@@ -908,11 +700,9 @@ class WPSEO_Utils {
 	 *
 	 * This is used because stupidly enough, the `filter_input` function is not available on all hosts...
 	 *
-	 * @deprecated Passes through to PHP call, no longer used in code.
-	 *
-	 * @param int    $type          Input type constant.
-	 * @param string $variable_name Variable name to get.
-	 * @param int    $filter        Filter to apply.
+	 * @param int    $type
+	 * @param string $variable_name
+	 * @param int    $filter
 	 *
 	 * @return mixed
 	 */
@@ -923,7 +713,7 @@ class WPSEO_Utils {
 	/**
 	 * Trim whitespace and NBSP (Non-breaking space) from string
 	 *
-	 * @param string $string String input to trim.
+	 * @param string $string
 	 *
 	 * @return string
 	 */
@@ -938,7 +728,7 @@ class WPSEO_Utils {
 	/**
 	 * Check if a string is a valid datetime
 	 *
-	 * @param string $datetime String input to check as valid input for DateTime class.
+	 * @param string $datetime
 	 *
 	 * @return bool
 	 */
@@ -963,7 +753,7 @@ class WPSEO_Utils {
 	 *
 	 * This method will parse the URL and combine them in one string.
 	 *
-	 * @param string $url URL string.
+	 * @param string $url
 	 *
 	 * @return mixed
 	 */
@@ -992,9 +782,9 @@ class WPSEO_Utils {
 	/**
 	 * Get plugin name from file
 	 *
-	 * @param string $plugin Plugin path relative to plugins directory.
+	 * @param string $plugin
 	 *
-	 * @return string|bool
+	 * @return bool
 	 */
 	public static function get_plugin_name( $plugin ) {
 		$plugin_details = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
@@ -1004,104 +794,6 @@ class WPSEO_Utils {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Retrieves the sitename.
-	 *
-	 * @return string
-	 */
-	public static function get_site_name() {
-		return trim( strip_tags( get_bloginfo( 'name' ) ) );
-	}
-
-	/**
-	 * Retrieves the title separator.
-	 *
-	 * @return string
-	 */
-	public static function get_title_separator() {
-		$replacement = WPSEO_Options::get_default( 'wpseo_titles', 'separator' );
-
-		// Get the titles option and the separator options.
-		$titles_options    = WPSEO_Options::get_option( 'wpseo_titles' );
-		$seperator_options = WPSEO_Option_Titles::get_instance()->get_separator_options();
-
-		// This should always be set, but just to be sure.
-		if ( isset( $seperator_options[ $titles_options['separator'] ] ) ) {
-			// Set the new replacement.
-			$replacement = $seperator_options[ $titles_options['separator'] ];
-		}
-
-		/**
-		 * Filter: 'wpseo_replacements_filter_sep' - Allow customization of the separator character(s)
-		 *
-		 * @api string $replacement The current separator
-		 */
-		return apply_filters( 'wpseo_replacements_filter_sep', $replacement );
-	}
-
-	/**
-	 * Wrapper for encoding the array as a json string. Includes a fallback if wp_json_encode doesn't exists
-	 *
-	 * @param array $array_to_encode The array which will be encoded.
-	 * @param int   $options		 Optional. Array with options which will be passed in to the encoding methods.
-	 * @param int   $depth    		 Optional. Maximum depth to walk through $data. Must be greater than 0. Default 512.
-	 *
-	 * @return false|string
-	 */
-	public static function json_encode( array $array_to_encode, $options = 0, $depth = 512 ) {
-		if ( function_exists( 'wp_json_encode' ) ) {
-			return wp_json_encode( $array_to_encode, $options, $depth );
-		}
-
-		// @codingStandardsIgnoreStart
-		return json_encode( $array_to_encode );
-		// @codingStandardsIgnoreEnd
-	}
-
-	/**
-	 * Check if the current opened page is a Yoast SEO page.
-	 *
-	 * @return bool
-	 */
-	public static function is_yoast_seo_page() {
-		static $is_yoast_seo;
-
-		if ( $is_yoast_seo === null ) {
-			$current_page = filter_input( INPUT_GET, 'page' );
-			$is_yoast_seo = ( substr( $current_page, 0, 6 ) === 'wpseo_' );
-		}
-
-		return $is_yoast_seo;
-	}
-
-	/**
-	 * Determine if Yoast SEO is in development mode?
-	 *
-	 * Inspired by JetPack (https://github.com/Automattic/jetpack/blob/master/class.jetpack.php#L1383-L1406).
-	 *
-	 * @return bool
-	 */
-	public static function is_development_mode() {
-		$development_mode = false;
-
-		if ( defined( 'WPSEO_DEBUG' ) ) {
-			$development_mode = WPSEO_DEBUG;
-		}
-		elseif ( site_url() && false === strpos( site_url(), '.' ) ) {
-			$development_mode = true;
-		}
-
-		/**
-		 * Filter the Yoast SEO development mode.
-		 *
-		 * @since 3.0
-		 *
-		 * @param bool $development_mode Is Yoast SEOs development mode active.
-		 */
-
-		return apply_filters( 'yoast_seo_development_mode', $development_mode );
 	}
 
 } /* End of class WPSEO_Utils */

@@ -1,6 +1,9 @@
 <?php
 
 class wfActivityReport {
+	const BLOCK_TYPE_COMPLEX = 'complex';
+	const BLOCK_TYPE_BRUTE_FORCE = 'bruteforce';
+	const BLOCK_TYPE_BLACKLIST = 'blacklist';
 
 	/**
 	 * @var int
@@ -52,8 +55,15 @@ class wfActivityReport {
 	 * Send out the report and reschedule the next report's cron job.
 	 */
 	public static function executeCronJob() {
-		$report = new self();
-		$report->sendReportViaEmail(wfConfig::getAlertEmails());
+		if (!wfConfig::get('email_summary_enabled', 1)) {
+			return;
+		}
+		
+		$emails = wfConfig::getAlertEmails();
+		if (count($emails)) {
+			$report = new self();
+			$report->sendReportViaEmail($emails);
+		}
 		self::scheduleCronJob();
 	}
 
@@ -96,16 +106,16 @@ class wfActivityReport {
 		$end_time = 0;
 
 		switch ($interval) {
+			// Send a report 4pm every day
+			case 'daily':
+				$start_time = gmmktime(16, 0, 0, $month, $day_of_month, $year) + (-$offset * 60 * 60);
+				$end_time = $start_time + 86400;
+				break;
+			
 			// Send a report 4pm every Monday
 			case 'weekly':
 				$start_time = gmmktime(16, 0, 0, $month, $day_of_month - $day + 1, $year) + (-$offset * 60 * 60);
 				$end_time = $start_time + (86400 * 7);
-				break;
-
-			// Send a report 4pm every other Monday
-			case 'biweekly':
-				$start_time = gmmktime(16, 0, 0, $month, $day_of_month - $day + 1, $year) + (-$offset * 60 * 60);
-				$end_time = $start_time + (86400 * 14);
 				break;
 
 			// Send a report at 4pm the first of every month
@@ -139,8 +149,8 @@ class wfActivityReport {
 		// weekly
 		$from = $time - (86400 * 7);
 		switch ($interval) {
-			case 'biweekly':
-				$from = $time - (86400 * 14);
+			case 'daily':
+				$from = $time - 86400;
 				break;
 
 			// Send a report at 4pm the first of every month
@@ -157,13 +167,17 @@ class wfActivityReport {
 	 */
 	public function getFullReport() {
 		$start_time = microtime(true);
+		$remainder = 0;
+		$recent_firewall_activity = $this->getRecentFirewallActivity($this->limit, $remainder);
 		return array(
-			'top_ips_blocked'         => $this->getTopIPsBlocked($this->limit),
-			'top_countries_blocked'   => $this->getTopCountriesBlocked($this->limit),
-			'top_failed_logins'       => $this->getTopFailedLogins($this->limit),
-			'recently_modified_files' => $this->getRecentFilesModified($this->limit),
-			'updates_needed'          => $this->getUpdatesNeeded(),
-			'microseconds'            => microtime(true) - $start_time,
+			'top_ips_blocked'          => $this->getTopIPsBlocked($this->limit),
+			'top_countries_blocked'    => $this->getTopCountriesBlocked($this->limit),
+			'top_failed_logins'        => $this->getTopFailedLogins($this->limit),
+			'recent_firewall_activity' => $recent_firewall_activity,
+			'omitted_firewall_activity'=> $remainder,
+			'recently_modified_files'  => $this->getRecentFilesModified($this->limit),
+			'updates_needed'           => $this->getUpdatesNeeded(),
+			'microseconds'             => microtime(true) - $start_time,
 		);
 	}
 
@@ -180,22 +194,75 @@ class wfActivityReport {
 			'microseconds'          => microtime(true) - $start_time,
 		);
 	}
+	
+	public function getBlockedCount($maxAgeDays = null, $grouping = null) {
+		$maxAgeDays = (int) $maxAgeDays;
+		if ($maxAgeDays <= 0) {
+			$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 7 day)) / 86400)';
+			switch (wfConfig::get('email_summary_interval', 'weekly')) {
+				case 'daily':
+					$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 day)) / 86400)';
+					break;
+				case 'monthly':
+					$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 month)) / 86400)';
+					break;
+			}
+		}
+		else {
+			$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval ' . $maxAgeDays . ' day)) / 86400)';
+		}
+		
+		//Possible values for blockType: throttle, manual, brute, fakegoogle, badpost, country, advanced, blacklist, waf
+		$groupingWHERE = '';
+		switch ($grouping) {
+			case self::BLOCK_TYPE_COMPLEX:
+				$groupingWHERE = ' AND blockType IN ("fakegoogle", "badpost", "country", "advanced", "waf")';
+				break;
+			case self::BLOCK_TYPE_BRUTE_FORCE:
+				$groupingWHERE = ' AND blockType IN ("throttle", "brute")';
+				break;
+			case self::BLOCK_TYPE_BLACKLIST:
+				$groupingWHERE = ' AND blockType IN ("blacklist", "manual")';
+				break;
+		}
+		
+		$table_wfBlockedIPLog = wfDB::networkTable('wfBlockedIPLog');
+		$count = $this->db->get_var(<<<SQL
+SELECT SUM(blockCount) as blockCount
+FROM {$table_wfBlockedIPLog}
+WHERE unixday >= {$interval}{$groupingWHERE}
+SQL
+			);
+		return $count;
+	}
 
 	/**
 	 * @param int $limit
 	 * @return mixed
 	 */
-	public function getTopIPsBlocked($limit = 10) {
-		$where = $this->getBlockedIPWhitelistWhereClause();
-		if ($where) {
-			$where = 'WHERE NOT (' . $where . ')';
+	public function getTopIPsBlocked($limit = 10, $maxAgeDays = null) {
+		$maxAgeDays = (int) $maxAgeDays;
+		if ($maxAgeDays <= 0) {
+			$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 7 day)) / 86400)';
+			switch (wfConfig::get('email_summary_interval', 'weekly')) {
+				case 'daily':
+					$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 day)) / 86400)';
+					break;
+				case 'monthly':
+					$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 month)) / 86400)';
+					break;
+			}
 		}
-
+		else {
+			$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval ' . $maxAgeDays . ' day)) / 86400)';
+		}
+		
+		$table_wfBlockedIPLog = wfDB::networkTable('wfBlockedIPLog');
 		$results = $this->db->get_results($this->db->prepare(<<<SQL
 SELECT *,
 SUM(blockCount) as blockCount
-FROM {$this->db->prefix}wfBlockedIPLog
-$where
+FROM {$table_wfBlockedIPLog}
+WHERE unixday >= {$interval}
 GROUP BY IP
 ORDER BY blockCount DESC
 LIMIT %d
@@ -213,16 +280,28 @@ SQL
 	 * @param int $limit
 	 * @return array
 	 */
-	public function getTopCountriesBlocked($limit = 10) {
-		$where = $this->getBlockedIPWhitelistWhereClause();
-		if ($where) {
-			$where = 'WHERE NOT (' . $where . ')';
+	public function getTopCountriesBlocked($limit = 10, $maxAgeDays = null) {
+		$maxAgeDays = (int) $maxAgeDays;
+		if ($maxAgeDays <= 0) {
+			$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 7 day)) / 86400)';
+			switch (wfConfig::get('email_summary_interval', 'weekly')) {
+				case 'daily':
+					$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 day)) / 86400)';
+					break;
+				case 'monthly':
+					$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 month)) / 86400)';
+					break;
+			}
 		}
-
+		else {
+			$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval ' . $maxAgeDays . ' day)) / 86400)';
+		}
+	  	
+		$table_wfBlockedIPLog = wfDB::networkTable('wfBlockedIPLog');
 		$results = $this->db->get_results($this->db->prepare(<<<SQL
 SELECT *, COUNT(IP) as totalIPs, SUM(blockCount) as totalBlockCount
-FROM {$this->db->base_prefix}wfBlockedIPLog
-$where
+FROM {$table_wfBlockedIPLog}
+WHERE unixday >= {$interval}
 GROUP BY countryCode
 ORDER BY totalBlockCount DESC
 LIMIT %d
@@ -243,59 +322,36 @@ SQL
 	public function getTopFailedLogins($limit = 10) {
 		$interval = 'UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 7 day))';
 		switch (wfConfig::get('email_summary_interval', 'weekly')) {
-			case 'biweekly':
-				$interval = 'UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 14 day))';
+			case 'daily':
+				$interval = 'UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 day))';
 				break;
 			case 'monthly':
 				$interval = 'UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 month))';
 				break;
 		}
-
-		$results = $this->db->get_results($this->db->prepare(<<<SQL
-SELECT *,
-sum(fail) as fail_count,
-max(userID) as is_valid_user
-FROM {$this->db->base_prefix}wfLogins
-WHERE fail = 1
-AND ctime > $interval
-GROUP BY username
+	  
+		$table_wfLogins = wfDB::networkTable('wfLogins');
+		$failedLogins = $this->db->get_results($this->db->prepare(<<<SQL
+SELECT wfl.*,
+sum(wfl.fail) as fail_count
+FROM {$table_wfLogins} wfl
+WHERE wfl.fail = 1
+AND wfl.ctime > $interval
+GROUP BY wfl.username
 ORDER BY fail_count DESC
 LIMIT %d
 SQL
 			, $limit));
-		return $results;
-	}
-
-	/**
-	 * Generate SQL from the whitelist. Uses the return format from wfUtils::getIPWhitelist
-	 *
-	 * @see wfUtils::getIPWhitelist
-	 * @param array $whitelisted_ips
-	 * @return string
-	 */
-	public function getBlockedIPWhitelistWhereClause($whitelisted_ips = null) {
-		if ($whitelisted_ips === null) {
-			$whitelisted_ips = wfUtils::getIPWhitelist();
+		
+		foreach ($failedLogins as &$login) {
+			$exists = $this->db->get_var($this->db->prepare(<<<SQL
+SELECT !ISNULL(ID) FROM {$this->db->users} WHERE user_login = '%s' OR user_email = '%s'
+SQL
+			, $login->username, $login->username));
+			$login->is_valid_user = $exists;
 		}
-		if (!is_array($whitelisted_ips)) {
-			return false;
-		}
-
-		$where = '';
-
-		foreach ($whitelisted_ips as $ip_range) {
-			if (!is_a($ip_range, 'wfUserIPRange')) {
-				$ip_range = wfUtils::CIDR2wfUserIPRange($ip_range);
-			}
-
-			$where .= $ip_range->toSQL('IP') . ' OR ';
-		}
-		if ($where) {
-			// remove the extra ' OR '
-			$where = substr($where, 0, -4);
-		}
-
-		return $where;
+		
+		return $failedLogins;
 	}
 
 	/**
@@ -303,9 +359,9 @@ SQL
 	 *
 	 * @return array|bool
 	 */
-	public function getUpdatesNeeded() {
+	public function getUpdatesNeeded($useCachedValued = true) {
 		$update_check = new wfUpdateCheck();
-		$needs_update = $update_check->checkAllUpdates()
+		$needs_update = $update_check->checkAllUpdates($useCachedValued)
 			->needsAnyUpdates();
 		if ($needs_update) {
 			return array(
@@ -315,6 +371,19 @@ SQL
 			);
 		}
 		return false;
+	}
+	
+	/**
+	 * Returns list of firewall activity up to $limit number of entries.
+	 * 
+	 * @param int $limit Max events to return in results
+	 * @return array
+	 */
+	public function getRecentFirewallActivity($limit = 300, &$remainder) {
+		$dateRange = wfActivityReport::getReportDateRange();
+		$recent_firewall_activity = new wfRecentFirewallActivity(null, max(604800, $dateRange[1] - $dateRange[0]));
+		$recent_firewall_activity->run();
+		return $recent_firewall_activity->mostRecentActivity($limit, $remainder);
 	}
 
 	/**
@@ -336,22 +405,20 @@ SQL
 	}
 
 	/**
-	 * Remove entries older than a week in the IP log.
+	 * Remove entries older than a month in the IP log.
 	 */
 	public function rotateIPLog() {
-		// default to weekly
-		$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 7 day)) / 86400)';
-		switch (wfConfig::get('email_summary_interval', 'weekly')) {
-			case 'biweekly':
-				$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 14 day)) / 86400)';
-				break;
-			case 'monthly':
-				$interval = 'FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 month)) / 86400)';
-				break;
-		}
+		$table_wfBlockedIPLog = wfDB::networkTable('wfBlockedIPLog');
 		$this->db->query(<<<SQL
-DELETE FROM {$this->db->base_prefix}wfBlockedIPLog
-WHERE unixday < $interval
+DELETE FROM {$table_wfBlockedIPLog}
+WHERE unixday < FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 month)) / 86400)
+SQL
+		);
+		
+		$table_wfBlockedCommentLog = wfDB::networkTable('wfBlockedCommentLog');
+		$this->db->query(<<<SQL
+DELETE FROM {$table_wfBlockedCommentLog}
+WHERE unixday < FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), interval 1 month)) / 86400)
 SQL
 		);
 	}
@@ -360,9 +427,11 @@ SQL
 	 * @param mixed $ip_address
 	 * @param int|null $unixday
 	 */
-	public static function logBlockedIP($ip_address, $unixday = null) {
+	public static function logBlockedIP($ip_address, $unixday = null, $type = null) {
 		/** @var wpdb $wpdb */
 		global $wpdb;
+		
+		//Possible values for $type: throttle, manual, brute, fakegoogle, badpost, country, advanced, blacklist, waf
 
 		if (wfUtils::isValidIP($ip_address)) {
 			$ip_bin = wfUtils::inet_pton($ip_address);
@@ -370,22 +439,61 @@ SQL
 			$ip_bin = $ip_address;
 			$ip_address = wfUtils::inet_ntop($ip_bin);
 		}
-
-		$blocked_table = "{$wpdb->base_prefix}wfBlockedIPLog";
+		
+		$blocked_table = wfDB::networkTable('wfBlockedIPLog');
 
 		$unixday_insert = 'FLOOR(UNIX_TIMESTAMP() / 86400)';
 		if (is_int($unixday)) {
 			$unixday_insert = absint($unixday);
 		}
+		
+		if ($type === null) {
+			$type = 'generic';
+		}
 
 		$country = wfUtils::IP2Country($ip_address);
 
 		$wpdb->query($wpdb->prepare(<<<SQL
-INSERT INTO $blocked_table (IP, countryCode, blockCount, unixday)
-VALUES (%s, %s, 1, $unixday_insert)
+INSERT INTO $blocked_table (IP, countryCode, blockCount, unixday, blockType)
+VALUES (%s, %s, 1, $unixday_insert, %s)
 ON DUPLICATE KEY UPDATE blockCount = blockCount + 1
 SQL
-			, $ip_bin, $country));
+			, $ip_bin, $country, $type));
+	}
+	
+	/**
+	 * @param mixed $ip_address
+	 * @param int|null $unixday
+	 */
+	public static function logBlockedComment($ip_address, $type, $unixday = null) {
+		/** @var wpdb $wpdb */
+		global $wpdb;
+		
+		//Possible values for $type: anon, gsb, reputation
+		
+		if (wfUtils::isValidIP($ip_address)) {
+			$ip_bin = wfUtils::inet_pton($ip_address);
+		}
+		else {
+			$ip_bin = $ip_address;
+			$ip_address = wfUtils::inet_ntop($ip_bin);
+		}
+	  
+	 	$blocked_table = wfDB::networkTable('wfBlockedCommentLog');
+		
+		$unixday_insert = 'FLOOR(UNIX_TIMESTAMP() / 86400)';
+		if (is_int($unixday)) {
+			$unixday_insert = absint($unixday);
+		}
+		
+		$country = wfUtils::IP2Country($ip_address);
+		
+		$wpdb->query($wpdb->prepare(<<<SQL
+INSERT INTO {$blocked_table} (IP, countryCode, blockCount, unixday, blockType)
+VALUES (%s, %s, 1, {$unixday_insert}, %s)
+ON DUPLICATE KEY UPDATE blockCount = blockCount + 1
+SQL
+			, $ip_bin, $country, $type));
 	}
 
 	/**
@@ -466,6 +574,83 @@ SQL
 	}
 }
 
+class wfRecentFirewallActivity {
+	private $activity = array();
+	
+	private $max_fetch = 2000;
+	private $time_range = 604800;
+	
+	public function __construct($max_fetch = null, $time_range = null) {
+		if ($max_fetch !== null) {
+			$this->max_fetch = $max_fetch;
+		}
+		
+		if ($time_range !== null) {
+			$this->time_range = $time_range;
+		}
+	}
+	
+	public function run() {
+		global $wpdb;
+		
+		$table_wfHits = wfDB::networkTable('wfHits');
+		$results = $wpdb->get_results($wpdb->prepare(<<<SQL
+SELECT attackLogTime, IP, URL, UA, actionDescription, actionData
+FROM {$table_wfHits}
+WHERE action = 'blocked:waf' AND attackLogTime > (UNIX_TIMESTAMP() - %d)
+ORDER BY attackLogTime DESC
+LIMIT %d
+SQL
+			, $this->time_range, $this->max_fetch));
+		if ($results) {
+			foreach ($results as &$row) {
+				$actionData = json_decode($row->actionData, true);
+				if (!is_array($actionData) || !isset($actionData['paramKey']) || !isset($actionData['paramValue'])) {
+					continue;
+				}
+				
+				if (isset($actionData['failedRules']) && $actionData['failedRules'] == 'blocked') {
+					$row->longDescription = "Blocked because the IP is blacklisted";
+				}
+				else {
+					$row->longDescription = "Blocked for " . $row->actionDescription;
+				}
+				
+				$paramKey = base64_decode($actionData['paramKey']);
+				$paramValue = base64_decode($actionData['paramValue']);
+				if (strlen($paramValue) > 100) {
+					$paramValue = substr($paramValue, 0, 100) . chr(2026);
+				}
+				
+				if (preg_match('/([a-z0-9_]+\.[a-z0-9_]+)(?:\[(.+?)\](.*))?/i', $paramKey, $matches)) {
+					switch ($matches[1]) {
+						case 'request.queryString':
+							$row->longDescription = "Blocked for " . $row->actionDescription . ' in query string: ' . $matches[2] . '=' . $paramValue;
+							break;
+						case 'request.body':
+							$row->longDescription = "Blocked for " . $row->actionDescription . ' in POST body: ' . $matches[2] . '=' . $paramValue;
+							break;
+						case 'request.cookie':
+							$row->longDescription = "Blocked for " . $row->actionDescription . ' in cookie: ' . $matches[2] . '=' . $paramValue;
+							break;
+						case 'request.fileNames':
+							$row->longDescription = "Blocked for a " . $row->actionDescription . ' in file: ' . $matches[2] . '=' . $paramValue;
+							break;
+					}
+				}
+			}
+		}
+		
+		$this->activity = $results;
+	}
+	
+	public function mostRecentActivity($limit, &$remainder = null) {
+		if ($remainder !== null) {
+			$remainder = count($this->activity) - $limit;
+		}
+		return array_slice($this->activity, 0, $limit);
+	}
+}
 
 class wfRecentlyModifiedFiles extends wfDirectoryIterator {
 
@@ -489,7 +674,7 @@ class wfRecentlyModifiedFiles extends wfDirectoryIterator {
 	public function __construct($directory = ABSPATH, $max_files_per_directory = 20000, $max_iterations = 250000, $time_range = 604800) {
 		parent::__construct($directory, $max_files_per_directory, $max_iterations);
 		$this->time_range = $time_range;
-		$excluded_directories = explode(',', (string) wfConfig::get('email_summary_excluded_directories'));
+		$excluded_directories = explode("\n", wfUtils::cleanupOneEntryPerLine(wfConfig::get('email_summary_excluded_directories', '')));
 		$this->excluded_directories = array();
 		foreach ($excluded_directories  as $index => $path) {
 			if (($dir = realpath(ABSPATH . $path)) !== false) {
@@ -565,10 +750,11 @@ class wfActivityReportView extends wfView {
 	 * @return string
 	 */
 	public function displayFile($file) {
-		if (stripos($file, ABSPATH) === 0) {
-			return substr($file, strlen(ABSPATH));
+		$realPath = realpath($file);
+		if (stripos($realPath, ABSPATH) === 0) {
+			return substr($realPath, strlen(ABSPATH));
 		}
-		return $file;
+		return $realPath;
 	}
 
 	/**
@@ -579,6 +765,19 @@ class wfActivityReportView extends wfView {
 		if ($unix_time === null) {
 			$unix_time = time();
 		}
-		return date_i18n('F j, Y g:ia', $unix_time);
+		return wfUtils::formatLocalTime('F j, Y g:ia', $unix_time);
+	}
+	
+	public function attackTime($unix_time = null) {
+		if ($unix_time === null) {
+			$unix_time = time();
+		}
+		return wfUtils::formatLocalTime('F j, Y', $unix_time) . "<br>" . wfUtils::formatLocalTime('g:ia', $unix_time);
+	}
+	
+	public function displayIP($binaryIP) {
+		$readableIP = wfUtils::inet_ntop($binaryIP);
+		$country = wfUtils::countryCode2Name(wfUtils::IP2Country($readableIP));
+		return "{$readableIP} (" . ($country ? $country : 'Unknown') . ")"; 
 	}
 }

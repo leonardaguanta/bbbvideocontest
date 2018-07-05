@@ -92,7 +92,7 @@ class WPSEO_Breadcrumbs {
 	 * Create the breadcrumb
 	 */
 	private function __construct() {
-		$this->options        = WPSEO_Options::get_options( array( 'wpseo_titles', 'wpseo_internallinks', 'wpseo_xml' ) );
+		$this->options        = WPSEO_Options::get_all();
 		$this->post           = ( isset( $GLOBALS['post'] ) ? $GLOBALS['post'] : null );
 		$this->show_on_front  = get_option( 'show_on_front' );
 		$this->page_for_posts = get_option( 'page_for_posts' );
@@ -110,9 +110,9 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Get breadcrumb string using the singleton instance of this class
 	 *
-	 * @param string $before  Optional string to prepend.
-	 * @param string $after   Optional string to append.
-	 * @param bool   $display Echo or return flag.
+	 * @param string $before
+	 * @param string $after
+	 * @param bool   $display Echo or return.
 	 *
 	 * @return object
 	 */
@@ -200,7 +200,7 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Find the deepest term in an array of term objects
 	 *
-	 * @param array $terms Terms set.
+	 * @param  array $terms
 	 *
 	 * @return object
 	 */
@@ -329,7 +329,7 @@ class WPSEO_Breadcrumbs {
 			if ( is_post_type_archive() ) {
 				$post_type = $wp_query->get( 'post_type' );
 
-				if ( $post_type && is_string( $post_type ) ) {
+				if ( $post_type ) {
 					$this->add_ptarchive_crumb( $post_type );
 				}
 			}
@@ -409,7 +409,7 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Add a single id based crumb to the crumbs property
 	 *
-	 * @param int $id Post ID.
+	 * @param int $id
 	 */
 	private function add_single_post_crumb( $id ) {
 		$this->crumbs[] = array(
@@ -420,7 +420,7 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Add a term based crumb to the crumbs property
 	 *
-	 * @param object $term Term data object.
+	 * @param object $term
 	 */
 	private function add_term_crumb( $term ) {
 		$this->crumbs[] = array(
@@ -442,9 +442,9 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Add a predefined crumb to the crumbs property
 	 *
-	 * @param string $text       Text string.
-	 * @param string $url        URL string.
-	 * @param bool   $allow_html Flag to allow HTML.
+	 * @param string $text
+	 * @param string $url
+	 * @param bool   $allow_html
 	 */
 	private function add_predefined_crumb( $text, $url = '', $allow_html = false ) {
 		$this->crumbs[] = array(
@@ -487,10 +487,6 @@ class WPSEO_Breadcrumbs {
 	 * Add ptarchive crumb to the crumbs property if it can be linked to, for a single post
 	 */
 	private function maybe_add_pt_archive_crumb_for_post() {
-		// Never do this for the Post type archive for posts, as that would break `maybe_add_blog_crumb`.
-		if ( $this->post->post_type === 'post' ) {
-			return;
-		}
 		if ( isset( $this->post->post_type ) && get_post_type_archive_link( $this->post->post_type ) ) {
 			$this->add_ptarchive_crumb( $this->post->post_type );
 		}
@@ -507,22 +503,16 @@ class WPSEO_Breadcrumbs {
 
 				if ( is_array( $terms ) && $terms !== array() ) {
 
-					$primary_term = new WPSEO_Primary_Term( $main_tax, $this->post->ID );
-					if ( $primary_term->get_primary_term() ) {
-						$breadcrumb_term = get_term( $primary_term->get_primary_term(), $main_tax );
-					}
-					else {
-						$breadcrumb_term = $this->find_deepest_term( $terms );
-					}
+					$deepest_term = $this->find_deepest_term( $terms );
 
-					if ( is_taxonomy_hierarchical( $main_tax ) && $breadcrumb_term->parent != 0 ) {
-						$parent_terms = $this->get_term_parents( $breadcrumb_term );
+					if ( is_taxonomy_hierarchical( $main_tax ) && $deepest_term->parent != 0 ) {
+						$parent_terms = $this->get_term_parents( $deepest_term );
 						foreach ( $parent_terms as $parent_term ) {
 							$this->add_term_crumb( $parent_term );
 						}
 					}
 
-					$this->add_term_crumb( $breadcrumb_term );
+					$this->add_term_crumb( $deepest_term );
 				}
 			}
 		}
@@ -557,7 +547,7 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Add parent taxonomy crumb based on user defined preference
 	 *
-	 * @param object $term Term data object.
+	 * @param object $term
 	 */
 	private function maybe_add_preferred_term_parent_crumb( $term ) {
 		if ( isset( $this->options[ 'taxonomy-' . $term->taxonomy . '-ptparent' ] ) && $this->options[ 'taxonomy-' . $term->taxonomy . '-ptparent' ] != '0' ) {
@@ -575,7 +565,7 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Add parent taxonomy crumbs to the crumb property for hierachical taxonomy
 	 *
-	 * @param object $term Term data object.
+	 * @param object $term
 	 */
 	private function maybe_add_term_parent_crumbs( $term ) {
 		if ( is_taxonomy_hierarchical( $term->taxonomy ) && $term->parent != 0 ) {
@@ -620,7 +610,7 @@ class WPSEO_Breadcrumbs {
 	/**
 	 * Add (non-link) date crumb to crumbs property
 	 *
-	 * @param string $date Optional date string, defaults to post's date.
+	 * @param string $date
 	 */
 	private function add_date_crumb( $date = null ) {
 		if ( is_null( $date ) ) {
@@ -898,9 +888,9 @@ class WPSEO_Breadcrumbs {
 	 *
 	 * @deprecated 1.5.2.3
 	 *
-	 * @param string $links   Unused.
-	 * @param string $wrapper Unused.
-	 * @param string $element Unused.
+	 * @param string $links
+	 * @param string $wrapper
+	 * @param string $element
 	 *
 	 * @return void
 	 */

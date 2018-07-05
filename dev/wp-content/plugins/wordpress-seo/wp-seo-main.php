@@ -13,7 +13,7 @@ if ( ! function_exists( 'add_filter' ) ) {
  * @internal Nobody should be able to overrule the real version number as this can cause serious issues
  * with the options, so no if ( ! defined() )
  */
-define( 'WPSEO_VERSION', '3.1.1' );
+define( 'WPSEO_VERSION', '2.3.5' );
 
 if ( ! defined( 'WPSEO_PATH' ) ) {
 	define( 'WPSEO_PATH', plugin_dir_path( WPSEO_FILE ) );
@@ -42,9 +42,9 @@ function wpseo_auto_load( $class ) {
 
 	if ( $classes === null ) {
 		$classes = array(
-			'wp_list_table'   => ABSPATH . 'wp-admin/includes/class-wp-list-table.php',
-			'walker_category' => ABSPATH . 'wp-includes/category-template.php',
-			'pclzip'          => ABSPATH . 'wp-admin/includes/class-pclzip.php',
+			'wp_list_table'                      => ABSPATH . 'wp-admin/includes/class-wp-list-table.php',
+			'walker_category'                    => ABSPATH . 'wp-includes/category-template.php',
+			'pclzip'                             => ABSPATH . 'wp-admin/includes/class-pclzip.php',
 		);
 	}
 
@@ -60,7 +60,6 @@ if ( file_exists( WPSEO_PATH . '/vendor/autoload_52.php' ) ) {
 }
 elseif ( ! class_exists( 'WPSEO_Options' ) ) { // Still checking since might be site-level autoload R.
 	add_action( 'admin_init', 'yoast_wpseo_missing_autoload', 1 );
-
 	return;
 }
 
@@ -109,7 +108,8 @@ function wpseo_deactivate( $networkwide = false ) {
 function wpseo_network_activate_deactivate( $activate = true ) {
 	global $wpdb;
 
-	$all_blogs = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	$original_blog_id = get_current_blog_id(); // Alternatively use: $wpdb->blogid.
+	$all_blogs        = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 
 	if ( is_array( $all_blogs ) && $all_blogs !== array() ) {
 		foreach ( $all_blogs as $blog_id ) {
@@ -121,9 +121,9 @@ function wpseo_network_activate_deactivate( $activate = true ) {
 			else {
 				_wpseo_deactivate();
 			}
-
-			restore_current_blog();
 		}
+		// Restore back to original blog.
+		switch_to_blog( $original_blog_id );
 	}
 }
 
@@ -143,12 +143,7 @@ function _wpseo_activate() {
 	}
 	WPSEO_Options::ensure_options_exist();
 
-	if ( is_multisite() && ms_is_switched() ) {
-		delete_option( 'rewrite_rules' );
-	}
-	else {
-		add_action( 'shutdown', 'flush_rewrite_rules' );
-	}
+	add_action( 'shutdown', 'flush_rewrite_rules' );
 
 	wpseo_add_capabilities();
 
@@ -164,12 +159,7 @@ function _wpseo_activate() {
 function _wpseo_deactivate() {
 	require_once( WPSEO_PATH . 'inc/wpseo-functions.php' );
 
-	if ( is_multisite() && ms_is_switched() ) {
-		delete_option( 'rewrite_rules' );
-	}
-	else {
-		add_action( 'shutdown', 'flush_rewrite_rules' );
-	}
+	add_action( 'shutdown', 'flush_rewrite_rules' );
 
 	wpseo_remove_capabilities();
 
@@ -188,7 +178,7 @@ function _wpseo_deactivate() {
  * @internal Unfortunately will fail if the plugin is in the must-use directory
  * @see      https://core.trac.wordpress.org/ticket/24205
  *
- * @param int $blog_id Blog ID.
+ * @param int $blog_id
  */
 function wpseo_on_activate_blog( $blog_id ) {
 	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
@@ -220,7 +210,7 @@ function wpseo_load_textdomain() {
 	}
 }
 
-add_action( 'plugins_loaded', 'wpseo_load_textdomain' );
+add_action( 'init', 'wpseo_load_textdomain', 1 );
 
 
 /**
@@ -233,11 +223,11 @@ function wpseo_init() {
 	WPSEO_Options::get_instance();
 	WPSEO_Meta::init();
 
-	$options = WPSEO_Options::get_options( array( 'wpseo', 'wpseo_permalinks', 'wpseo_xml' ) );
+	$options = WPSEO_Options::get_all();
 	if ( version_compare( $options['version'], WPSEO_VERSION, '<' ) ) {
 		new WPSEO_Upgrade();
 		// Get a cleaned up version of the $options.
-		$options = WPSEO_Options::get_options( array( 'wpseo', 'wpseo_permalinks', 'wpseo_xml' ) );
+		$options = WPSEO_Options::get_all();
 	}
 
 	if ( $options['stripcategorybase'] === true ) {
@@ -262,7 +252,7 @@ function wpseo_init() {
 function wpseo_frontend_init() {
 	add_action( 'init', 'initialize_wpseo_front' );
 
-	$options = WPSEO_Options::get_option( 'wpseo_internallinks' );
+	$options = WPSEO_Options::get_all();
 	if ( $options['breadcrumbs-enable'] === true ) {
 		/**
 		 * If breadcrumbs are active (which they supposedly are if the users has enabled this settings,
@@ -281,7 +271,7 @@ function wpseo_frontend_init() {
  * Instantiate the different social classes on the frontend
  */
 function wpseo_frontend_head_init() {
-	$options = WPSEO_Options::get_option( 'wpseo_social' );
+	$options = WPSEO_Options::get_all();
 	if ( $options['twitter'] === true ) {
 		add_action( 'wpseo_head', array( 'WPSEO_Twitter', 'get_instance' ), 40 );
 	}
@@ -290,7 +280,7 @@ function wpseo_frontend_head_init() {
 		$GLOBALS['wpseo_og'] = new WPSEO_OpenGraph;
 	}
 
-	if ( $options['googleplus'] === true && ( is_singular() || ( is_category() || is_tax() || is_tag() ) ) ) {
+	if ( $options['googleplus'] === true && is_singular() ) {
 		add_action( 'wpseo_head', array( 'WPSEO_GooglePlus', 'get_instance' ), 35 );
 	}
 }
@@ -328,9 +318,6 @@ if ( ( ! defined( 'WP_INSTALLING' ) || WP_INSTALLING === false ) && ( $spl_autol
 			// Plugin conflict ajax hooks.
 			new Yoast_Plugin_Conflict_Ajax();
 
-			if ( filter_input( INPUT_POST, 'action' ) === 'inline-save' ) {
-				add_action( 'plugins_loaded', 'wpseo_admin_init', 15 );
-			}
 		}
 		else {
 			add_action( 'plugins_loaded', 'wpseo_admin_init', 15 );
@@ -349,9 +336,6 @@ register_activation_hook( WPSEO_FILE, array( 'WPSEO_Plugin_Conflict', 'hook_chec
 register_deactivation_hook( WPSEO_FILE, 'wpseo_deactivate' );
 add_action( 'wpmu_new_blog', 'wpseo_on_activate_blog' );
 add_action( 'activate_blog', 'wpseo_on_activate_blog' );
-
-// Loading OnPage integration.
-new WPSEO_OnPage();
 
 /**
  * Wraps for notifications center class.
@@ -434,7 +418,7 @@ function yoast_wpseo_missing_filter_notice() {
 /**
  * Echo's the Activation failed notice with any given message.
  *
- * @param string $message Message string.
+ * @param string $message
  */
 function yoast_wpseo_activation_failed_notice( $message ) {
 	echo '<div class="error"><p>' . __( 'Activation failed:', 'wordpress-seo' ) . ' ' . $message . '</p></div>';

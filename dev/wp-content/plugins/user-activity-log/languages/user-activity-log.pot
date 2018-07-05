@@ -1,0 +1,239 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: User Activity Log 1.0\n"
+"POT-Creation-Date: 2015-10-07 15:37+0530\n"
+"PO-Revision-Date: 2015-10-07 15:42+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_EN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n;esc_attr_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: /var/www/ravi/themes/wp-plugins/wp-content/plugins/"
+"user-activity-log\n"
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:99
+msgid "Notification Settings"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:107
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:403
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:547
+msgid "General"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:112
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:408
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:552
+msgid "Users/Roles"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:117
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:413
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:419
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:557
+msgid "Email"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:123
+msgid "Select Users/Roles"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:124
+msgid "Email will be sent upon login of these selected users/roles."
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:130
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:132
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:133
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:135
+msgid "Search"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:142
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:188
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:199
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:265
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:272
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:226
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:239
+msgid "Role"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:143
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:185
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:196
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:227
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:240
+msgid "User"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:150
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:199
+#, php-format
+msgid "%s item"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:184
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:195
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:264
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:271
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:224
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:237
+msgid "No."
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:186
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:197
+msgid "First name"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:187
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:198
+msgid "Last name"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:189
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:200
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:228
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:241
+msgid "Email address"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:244
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:304
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:279
+msgid "No record found."
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:335
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:452
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:582
+msgid "Save Changes"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:387
+msgid "Email Settings"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:420
+msgid "This email will be sent upon login of selected users/roles."
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:423
+msgid "Enable?"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:425
+msgid "Yes"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:426
+msgid "No"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:430
+msgid "From Email"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:433
+msgid "The source Email address"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:437
+msgid "To Email"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:440
+msgid "The Email address notifications will be sent to"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:444
+msgid "Message"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:447
+msgid "Customize the message as per your requirement"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:539
+msgid "General Settings"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:563
+msgid "Display Option"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:564
+msgid "There are some basic options for display User Action Log"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:567
+msgid "Keep logs for"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:570
+msgid ""
+"Maximum number of days to keep activity log. Leave blank to keep activity "
+"log forever (not recommended)."
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:574
+msgid "Delete Log Activities"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:576
+msgid "Are you sure want to Reset Database?"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:576
+msgid "Reset Database"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_settings_menu.php:577
+msgid "Warning: Clicking this will delete all activities from the database."
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:127
+msgid "User Activities"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:142
+msgid "All Role"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:161
+msgid "All User"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:180
+msgid "All Type"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:225
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:238
+msgid "Date"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:229
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:242
+msgid "IP"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:230
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:243
+msgid "Type"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:231
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:244
+msgid "Action"
+msgstr ""
+
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:232
+#: /var/www/ravi/themes/wp-plugins/wp-content/plugins/user-activity-log/user_activity_log.php:245
+msgid "Description"
+msgstr ""
