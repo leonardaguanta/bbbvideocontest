@@ -101,6 +101,7 @@ dev/wp-content/themes/twenty*/
 # ignore node/grunt dependency directories
 node_modules/
 
+dev/wp-config.php
 sitemap.xml
 *.log
 sitemap.xml
