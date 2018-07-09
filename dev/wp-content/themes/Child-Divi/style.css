@@ -11,26 +11,50 @@
 /*********************************
  * Theme Customization Starts here 
  ********************************/
+
+/*----------------- DEFAULTS ----------------*/
+html .page h3 { font-size: 17px; padding-bottom:  15px; }
+body p { font-size: 13.5px; }
+.site-header h1 { font-size: 45px; }
+section.site-header.et_pb_fullwidth_header { padding: 15px 0; }
+
+.home-about-row { border-top: 1px solid rgba(63, 134, 157, 0.4); }
+
+#main-header img#logo{
+    max-height: 180px;
+    background: #fff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .3);
+}
+
+#main-header.et-fixed-header img#logo { max-height: 100%; }
+#top-menu-nav #top-menu li.current-menu-item > a {
+    border-bottom: 2px solid #E77F20;
+    padding-bottom: 10px;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2);
+}
+
+
 /*------------------------------------------------*/
 /*-----------------[CTA Menu Item]----------------*/
 /*-----------------[by GenoQuiroz]----------------*/
 /*------------------------------------------------*/
  
 /* style the get started cta button */
-            .get-started {border-radius: 0px;}
-            .get-started a {color: #fff!important;}
-            li.get-started {
-                background-color:#ed7818; 
-                font-weight: 700; 
-                text-transform: uppercase; 
-                text-align: center; 
-                padding: 12px 13px 10px 10px!important;
-            border-radius: 3px;
-                -moz-transition: all 0.5s; 
-                -webkit-transition: all 0.5s;
-                transition: all 0.5s;}
-            li.get-started:hover {background-color:#c96310;}
- 
+.get-started {border-radius: 0px;}
+.get-started a {color: #fff!important;}
+li.get-started {
+	background-color: #ed7818;
+    font-weight: 400;
+    text-align: center;
+    padding: 10px 14px 12px 14px!important;
+    border-radius: 3px;
+    -moz-transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+}
+li.get-started:hover {background-color:#c96310;}
+
+
 /* fixed header button text color */
                  .et-fixed-header #top-menu .get-started a {
                         color: #fff!important;}

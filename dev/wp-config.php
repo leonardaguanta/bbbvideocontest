@@ -21,17 +21,16 @@
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
 define('WP_CACHE', true); //Added by WP-Cache Manager
-define( 'WPCACHEHOME', '/opt/www/clients/site20/wp-content/plugins/wp-super-cache/' ); //Added by WP-Cache Manager
 define('DB_NAME', 'bbb');
 
 /** MySQL database username */
-define('DB_USER', 'root');
+define('DB_USER', 'bbb');
 
 /** MySQL database password */
-define('DB_PASSWORD', '');
+define('DB_PASSWORD', 'thepasswordisplatypus');
 
 /** MySQL hostname */
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'customwebdb.cswffisrqlco.us-east-1.rds.amazonaws.com');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
