@@ -24,13 +24,13 @@ define('WP_CACHE', true); //Added by WP-Cache Manager
 define('DB_NAME', 'bbb');
 
 /** MySQL database username */
-define('DB_USER', 'bbb');
+define('DB_USER', 'root');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'thepasswordisplatypus');
+define('DB_PASSWORD', '');
 
 /** MySQL hostname */
-define('DB_HOST', 'customwebdb.cswffisrqlco.us-east-1.rds.amazonaws.com');
+define('DB_HOST', 'localhost');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
