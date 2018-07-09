@@ -12,5 +12,12 @@ function display_schools() {
     ob_end_clean();
 	return $ret;
 }
-
+add_shortcode( 'schools_home', 'display_schools_home' );
+function display_schools_home() {
+	ob_start();
+    include 'shortcodes/functions-schools-home.php';
+    $ret = ob_get_contents();
+    ob_end_clean();
+	return $ret;
+}
 ?>
