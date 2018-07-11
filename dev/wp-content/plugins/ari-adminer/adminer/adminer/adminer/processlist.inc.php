@@ -13,8 +13,9 @@ page_header(lang('Process list'), $error);
 ?>
 
 <form action="" method="post">
-<table cellspacing="0" onclick="tableClick(event);" ondblclick="tableClick(event, true);" class="nowrap checkable">
+<table cellspacing="0" class="nowrap checkable">
 <?php
+echo script("mixin(qsl('table'), {onclick: tableClick, ondblclick: partialArg(tableClick, true)});");
 // HTML valid because there is always at least one process
 $i = -1;
 foreach (process_list() as $i => $row) {
@@ -44,7 +45,6 @@ foreach (process_list() as $i => $row) {
 }
 ?>
 </table>
-<script type='text/javascript'>tableCheck();</script>
 <p>
 <?php
 if (support("kill")) {
@@ -54,3 +54,4 @@ if (support("kill")) {
 ?>
 <input type="hidden" name="token" value="<?php echo $token; ?>">
 </form>
+<?php echo script("tableCheck();"); ?>

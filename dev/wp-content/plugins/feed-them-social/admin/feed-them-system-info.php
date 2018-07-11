@@ -6,7 +6,7 @@ namespace feedthemsocial;
  * @package feedthemsocial
  * @since 1.9.6
  */
-class FTS_system_info_page {
+class FTS_system_info_page extends feed_them_social_functions {
 
     /**
      * Construct
@@ -54,7 +54,7 @@ class FTS_system_info_page {
 			$theme      = $theme_data->Name . ' ' . $theme_data->Version; ?>
 
 SITE_URL:                 <?php echo site_url() . "\n"; ?>
-Feed Them Social Version: <?php echo ftsystem_version(). "\n"; ?>
+Feed Them Social Version: <?php echo FEED_THEM_SOCIAL_VERSION. "\n"; ?>
 
 -- Wordpress Configuration:
 	
@@ -86,9 +86,14 @@ Display Erros:            <?php echo ( ini_get( 'display_errors' ) ) ? 'On (' . 
 FSOCKOPEN:                <?php echo ( function_exists( 'fsockopen' ) ) ? 'Your server supports fsockopen.' : 'Your server does not support fsockopen.'; ?><?php echo "\n"; ?>
 cURL:                     <?php echo ( function_exists( 'curl_init' ) ) ? 'Your server supports cURL.' : 'Your server does not support cURL.'; ?><?php echo "\n"; ?>
 
+-- FTS Settings->Global Options:
+<?php $fts_cachetime = get_option('fts_clear_cache_developer_mode') ? get_option('fts_clear_cache_developer_mode') : '86400' ; ?>
+
+Cache time:               <?php echo $this->fts_cachetime_amount($fts_cachetime) . "\n"; ?>
+
 -- Active Plugins:
 
-<?php $plugins = get_plugins();
+<?php $plugins = \get_plugins();
 $active_plugins = get_option( 'active_plugins', array() );
 foreach ( $plugins as $plugin_path => $plugin ) {
 // If the plugin isn't active, don't show it.
@@ -102,7 +107,7 @@ if ( is_multisite() ) :
 -- Network Active Plugins:
 
 		<?php
-				$plugins = wp_get_active_network_plugins();
+				$plugins = \wp_get_active_network_plugins();
 			$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
 			foreach ( $plugins as $plugin_path ) {
@@ -126,6 +131,7 @@ if ( is_multisite() ) :
 			$twitterOptions3 = get_option('fts_twitter_custom_access_token') ? 'Yes' : 'No' ;
 			$twitterOptions4 = get_option('fts_twitter_custom_access_token_secret') ? 'Yes' : 'No' ;
 			$instagramOptions = get_option('fts_instagram_custom_api_token') ? 'Yes' : 'No' ;
+			$pinterest_token = get_option('fts_pinterest_custom_api_token') ? 'Yes' : 'No' ;
 
 			$ftsDateTimeFormat = get_option('fts-date-and-time-format') ? get_option('fts-date-and-time-format') : 'No' ;
 			$ftsTimezone = get_option('fts-timezone') ? get_option('fts-timezone') : 'No' ;
@@ -152,26 +158,27 @@ Twitter Consumer Key:       <?php echo $twitterOptions1      . "\n"; ?>
 Twitter Secret:             <?php echo $twitterOptions2      . "\n"; ?>
 Twitter Token:              <?php echo $twitterOptions3      . "\n"; ?>
 Twitter Token Secret:       <?php echo $twitterOptions4      . "\n"; ?>
-Instagram:                  <?php echo $instagramOptions     . "\n"; ?>
-<?php if (is_plugin_active('feed-them-premium/feed-them-premium.php')) {
-$youtubeOptions = get_option('youtube_custom_api_token') ?'Yes' :'No' ;
+Pinterest Token:            <?php echo $pinterest_token      . "\n"; ?>
+Instagram:                  <?php echo $instagramOptions     . "\n";
+
+$youtubeOptions = get_option('youtube_custom_api_token') || get_option('youtube_custom_access_token') && get_option('youtube_custom_refresh_token') && get_option('youtube_custom_token_exp_time') ?'Yes' :'No' ;
 $ftsFixLoadmore = get_option('fts_fix_loadmore') ? get_option('fts_fix_loadmore') : 'No' ;
 $feed_them_social_premium_license_key = get_option('feed_them_social_premium_license_key');
 $fts_bar_license_key = get_option('fts_bar_license_key');
 $feed_them_carousel_premium_license_key = get_option('feed_them_carousel_premium_license_key');
+$feed_them_social_combined_streams_license_key = get_option('feed_them_social_combined_streams_license_key');
+$fb_hide_error_handler_message = get_option('fb_hide_error_handler_message');
+
 	?>YouTube:                    <?php echo $youtubeOptions     . "\n"; ?>
-
--- Offset Post Limit:
-
-Offset Facebook Post Limit: <?php echo $ftsOffsetPostLimit ?>
-
-Hide Notice on Front End:   <?php echo $ftsHideOffsetPostLimitNotice ?>
-
 
 -- FaceBook & Twitter Date Format and Timezone
 
 Date Format:                <?php echo $ftsDateTimeFormat     . "\n"; ?>
 Timezone:                   <?php echo $ftsTimezone     . "\n"; ?>
+
+-- Hide Facebook Error Handler:
+
+Hide:                       <?php echo isset($fb_hide_error_handler_message) && $fb_hide_error_handler_message == 'yes' ? 'Yes'. "\n" : 'No'. "\n"; ?>
 
 -- Fix Twitter Time:
 
@@ -182,6 +189,7 @@ Fix:                        <?php echo isset($ftsFixTwitterTime) && $ftsFixTwitt
 Fix:                        <?php echo isset($ftsDisableMagnificCSS) && $ftsDisableMagnificCSS == 1 ? 'Yes'. "\n" : 'No'. "\n"; ?>
 
 -- Fix Internal Server Error:
+		<?php if (is_plugin_active('feed-them-social-combined-streams/feed-them-social-combined-streams.php') || is_plugin_active('feed-them-premium/feed-them-premium.php') || is_plugin_active('feed-them-social-facebook-reviews/feed-them-social-facebook-reviews.php') || is_plugin_active('fts-bar/fts-bar.php') || is_plugin_active('feed-them-carousel-premium/feed-them-carousel-premium.php') ) { ?>
 
 Fix:                        <?php echo isset($ftsFixTimeOut) && $ftsFixTimeOut == 1 ? 'Yes'. "\n" : 'No'. "\n"; ?>
 
@@ -189,13 +197,15 @@ Fix:                        <?php echo isset($ftsFixTimeOut) && $ftsFixTimeOut =
 
 Override:                   <?php echo isset($ftsFixLoadmore) && $ftsFixLoadmore == 1 ? 'Yes'. "\n" : 'No'. "\n"; ?>
 
--- Premium License:
+-- Premium Extensions:
 
-Premium Active:             <?php echo isset($feed_them_social_premium_license_key) && $feed_them_social_premium_license_key !== '' ? 'Yes'. "\n" : 'No'. "\n"; } if (is_plugin_active('fts-bar/fts-bar.php')) { ?>
-FTS Bar Active:             <?php echo isset($fts_bar_license_key) && $fts_bar_license_key !== '' ? 'Yes'. "\n" : 'No'. "\n"; } if (is_plugin_active('fts-bar/fts-bar.php')) { ?>
-FTS Carousel Premium:       <?php echo isset($feed_them_carousel_premium_license_key) && $feed_them_carousel_premium_license_key !== '' ? 'Yes'. "\n" : 'No'. "\n"; } if (is_plugin_active('feed-them-carousel-premium/feed-them-carousel-premium.php')) { ?>
-Facebook Reviews Active:    <?php echo isset($fb_reviews_token) && $fb_reviews_token !== '' ? 'Yes'. "\n" : 'No'. "\n";
-			} ?>
+<?php if (is_plugin_active('feed-them-social-combined-streams/feed-them-social-combined-streams.php')) { ?>
+FTS Combined Streams:       <?php echo isset($feed_them_social_combined_streams_license_key) && $feed_them_social_combined_streams_license_key !== '' ? 'Yes'. "\n" : 'No'. "\n"; }if (is_plugin_active('feed-them-premium/feed-them-premium.php')) { ?>
+Premium Active:             <?php echo isset($feed_them_social_premium_license_key) && $feed_them_social_premium_license_key !== '' ? 'Yes'. "\n" : 'No'. "\n"; }if (is_plugin_active('fts-bar/fts-bar.php')) { ?>
+FTS Bar Active:             <?php echo isset($fts_bar_license_key) && $fts_bar_license_key !== '' ? 'Yes'. "\n" : 'No'. "\n"; }if (is_plugin_active('feed-them-carousel-premium/feed-them-carousel-premium.php')) { ?>
+FTS Carousel Premium:       <?php echo isset($feed_them_carousel_premium_license_key) && $feed_them_carousel_premium_license_key !== '' ? 'Yes'. "\n" : 'No'. "\n"; }if (is_plugin_active('feed-them-social-facebook-reviews/feed-them-social-facebook-reviews.php')) { ?>
+Facebook Reviews Active:    <?php echo isset($fb_reviews_token) && $fb_reviews_token !== '' ? 'Yes'. "\n" : 'No'. "\n";}
+		} ?>
 			
 ### End System Info ###</textarea>
 	<?php

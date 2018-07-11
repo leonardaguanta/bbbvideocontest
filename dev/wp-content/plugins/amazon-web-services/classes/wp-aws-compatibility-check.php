@@ -30,7 +30,7 @@ if ( ! class_exists( 'WP_AWS_Compatibility_Check' ) ) {
 		protected $plugin_slug;
 
 		/**
-		 * @var string The name of the plugin, e.g. WP Offload S3 - Pro Upgrade
+		 * @var string The name of the plugin, e.g. WP Offload S3
 		 */
 		protected $plugin_name;
 
@@ -121,6 +121,19 @@ if ( ! class_exists( 'WP_AWS_Compatibility_Check' ) ) {
 			$GLOBALS['aws_meta'][ $this->plugin_slug ]['compatible'] = $compatible;
 
 			return $compatible;
+		}
+
+		/**
+		 * Is a plugin active
+		 *
+		 * @param string $plugin_base
+		 *
+		 * @return bool
+		 */
+		function is_plugin_active( $plugin_base ) {
+			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+			return is_plugin_active( $plugin_base );
 		}
 
 		/**
@@ -291,7 +304,7 @@ if ( ! class_exists( 'WP_AWS_Compatibility_Check' ) ) {
 		/**
 		 * Get the compatibility error message
 		 *
-		 * @return string|void
+		 * @return string|bool
 		 */
 		function get_error_msg() {
 			if ( is_null( $this->parent_plugin_slug ) ) {
@@ -319,7 +332,7 @@ if ( ! class_exists( 'WP_AWS_Compatibility_Check' ) ) {
 					} else {
 						$msg .= ' ' . __( 'It appears to be installed already.', 'amazon-web-services' );
 						$activate_url = $this->get_plugin_action_url( 'activate', $parent_basename );
-						$msg .= ' <a style="font-weight:bold;text-decoration:none;" href="' . $activate_url . '">' . _x( 'Activate it now.', 'Activate plugin', 'amazon-web-services' ) . '</a>';
+						$msg .= ' <a id="'. $this->plugin_slug . '-activate-parent" style="font-weight:bold;text-decoration:none;" href="' . $activate_url . '">' . _x( 'Activate it now.', 'Activate plugin', 'amazon-web-services' ) . '</a>';
 					}
 				} else {
 					$install_url = 'https://deliciousbrains.com/my-account/';
@@ -344,7 +357,7 @@ if ( ! class_exists( 'WP_AWS_Compatibility_Check' ) ) {
 				}
 
 				global $as3cfpro;
-				if ( ! empty( $as3cfpro ) && $as3cfpro->get_plugin_slug() === $this->parent_plugin_slug ) {
+				if ( ! empty( $as3cfpro ) && $as3cfpro->get_plugin_slug( true ) === $this->parent_plugin_slug ) {
 					// Don't show update link for addons of a licensed plugin where the license is invalid
 					if ( ! $as3cfpro->is_valid_licence() ) {
 						$msg .= ' ' . sprintf( __( 'A valid license for %s is required to update.', 'amazon-web-services' ), $this->get_parent_plugin_name() );
@@ -378,9 +391,18 @@ if ( ! class_exists( 'WP_AWS_Compatibility_Check' ) ) {
 			if ( ! version_compare( $this_plugin_version, $this_plugin_version_required, '>=' ) ) {
 				$msg = sprintf( __( '%1$s has been disabled because it will not work with the version of the %2$s plugin installed. %1$s %3$s or later is required.', 'amazon-web-services' ), $this->plugin_name, $this->get_parent_plugin_name(), $this_plugin_version_required );
 
-				$update_url = $this->get_plugin_action_url( 'upgrade', $plugin_basename );
-				$msg .= ' <a style="font-weight:bold;text-decoration:none;white-space:nowrap;" href="' . $update_url . '">' . sprintf( __( 'Update %s to the latest version', 'amazon-web-services' ), $this->plugin_name ) . '</a>';
+				$update_url  = $this->get_plugin_action_url( 'upgrade', $plugin_basename );
+				$upgrade_msg = ' <a style="font-weight:bold;text-decoration:none;white-space:nowrap;" href="' . $update_url . '">' . sprintf( __( 'Update %s to the latest version', 'amazon-web-services' ), $this->plugin_name ) . '</a>';
 
+				global $as3cfpro;
+				if ( ! empty( $as3cfpro ) && $as3cfpro->get_plugin_slug( true ) === $this->parent_plugin_slug ) {
+					// Don't show update link for addons of a licensed plugin where the license is invalid
+					if ( ! $as3cfpro->is_valid_licence() ) {
+						$upgrade_msg = ' ' . sprintf( __( 'A valid license for %s is required to update.', 'amazon-web-services' ), $this->get_parent_plugin_name() );
+					}
+				}
+
+				$msg .= $upgrade_msg;
 				$msg .= $hide_notice_msg;
 
 				return $this->set_error_msg( $msg );
@@ -457,7 +479,7 @@ if ( ! class_exists( 'WP_AWS_Compatibility_Check' ) ) {
 		 * @param string $message
 		 */
 		function render_notice( $message ) {
-			printf( '<div class="' . $this->notice_class . ' aws-compatibility-notice"><p>%s</p></div>', $message );
+			printf( '<div id="aws-compat-notice' . $this->plugin_slug . '" class="' . $this->notice_class . ' aws-compatibility-notice"><p>%s</p></div>', $message );
 		}
 
 		/**

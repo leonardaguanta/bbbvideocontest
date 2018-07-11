@@ -1,6 +1,8 @@
 <?php
 /**
- * @package WPSEO\Admin|Google_Search_Console
+ * WPSEO plugin file.
+ *
+ * @package WPSEO\Admin\Google_Search_Console
  */
 
 /**
@@ -65,11 +67,12 @@ class WPSEO_GSC_Platform_Tabs {
 	/**
 	 * Setting the current tab
 	 *
-	 * @param array $platforms
+	 * @param array $platforms Set of platforms (desktop, mobile, feature phone).
 	 */
 	private function set_current_tab( array $platforms ) {
 		$this->current_tab = key( $platforms );
-		if ( $current_platform = filter_input( INPUT_GET, 'tab' ) ) {
+		$current_platform  = filter_input( INPUT_GET, 'tab' );
+		if ( ! empty( $current_platform ) && isset( $platforms[ $current_platform ] ) ) {
 			$this->current_tab = $current_platform;
 		}
 	}
@@ -77,9 +80,9 @@ class WPSEO_GSC_Platform_Tabs {
 	/**
 	 * Parses the tab
 	 *
-	 * @param string $platform_target
-	 * @param string $platform_value
-	 * @param string $admin_link
+	 * @param string $platform_target Platform (desktop, mobile, feature phone).
+	 * @param string $platform_value  Link anchor.
+	 * @param string $admin_link      Link URL admin base.
 	 *
 	 * @return string
 	 */
@@ -89,7 +92,6 @@ class WPSEO_GSC_Platform_Tabs {
 			$active = ' nav-tab-active';
 		}
 
-		return '<a class="nav-tab ' . $active . '" id="' . $platform_target . '-tab" href="' . $admin_link . $platform_target . '">' . $platform_value . '</a>';
+		return '<a class="nav-tab' . esc_attr( $active ) . '" id="' . esc_attr( $platform_target . '-tab' ) . '" href="' . esc_url( $admin_link . $platform_target ) . '">' . esc_html( $platform_value ) . '</a>';
 	}
-
 }

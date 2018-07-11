@@ -1,6 +1,6 @@
   jQuery(function($){
     $('.btn-toolbar,.fea-btn').hide();
-    $('#la-title').attr('contenteditable', 'false'); 
+    $('.la-title').attr('contenteditable', 'false'); 
     $('.deactive,.hid').hide();
     $('.eneditor').removeClass('editor');
     $('#la-save').hide();
@@ -47,7 +47,7 @@
     window.prettyPrint && prettyPrint();
     $(this).hide();
     $('.deactive').show();
-    $('#la-title').attr('contenteditable', 'true');
+    $('.la-title').attr('contenteditable', 'true');
     $('.eneditor').addClass('editor').attr('contenteditable', 'true');
     $('#la-save').show();
     });
@@ -57,7 +57,7 @@
       $('.btn-toolbar,.fea-btn,.hid').hide();
     $(this).hide();
     $('.deactive').hide();
-    $('#la-title').attr('contenteditable', 'false');
+    $('.la-title').attr('contenteditable', 'false');
     $('.activep').show();
     $('.eneditor').removeClass('editor').attr('contenteditable', 'false');
     $('#la-save').hide();
@@ -69,7 +69,7 @@
   $('#la-save').click(function(event) {
       jQuery('.loader').show();
       event.preventDefault();
-      var title = $('#la-title').html();
+      var title = $('.la-title').html();
       var content = $('.eneditor').html();
       var image = $('.wp-post-image').attr('src');
       var data = {
@@ -82,6 +82,7 @@
       };
       $.post(laAjax.url, data, function(resp) {
         console.log(resp);
+        window.location.reload(true);
         jQuery('.loader').hide();
       });
     });

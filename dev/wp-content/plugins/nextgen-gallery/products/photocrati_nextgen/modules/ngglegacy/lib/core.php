@@ -18,8 +18,8 @@ class nggGallery {
 	/**
 	* Show a system messages
 	*/
-	static function show_message($message) {
-		echo '<div class="wrap"><h2></h2><div class="updated fade" id="message"><p>' . $message . '</p></div></div>' . "\n";
+	static function show_message($message, $message_id=NULL) {
+		echo '<div class="wrap"><h2></h2><div class="updated fade '.$message_id.'" id="message"><p>' . $message . '</p></div></div>' . "\n";
 	}
 
 	/**
@@ -129,7 +129,7 @@ class nggGallery {
 	* @param string $template_name Name of the template file (without extension)
 	* @param string $vars Array of variable name=>value that is available to the display code (optional)
 	* @deprecated Use C_Displayed_Gallery_Renderer class
-	* @return void
+	* @return string
 	**/
 	static function capture ($template_name, $vars = array ())
 	{
@@ -216,7 +216,7 @@ class nggGallery {
 				}
 			}
 		}
-		return;
+		return '';
 	}
 
 	/**

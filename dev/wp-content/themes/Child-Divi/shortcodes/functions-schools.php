@@ -8,18 +8,18 @@ if ( $loop->have_posts() && !(is_admin()) ) :
                  
     	<div class="et_pb_column et_pb_column_1_2  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough">								
 			<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_0 schools-container">	
-				<div class="et_pb_text_inner">
+				<div class="et_pb_text_inner clearfix">
 					<div class="school-logo">
 						<?php if( get_field('school_logo') ): ?>
 							<img src="<?php the_field('school_logo'); ?>" alt="<?php echo get_the_title(); ?>">
 						<?php endif; ?>
 					</div>
 					<div class="school-name">
-						<h2><?php echo get_the_title(); ?></h2>
+						<h3><?php echo get_the_title(); ?></h3>
 					</div>
 				</div>
 			</div> <!-- .et_pb_text -->			
-			<div class="et_pb_module et_pb_image et_pb_image_1 et_always_center_on_mobile">							
+			<div class="et_pb_module et_pb_image et_pb_image_1 et_always_center_on_mobile schools-image">							
 				<span class="et_pb_image_wrap">
 				<?php if ( has_post_thumbnail() ) { ?>
 
@@ -36,7 +36,7 @@ if ( $loop->have_posts() && !(is_admin()) ) :
 			
 			<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_2">										
 				<div class="et_pb_text_inner">
-					<p><strong><a href="<?php echo get_post_permalink(); ?>">Show more</a></strong></p>
+					<p><strong><a href="<?php echo get_post_permalink(); ?>" class="custom-link">Show more</a></strong></p>
 				</div>
 			</div> <!-- .et_pb_text -->
 		</div>

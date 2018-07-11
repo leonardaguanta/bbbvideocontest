@@ -5,7 +5,7 @@
 if ( class_exists( 'GFForms' ) ) {
 	GFForms::include_addon_framework();
 	class GFAjaxFileUpload extends GFAddOn {
-		protected $_version = '2.3.1';
+		protected $_version = '2.8.0';
 		protected $_min_gravityforms_version = '1.7.9999';
 		protected $_slug = 'gfajaxfileupload';
 		protected $_full_path = __FILE__;
@@ -20,7 +20,7 @@ if ( class_exists( 'GFForms' ) ) {
 		// Add the text in the plugin settings to the bottom of the form if enabled for this form
 		function form_submit_button( $button, $form ){
 			$settings = $this->get_form_settings( $form );
-			if ( true == rgar( $settings, 'enabled' ) ){
+			if ( rgar( $settings, 'enabled' ) ){
 				$text = $this->get_plugin_setting('mytextbox');
 				$button = "<div>{$text}</div>" . $button;
 			}
@@ -186,6 +186,19 @@ if ( class_exists( 'GFForms' ) ) {
                             )
                         ),
 						array(
+                            'label'   => __( 'Display file name below thumbnail', 'ajax-upload-for-gravity-forms' ),
+                            'type'    => 'checkbox',
+                            'name'    => 'thumbnail_file_name_enable',
+                            'tooltip' => __( 'When enabled the file name will be displayed below the thumbnail.', 'ajax-upload-for-gravity-forms' ),
+                            'choices' => array(
+                                array(
+                                    'label' => __( 'Yes', 'ajax-upload-for-gravity-forms' ),
+                                    'name'  => 'thumbnail_file_name_enable',
+									'default_value' => false
+                                )
+                            )
+                        ),
+						array(
                             'label'   => __( 'Crop thumbnails', 'ajax-upload-for-gravity-forms' ),
                             'type'    => 'checkbox',
                             'name'    => 'thumbnail_crop',
@@ -331,6 +344,19 @@ if ( class_exists( 'GFForms' ) ) {
                                 )
                             )
                         ),
+						array(
+                            'label'   => __( 'Enable apostrophe/quote in file name error message', 'ajax-upload-for-gravity-forms' ),
+                            'type'    => 'checkbox',
+                            'name'    => 'apostrophe_error_enable',
+                            'tooltip' => __( "Some web servers are configured to not allow file names that contain an apostrophe/quote ('). When enabled if an uploaded file has an apostrophe/quote in the file name an error message will be displayed and the upload will stop.", 'ajax-upload-for-gravity-forms' ),
+                            'choices' => array(
+                                array(
+                                    'label' => __( 'Yes', 'ajax-upload-for-gravity-forms' ),
+                                    'name'  => 'apostrophe_error_enable',
+									'default_value' => false
+                                )
+                            )
+                        ),
                     )
                 )
             );
@@ -411,7 +437,9 @@ if ( class_exists( 'GFForms' ) ) {
         } // END settings_zip_file_name
 
 		public function scripts() {
-			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+			$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
+
+			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) || rgar( $ajax_upload_options, 'displayscripterrors' ) ? '' : '.min';
 			$version = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? mt_rand() : $this->_version;
 
 			$scripts = array(
@@ -480,10 +508,11 @@ if ( class_exists( 'GFForms' ) ) {
 
 			$settings_array = array(
 				'ajax_url' => admin_url('admin-ajax.php'),
-				'allowdelete' => ( is_user_logged_in() && true == rgar( $ajax_upload_options, 'allowdelete' ) ) || ( !is_user_logged_in() && true == rgar( $ajax_upload_options, 'allownoprivdelete' ) ),
+				'allowdelete' => ( is_user_logged_in() && rgar( $ajax_upload_options, 'allowdelete' ) ) || ( !is_user_logged_in() && rgar( $ajax_upload_options, 'allownoprivdelete' ) ),
 				'form_id' => $form_id,
 				'entry_user_id' => $entry_user_id,
 				'thumbnail_enable' => rgar( $ajax_upload_options, 'thumbnail_enable' ),
+				'thumbnail_file_name_enable' => rgar( $ajax_upload_options, 'thumbnail_file_name_enable' ),
 				'thumbnail_width' => floatval( rgar( $ajax_upload_options, 'thumbnail_width' ) ),
 				'file_chunk_size' => floatval( rgar( $ajax_upload_options, 'file_chunk_size' ) ) * 1024 * 1024,
 				'file_size_kb' => floatval( rgar( $ajax_upload_options, 'filesize' ) ) * 1024 * 1024,
@@ -507,6 +536,9 @@ if ( class_exists( 'GFForms' ) ) {
 				'text_error_timeout' => esc_js( __( 'Time out error.', 'ajax-upload-for-gravity-forms' ) ),
 				'text_error_uncaught' => esc_js( __( 'Uncaught Error.\n', 'ajax-upload-for-gravity-forms' ) ),
 				'text_line_number' => esc_js( __( 'Line Number', 'ajax-upload-for-gravity-forms' ) ),
+				'text_only_one_file_message' => esc_js( __( 'Error: only 1 file can be uploaded at a time.', 'ajax-upload-for-gravity-forms' ) ),
+				'apostrophe_error_enable' => rgar( $ajax_upload_options, 'apostrophe_error_enable' ),
+				'text_apostrophe_error_message' => esc_js( __( "Error: file name contains an apostrophe/quote (&lsquo;). Remove apostrophe/quote (&lsquo;) from file name and try again.", 'ajax-upload-for-gravity-forms' ) ),
 				'is_entry_detail' => $is_entry_detail ? $is_entry_detail : 0,
 			);
 
@@ -526,17 +558,17 @@ if ( class_exists( 'GFForms' ) ) {
 		public function requires_script( $form, $is_ajax ) {
 			if ( ! $this->is_form_editor() && is_array( $form ) ) {
 				foreach ( $form['fields'] as $field ) {
-					if ( 'itsg_single_ajax' == $field->type ) {
+					if ( 'itsg_single_ajax' == $field->get_input_type() ) {
 						return true;
 					} elseif ( 'list' == $field->get_input_type() ) {
 						$has_columns = is_array( $field->choices );
 						if ( $has_columns ) {
 							foreach ( $field->choices as $choice ) {
-								if ( true == rgar( $choice, 'isAjaxUpload' ) ) {
+								if ( rgar( $choice, 'isAjaxUpload' ) ) {
 									return true;
 								}
 							}
-						} elseif ( true == $field->itsg_list_field_ajaxupload ) {
+						} elseif ( $field->itsg_list_field_ajaxupload ) {
 							return true;
 						}
 					}
@@ -547,7 +579,9 @@ if ( class_exists( 'GFForms' ) ) {
 		} // END requires_script
 
 		public function styles() {
-			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+			$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
+
+			$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) || rgar( $ajax_upload_options, 'displayscripterrors' ) ? '' : '.min';
 			$version = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? mt_rand() : $this->_version;
 
 			$styles = array(
@@ -565,7 +599,8 @@ if ( class_exists( 'GFForms' ) ) {
 
 		public function requires_stylesheet( $form, $is_ajax ) {
 			$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
-			if ( true == rgar( $ajax_upload_options, 'includecss' ) && $this->requires_script( $form, $is_ajax ) ) {
+
+			if ( rgar( $ajax_upload_options, 'includecss' ) && $this->requires_script( $form, $is_ajax ) ) {
 				return true;
 			}
 

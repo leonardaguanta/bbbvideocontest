@@ -3,7 +3,7 @@ Contributors: katzwebdesign, katzwebservices
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=User%20Groups&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 Tags: users, groups, user group, user
 Requires at least: 2.8
-Tested up to: 4.2.2
+Tested up to: 4.5
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -45,7 +45,15 @@ Nope.
 
 == Changelog ==
 
-= 1.2.2 & 1.2.3 on June 11, 2015 =
+= 1.3 & 1.3.1 on April 11, 2016 =
+
+* Fixed: User Groups lost when users update own profile
+* Fixed: Compatibility with WordPress 4.2 - 4.5
+* Added: Translation strings
+* Fixed: Additional sanitization
+* Fixed: Colorpicker in Edit User Group screen
+
+= 1.2.2 on June 11, 2015 =
 * Fixed: PHP notices
 * Fixed: When a User Group color wasn't set, the group would not display in the Users table column
 * Fixed: Potential security issue with `add_query_arg()` - [learn more](https://blog.sucuri.net/2015/04/security-advisory-xss-vulnerability-affecting-multiple-wordpress-plugins.html) (please update!)

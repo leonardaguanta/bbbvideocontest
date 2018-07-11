@@ -4,8 +4,8 @@ Contributors: comprock,saurabhd,subharanjan
 Donate link: https://axelerant.com/about-axelerant/donate/
 Tags: axelerant, client, customer, portfolio, quote, quotes, random, recommendation, reference, review, reviews, slider, testimonial, testimonials, wpml
 Requires at least: 3.9.2
-Tested up to: 4.3.0
-Stable tag: 3.2.0
+Tested up to: 4.9.5
+Stable tag: 3.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Easily add social proofing to your website with Testimonials Widget. List or sli
 
 == Description ==
 
-Testimonials Widget lets you randomly slide or list selected portfolios, quotes, reviews, or text with images or videos on your WordPress site. You can insert Testimonials content via shortcode, theme functions, or widgets with category and tag selections and having multiple display options such as random or specific ordering. Also, [Review schema](http://schema.org/Review) for improved search engine results is built-in.
+Testimonials Widget lets you randomly slide or list selected portfolios, quotes, reviews, or text with images or videos on your WordPress site. You can insert Testimonials content via shortcode, theme functions, or widgets with category and tag selections and having multiple display options such as random or specific ordering.
 
 = Testimonials Widget is Beyond a Simple WordPress Testimonials Slider! =
 
@@ -68,7 +68,9 @@ For easy custom styling, each testimonial widget has its own CSS class identifie
 
 Widgets display content sans `wpautop` formatting. This means there's no forced paragraph breaks unless the content specifically contains them. If needed, you can enable `wpautop` via the "Keep whitespace?" option.
 
-The single testimonial view supports image, author, title, location, email, company and URL details with optional Review schema.
+The single testimonial view supports image, author, title, location, email, company and URL details.
+
+As per Google's quality guidelines, marking up irrelevant or misleading content, such as fake reviews or content unrelated to the focus of a page may lead to review stars removed.
 
 = Shortcodes =
 
@@ -135,7 +137,6 @@ Details on the Shortcode Attributes tab at WordPress Admin > Testimonials > Sett
 * Date based archives
 * Deletes testimonials-widget custom post type entries and settings on uninstall
 * Disable self-generated quotation marks
-* Easily label and link to reviewed item for Review schema
 * Easy to configure Next and Previous page indicators
 * Editors and admins can edit testimonial publisher
 * Fields for author, testimonial, image, title, location, email, company and URL details
@@ -155,7 +156,6 @@ Details on the Shortcode Attributes tab at WordPress Admin > Testimonials > Sett
 * Recent testimonials widget
 * Respects meta capabilities
 * Rotation JavaScript in footer than body
-* Schema.org microdata format for improved search engine results
 * Settings export/import
 * Settings page contextual help
 * Settings screen for site-wide option defaults
@@ -184,9 +184,9 @@ Details on the Shortcode Attributes tab at WordPress Admin > Testimonials > Sett
 
 = Requirements =
 
-* PHP 5.3+ [Read notice](https://nodedesk.zendesk.com/hc/en-us/articles/202331041) – Since 2.16.0
+* PHP 5.3+ [Read notice](https://axelerant.atlassian.net/wiki/pages/viewpage.action?pageId=12845151) – Since 2.16.0
 * WordPress 3.6+
-* [jQuery 1.10+](https://nodedesk.zendesk.com/hc/en-us/articles/202244022)
+* [jQuery 1.10+](https://axelerant.atlassian.net/wiki/display/WPFAQ/Testimonials+widget+is+not+rotating)
 
 = Install Methods =
 
@@ -208,7 +208,7 @@ Details on the Shortcode Attributes tab at WordPress Admin > Testimonials > Sett
 = Usage =
 
 1. Watch [Testimonial Widget](https://www.youtube.com/watch?v=zDz1igmRK2g)
-1. Read [How do I create a testimonial record?](https://nodedesk.zendesk.com/hc/en-us/articles/202243712)
+1. Read [How do I create a testimonial record?](https://axelerant.atlassian.net/wiki/display/WPFAQ/How+do+I+create+a+testimonial+record)
 1. Add and manage testimonials through the **Testimonials Widget** menu in the WordPress admin area
 1. To display testimonials as a widget, go to the **Appearance** > **Widgets** menu and drag the **Testimonials Slider** widget into the desired widget area. Then configure the widget to select options and display as desired.
 1. Use the following shortcodes to display testimonials on a page, post, etc.
@@ -220,7 +220,7 @@ Details on the Shortcode Attributes tab at WordPress Admin > Testimonials > Sett
 	* `[testimonials_recent]` - Your site's most recent testimonials
 	* `[testimonials_slider]` - Displays rotating testimonials or statically
 	* `[testimonials_tag_cloud]` - A cloud of your most used testimonials' tags
-1. Read [theme functions usage](https://nodedesk.zendesk.com/hc/en-us/articles/202380271) for using the following theme helpers.
+1. Read [theme functions usage](https://axelerant.atlassian.net/wiki/pages/viewpage.action?pageId=16259701) for using the following theme helpers.
 	* `<?php echo testimonials(); // Testimonials listing with paging  ?>`
 	* `<?php echo testimonials_archives(); // A monthly archive of your site's testimonials ?>`
 	* `<?php echo testimonials_categories(); // A list or dropdown of testimonials' categories ?>`
@@ -276,29 +276,28 @@ Details on the Shortcode Attributes tab at WordPress Admin > Testimonials > Sett
 
 = Testimonials Widget 3.0 Upgrading =
 
-This is a major overhaul *without* backwards compliance of over 80 changes. Please read the [Testimonials Widget 3.0 and Testimonials Widget Premium 2.0 Upgrade Notice](https://nodedesk.zendesk.com/hc/en-us/articles/202476552) for more help. 
+This is a major overhaul *without* backwards compliance of over 80 changes. Please read the [Testimonials Widget 3.0 and Testimonials Widget Premium 2.0 Upgrade Notice](https://axelerant.atlassian.net/wiki/display/WPFAQ/Testimonials+Widget+3.0+and+Testimonials+Widget+Premium+2.0+Upgrade+Notice) for more help. 
 
 = Most Common Issues =
 
-* Got `Parse error: syntax error, unexpected T_STATIC…`? See [Most Axelerant Plugins Require PHP 5.3+](https://nodedesk.zendesk.com/hc/en-us/articles/202331041)
-* Got `The plugin does not have a valid header` error? See [Error: The plugin does not have a valid header](https://nodedesk.zendesk.com/hc/en-us/articles/202380141)
-* Shortcode not working? Read about [enabling shortcodes in widgets](https://nodedesk.zendesk.com/hc/en-us/articles/202385631) and make sure your theme isn't using the same shortcode.
-* [404 - Page not found](https://nodedesk.zendesk.com/hc/en-us/articles/202243692)
+* Got `Parse error: syntax error, unexpected T_STATIC…`? See [Most Axelerant Plugins Require PHP 5.3+](https://axelerant.atlassian.net/wiki/pages/viewpage.action?pageId=12845151)
+* Got `The plugin does not have a valid header` error? See [Error: The plugin does not have a valid header](https://axelerant.atlassian.net/wiki/display/WPFAQ/Error%3A+The+plugin+does+not+have+a+valid+header)
+* Shortcode not working? Read about [enabling shortcodes in widgets](https://axelerant.atlassian.net/wiki/display/WPFAQ/How+do+you+enable+shortcodes+in+widgets) and make sure your theme isn't using the same shortcode.
+* [404 - Page not found](https://axelerant.atlassian.net/wiki/display/WPFAQ/My+testimonials+URL+says+404+-+Page+not+found)
 * [Add testimonials using Gravity Forms](http://webtrainingwheels.com/how-to-collect-user-submitted-testimonials-wordpress/)
-* [Change styling or debug CSS](https://nodedesk.zendesk.com/hc/en-us/articles/202243372)
+* [Change styling or debug CSS](https://axelerant.atlassian.net/wiki/display/WPFAQ/How+to+Debug+and+Correct+CSS+Issues+in+Your+Browser)
 * [Customize bxSlider](http://bxslider.com/examples)
-* [Debug theme and plugin conflicts](https://nodedesk.zendesk.com/hc/en-us/articles/202330781)
-* [How do I create a testimonial record?](https://nodedesk.zendesk.com/hc/en-us/articles/202243712)
-* [How do I reset options?](https://nodedesk.zendesk.com/hc/en-us/articles/202243702)
-* [How to change testimonials layout](https://nodedesk.zendesk.com/hc/en-us/articles/202331021)
-* [My options don't work](https://nodedesk.zendesk.com/hc/en-us/articles/202243702)
-* [Pagination is broken](https://nodedesk.zendesk.com/hc/en-us/articles/202331071)
-* [Test Review schema output](https://developers.google.com/webmasters/structured-data/testing-tool/)
-* [Testimonials slider doesn't rotate](https://nodedesk.zendesk.com/hc/en-us/articles/202244022)
+* [Debug theme and plugin conflicts](https://axelerant.atlassian.net/wiki/display/WPFAQ/How+to+Debug+common+issues)
+* [How do I create a testimonial record?](https://axelerant.atlassian.net/wiki/display/WPFAQ/How+do+I+create+a+testimonial+record)
+* [How do I reset options?](https://axelerant.atlassian.net/wiki/display/WPFAQ/My+options+don%27t+work%2C+no+matter+what+I+do)
+* [How to change testimonials layout](https://axelerant.atlassian.net/wiki/display/WPFAQ/How+to+change+testimonials+layout)
+* [My options don't work](https://axelerant.atlassian.net/wiki/display/WPFAQ/My+options+don%27t+work%2C+no+matter+what+I+do)
+* [Pagination is broken](https://axelerant.atlassian.net/wiki/pages/viewpage.action?pageId=14024846)
+* [Testimonials slider doesn't rotate](https://axelerant.atlassian.net/wiki/display/WPFAQ/Testimonials+widget+is+not+rotating)
 
 = Still Stuck or Want Something Done? Get Support! =
 
-1. [Knowledge Base](https://nodedesk.zendesk.com/hc/en-us/sections/200861112) - read and comment upon 125+ frequently asked questions
+1. [Knowledge Base](https://axelerant.atlassian.net/wiki/display/WPFAQ) - read and comment upon 125+ frequently asked questions
 1. [Open Issues](https://github.com/michael-cannon/testimonials-widget/issues) - review and submit bug reports and enhancement requests
 1. [Support on WordPress](http://wordpress.org/support/plugin/testimonials-widget) - ask questions and review responses
 1. [Contribute Code](https://github.com/michael-cannon/testimonials-widget/blob/master/CONTRIBUTING.md)
@@ -320,7 +319,6 @@ This is a major overhaul *without* backwards compliance of over 80 changes. Plea
 10. Testimonials Settings page
 11. Testimonials Categories page
 12. Poedit Catalog properties
-13. Using Review schema data structures
 
 [gallery]
 
@@ -336,7 +334,7 @@ Read [UPGRADING](https://github.com/michael-cannon/testimonials-widget/blob/mast
 
 = 3.0.0 =
 
-This is a major overhaul *without* backwards compliance of over 80 changes. Please read the [Testimonials Widget 3.0 and Testimonials Widget Premium 2.0 Upgrade Notice](https://nodedesk.zendesk.com/hc/en-us/articles/202476552) for more help. 
+This is a major overhaul *without* backwards compliance of over 80 changes. Please read the [Testimonials Widget 3.0 and Testimonials Widget Premium 2.0 Upgrade Notice](https://axelerant.atlassian.net/wiki/display/WPFAQ/Testimonials+Widget+3.0+and+Testimonials+Widget+Premium+2.0+Upgrade+Notice) for more help. 
 
 If you use custom CSS, actions, or filters to modify Testimonials Widget and Testimonials Widget Premium actions or output, this upgrade will not be compatible with those modifications until corrections are made.
 
@@ -367,13 +365,12 @@ Read [DEPRECATED](https://github.com/michael-cannon/testimonials-widget/blob/mas
 
 You can translate this plugin into your own language if it's not done so already. The localization file `testimonials-widget.pot` can be found in the `languages` folder of this plugin. After translation, please [send the localized file](https://axelerant.com/contact-axelerant/) for plugin inclusion.
 
-**[How do I localize?](https://nodedesk.zendesk.com/hc/en-us/articles/202294892)**
+**[How do I localize?](https://axelerant.atlassian.net/wiki/display/WPFAQ/How+do+I+change+Testimonials+Widget+text+labels)**
 
 
 == Notes ==
 
 * Default and Gravatar image size is based upon Thumbnail size in Media Settings
-* Review schema [structured data testing tool](https://developers.google.com/webmasters/structured-data/testing-tool/)
 * When plugin is uninstalled, all data and settings are deleted if "Remove Plugin Data on Deletion" is checked in Settings
 
 

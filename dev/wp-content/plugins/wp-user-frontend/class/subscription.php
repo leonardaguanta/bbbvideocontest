@@ -14,7 +14,7 @@ class WPUF_Subscription {
     function __construct() {
 
         add_action( 'init', array($this, 'register_post_type') );
-        add_filter( 'wpuf_add_post_args', array($this, 'set_pending'), 10, 1 );
+        add_filter( 'wpuf_add_post_args', array($this, 'set_pending'), 10, 4 );
         add_filter( 'wpuf_add_post_redirect', array($this, 'post_redirect'), 10, 4 );
 
         add_filter( 'wpuf_addpost_notice', array($this, 'force_pack_notice'), 20, 3 );
@@ -22,14 +22,13 @@ class WPUF_Subscription {
         add_action( 'wpuf_add_post_form_top', array($this, 'add_post_info'), 10, 2 );
 
         add_action( 'wpuf_add_post_after_insert', array($this, 'monitor_new_post'), 10, 3 );
+        add_action( 'wpuf_draft_post_after_insert', array($this, 'monitor_new_draft_post'), 10, 3 );
         add_action( 'wpuf_payment_received', array($this, 'payment_received'), 10, 2 );
 
         add_shortcode( 'wpuf_sub_info', array($this, 'subscription_info') );
         add_shortcode( 'wpuf_sub_pack', array($this, 'subscription_packs') );
 
-        add_action( 'add_meta_boxes_wpuf_subscription', array($this, 'add_meta_box_subscription_post') );
-
-        add_action( 'save_post', array( $this, 'save_form_meta' ), 1, 3 );
+        add_action( 'save_post', array( $this, 'save_form_meta' ), 10, 2 );
         add_filter( 'enter_title_here', array( $this, 'change_default_title' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'subscription_script' ) );
 
@@ -41,6 +40,8 @@ class WPUF_Subscription {
 
         add_filter( 'template_redirect', array( $this, 'user_subscription_cancel' ) );
 
+        add_action( 'wpuf_draft_post_after_insert', array( $this, 'reset_user_subscription_data' ), 10, 4 );
+
     }
 
     /**
@@ -48,24 +49,43 @@ class WPUF_Subscription {
      *
      * @return WPUF_Subscription
      */
-    public function user_subscription_cancel () {
+    public static function subscriber_cancel( $user_id, $pack_id ) {
+        global $wpdb;
 
+        $sql = $wpdb->prepare( "SELECT transaction_id FROM " . $wpdb->prefix . "wpuf_transaction
+            WHERE user_id = %d AND pack_id = %d LIMIT 1", $user_id, $pack_id );
+        $result = $wpdb->get_row( $sql );
+
+        $transaction_id = $result ? $result->transaction_id : 0;
+
+        $wpdb->update( $wpdb->prefix.'wpuf_subscribers', array( 'subscribtion_status' => 'cancel' ), array( 'user_id' => $user_id, 'subscribtion_id' => $pack_id, 'transaction_id' => $transaction_id ) );
+    }
+
+    /**
+     * Handle subscription cancel request from the user
+     *
+     * @return WPUF_Subscription
+     */
+    public function user_subscription_cancel() {
         if ( isset( $_POST['wpuf_cancel_subscription'] ) ) {
 
             if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'wpuf-sub-cancel' ) ) {
-                wp_die( __( 'Nonce failure', 'dps' ) );
+                wp_die( __( 'Nonce failure', 'wp-user-frontend' ) );
             }
 
-            $user_id = get_current_user_id();
-            $current_pack = self::get_user_pack( $user_id );
+            $current_pack = self::get_user_pack( $_POST['user_id'] );
 
-            if ( $current_pack['recurring'] == 'yes' ) {
-                $wpuf_paypal  = new WPUF_Paypal();
-                $wpuf_paypal->recurring_change_status( $user_id, 'Cancel' );
+            $gateway = ( $_POST['gateway'] == 'bank/manual' ) ? 'bank' : sanitize_text_field( $_POST['gateway'] );
+
+            if ( 'bank' == $gateway || 'no' == $current_pack['recurring'] ) {
+                $this->update_user_subscription_meta( $_POST['user_id'], 'Cancel' );
             } else {
-                WPUF_Subscription::init()->update_user_subscription_meta( $user_id, 'Cancel' );
+                do_action( "wpuf_cancel_subscription_{$gateway}", $_POST );
             }
 
+            $this::subscriber_cancel( $_POST['user_id'], $current_pack['pack_id'] );
+
+            wp_redirect( $_SERVER['REQUEST_URI'] );
 
         }
     }
@@ -161,8 +181,8 @@ class WPUF_Subscription {
         $billing_amount = ( $pack->meta_value['billing_amount'] >= 0 && !empty( $pack->meta_value['billing_amount'] ) ) ? $pack->meta_value['billing_amount'] : false;
 
         if ( $billing_amount === false ) {
-            $this->new_subscription( $user_id, $pack_id, null, false, 'free' );
-            WPUF_Subscription::add_used_free_pack( $user_id, $pack_id );
+            wpuf_get_user( $user_id )->subscription()->add_pack( $pack_id, null, false, 'free' );
+            wpuf_get_user( $user_id )->subscription()->add_free_pack( $user_id, $pack_id );
         } else {
             $pay_page = intval( wpuf_get_option( 'payment_page', 'wpuf_payment' ) );
             $redirect = add_query_arg( array( 'action' => 'wpuf_pay', 'type' => 'pack', 'pack_id' => (int) $pack_id ), get_permalink( $pay_page ) );
@@ -183,13 +203,15 @@ class WPUF_Subscription {
      *
      * @return array
      */
-    function get_subscriptions() {
-        $args = array(
+    function get_subscriptions( $args = array() ) {
+        $defaults = array(
             'post_type'      => 'wpuf_subscription',
             'posts_per_page' => -1,
             'post_status'    => 'publish',
+
         );
 
+        $args  = wp_parse_args($args, $defaults);
         $posts = get_posts( $args );
 
         if ( $posts ) {
@@ -212,26 +234,27 @@ class WPUF_Subscription {
      */
     public static function get_subscription_meta( $subscription_id,  $pack_post = null ) {
 
-        $meta['post_content']         =  isset( $pack_post->post_content ) ? $pack_post->post_content : '';
-        $meta['post_title']           =  isset( $pack_post->post_title ) ? $pack_post->post_title : '';
-        $meta['billing_amount']       =  get_post_meta( $subscription_id, '_billing_amount', true );
-        $meta['expiration_number']    =  get_post_meta( $subscription_id, '_expiration_number', true );
-        $meta['expiration_period']    =  get_post_meta( $subscription_id, '_expiration_period', true );
-        $meta['recurring_pay']        =  get_post_meta( $subscription_id, '_recurring_pay', true );
-        $meta['billing_cycle_number'] =  get_post_meta( $subscription_id, '_billing_cycle_number', true );
-        $meta['cycle_period']         =  get_post_meta( $subscription_id, '_cycle_period', true );
-        $meta['billing_limit']        =  get_post_meta( $subscription_id, '_billing_limit', true );
-        $meta['trial_status']         =  get_post_meta( $subscription_id, '_trial_status', true );
-        $meta['trial_cost']           =  get_post_meta( $subscription_id, '_trial_cost', true );
-        $meta['trial_duration']       =  get_post_meta( $subscription_id, '_trial_duration', true );
-        $meta['trial_duration_type']  =  get_post_meta( $subscription_id, '_trial_duration_type', true );
-        $meta['post_type_name']       =  get_post_meta( $subscription_id, '_post_type_name', true );
-        $meta['_enable_post_expiration']       =  get_post_meta( $subscription_id, '_enable_post_expiration', true );
-        $meta['_post_expiration_time']       =  get_post_meta( $subscription_id, '_post_expiration_time', true );
-        //
-        $meta['_expired_post_status']       =  get_post_meta( $subscription_id, '_expired_post_status', true );
-        $meta['_enable_mail_after_expired']       =  get_post_meta( $subscription_id, '_enable_mail_after_expired', true );
-        $meta['_post_expiration_message']       =  get_post_meta( $subscription_id, '_post_expiration_message', true );
+        $meta['post_content']               = isset( $pack_post->post_content ) ? $pack_post->post_content : '';
+        $meta['post_title']                 = isset( $pack_post->post_title ) ? $pack_post->post_title : '';
+        $meta['billing_amount']             = get_post_meta( $subscription_id, '_billing_amount', true );
+        $meta['expiration_number']          = get_post_meta( $subscription_id, '_expiration_number', true );
+        $meta['expiration_period']          = get_post_meta( $subscription_id, '_expiration_period', true );
+        $meta['recurring_pay']              = get_post_meta( $subscription_id, '_recurring_pay', true );
+        $meta['billing_cycle_number']       = get_post_meta( $subscription_id, '_billing_cycle_number', true );
+        $meta['cycle_period']               = get_post_meta( $subscription_id, '_cycle_period', true );
+        $meta['billing_limit']              = get_post_meta( $subscription_id, '_billing_limit', true );
+        $meta['trial_status']               = get_post_meta( $subscription_id, '_trial_status', true );
+        $meta['trial_duration']             = get_post_meta( $subscription_id, '_trial_duration', true );
+        $meta['trial_duration_type']        = get_post_meta( $subscription_id, '_trial_duration_type', true );
+        $meta['post_type_name']             = get_post_meta( $subscription_id, '_post_type_name', true );
+        $meta['_enable_post_expiration']    = get_post_meta( $subscription_id, '_enable_post_expiration', true );
+        $meta['_post_expiration_time']      = get_post_meta( $subscription_id, '_post_expiration_time', true );
+        $meta['_expired_post_status']       = get_post_meta( $subscription_id, '_expired_post_status', true );
+        $meta['_enable_mail_after_expired'] = get_post_meta( $subscription_id, '_enable_mail_after_expired', true );
+        $meta['_post_expiration_message']   = get_post_meta( $subscription_id, '_post_expiration_message', true );
+
+        $meta = apply_filters( 'wpuf_get_subscription_meta', $meta, $subscription_id  );
+
         return $meta;
     }
 
@@ -252,7 +275,10 @@ class WPUF_Subscription {
             $post_types['wpuf_profile'],
             $post_types['wpuf_subscription'],
             $post_types['wpuf_coupon'],
-            $post_types['wpuf_input']
+            $post_types['wpuf_input'],
+            $post_types['custom_css'],
+            $post_types['customize_changeset'],
+            $post_types['oembed_cache']
         );
 
         return apply_filters( 'wpuf_posts_type', $post_types );
@@ -268,7 +294,7 @@ class WPUF_Subscription {
         $screen = get_current_screen();
 
         if ( 'wpuf_subscription' == $screen->post_type ) {
-            $title = __( 'Pack Name', 'wpuf' );
+            $title = __( 'Pack Name', 'wp-user-frontend' );
         }
 
         return $title;
@@ -282,12 +308,14 @@ class WPUF_Subscription {
      * @return void
      */
     function save_form_meta( $subscription_id, $post ) {
-        $post = $_POST;
-        if ( !isset( $post['wpuf_subscription'] ) ) {
+
+        $post_data = $_POST;
+
+        if ( !isset( $post_data['billing_amount'] ) ) {
             return;
         }
 
-        if ( !wp_verify_nonce( $post['wpuf_subscription'], 'wpuf_subscription_editor' ) ) {
+        if ( !isset( $_POST['meta_box_nonce'] ) || !wp_verify_nonce( $_POST['meta_box_nonce'], 'subs_meta_box_nonce' ) ) {
             return;
         }
 
@@ -296,24 +324,23 @@ class WPUF_Subscription {
             return;
         }
 
-        update_post_meta( $subscription_id, '_billing_amount', $post['billing_amount'] );
-        update_post_meta( $subscription_id, '_expiration_number', $post['expiration_number'] );
-        update_post_meta( $subscription_id, '_expiration_period', $post['expiration_period'] );
-        update_post_meta( $subscription_id, '_recurring_pay', $post['recurring_pay'] );
-        update_post_meta( $subscription_id, '_billing_cycle_number', $post['billing_cycle_number'] );
-        update_post_meta( $subscription_id, '_cycle_period', $post['cycle_period'] );
-        update_post_meta( $subscription_id, '_billing_limit', $post['billing_limit'] );
-        update_post_meta( $subscription_id, '_trial_status', $post['trial_status'] );
-        update_post_meta( $subscription_id, '_trial_cost', $post['trial_cost'] );
-        update_post_meta( $subscription_id, '_trial_duration', $post['trial_duration'] );
-        update_post_meta( $subscription_id, '_trial_duration_type', $post['trial_duration_type'] );
-        update_post_meta( $subscription_id, '_post_type_name', $post['post_type_name'] );
-        update_post_meta( $subscription_id, '_enable_post_expiration', ( isset($post['post_expiration_settings']['enable_post_expiration'])?$post['post_expiration_settings']['enable_post_expiration']:'' ) );
-        update_post_meta( $subscription_id, '_post_expiration_time', $post['post_expiration_settings']['expiration_time_value'].' '.$post['post_expiration_settings']['expiration_time_type'] );
-        update_post_meta( $subscription_id, '_expired_post_status', ( isset($post['post_expiration_settings']['expired_post_status'])?$post['post_expiration_settings']['expired_post_status']:'' ) );
-        update_post_meta( $subscription_id, '_enable_mail_after_expired', ( isset($post['post_expiration_settings']['enable_mail_after_expired'])?$post['post_expiration_settings']['enable_mail_after_expired']:'' ) );
-        update_post_meta( $subscription_id, '_post_expiration_message', ( isset($post['post_expiration_settings']['post_expiration_message'])?$post['post_expiration_settings']['post_expiration_message']:'' ) );
-        do_action( 'wpuf_update_subscription_pack', $subscription_id, $post );
+        update_post_meta( $subscription_id, '_billing_amount', $post_data['billing_amount'] );
+        update_post_meta( $subscription_id, '_expiration_number', $post_data['expiration_number'] );
+        update_post_meta( $subscription_id, '_expiration_period', $post_data['expiration_period'] );
+        update_post_meta( $subscription_id, '_recurring_pay', $post_data['recurring_pay'] );
+        update_post_meta( $subscription_id, '_billing_cycle_number', $post_data['billing_cycle_number'] );
+        update_post_meta( $subscription_id, '_cycle_period', $post_data['cycle_period'] );
+        update_post_meta( $subscription_id, '_billing_limit', $post_data['billing_limit'] );
+        update_post_meta( $subscription_id, '_trial_status', $post_data['trial_status'] );
+        update_post_meta( $subscription_id, '_trial_duration', $post_data['trial_duration'] );
+        update_post_meta( $subscription_id, '_trial_duration_type', $post_data['trial_duration_type'] );
+        update_post_meta( $subscription_id, '_post_type_name', $post_data['post_type_name'] );
+        update_post_meta( $subscription_id, '_enable_post_expiration', ( isset($post_data['post_expiration_settings']['enable_post_expiration']) ? $post_data['post_expiration_settings']['enable_post_expiration']:'' ) );
+        update_post_meta( $subscription_id, '_post_expiration_time', $post_data['post_expiration_settings']['expiration_time_value'] . ' ' . $post_data['post_expiration_settings']['expiration_time_type'] );
+        update_post_meta( $subscription_id, '_expired_post_status', ( isset($post_data['post_expiration_settings']['expired_post_status']) ? $post_data['post_expiration_settings']['expired_post_status']:'' ) );
+        update_post_meta( $subscription_id, '_enable_mail_after_expired', ( isset($post_data['post_expiration_settings']['enable_mail_after_expired']) ? $post_data['post_expiration_settings']['enable_mail_after_expired']:'' ) );
+        update_post_meta( $subscription_id, '_post_expiration_message', ( isset($post_data['post_expiration_settings']['post_expiration_message']) ? $post_data['post_expiration_settings']['post_expiration_message']:'' ) );
+        do_action( 'wpuf_update_subscription_pack', $subscription_id, $post_data );
     }
 
     /**
@@ -326,13 +353,13 @@ class WPUF_Subscription {
         $capability = wpuf_admin_role();
 
         register_post_type( 'wpuf_subscription', array(
-            'label'           => __( 'Subscription', 'wpuf' ),
+            'label'           => __( 'Subscription', 'wp-user-frontend' ),
             'public'          => false,
             'show_ui'         => true,
             'show_in_menu'    => false,
             'hierarchical'    => false,
             'query_var'       => false,
-            'supports'        => array('title'),
+            'supports'        => array( 'title' ),
             'capability_type' => 'post',
             'capabilities'    => array(
                 'publish_posts'       => $capability,
@@ -346,20 +373,20 @@ class WPUF_Subscription {
                 'read_post'           => $capability,
             ),
             'labels' => array(
-                'name'               => __( 'Subscription', 'wpuf' ),
-                'singular_name'      => __( 'Subscription', 'wpuf' ),
-                'menu_name'          => __( 'Subscription', 'wpuf' ),
-                'add_new'            => __( 'Add Subscription', 'wpuf' ),
-                'add_new_item'       => __( 'Add New Subscription', 'wpuf' ),
-                'edit'               => __( 'Edit', 'wpuf' ),
-                'edit_item'          => __( 'Edit Subscription', 'wpuf' ),
-                'new_item'           => __( 'New Subscription', 'wpuf' ),
-                'view'               => __( 'View Subscription', 'wpuf' ),
-                'view_item'          => __( 'View Subscription', 'wpuf' ),
-                'search_items'       => __( 'Search Subscription', 'wpuf' ),
-                'not_found'          => __( 'No Subscription Found', 'wpuf' ),
-                'not_found_in_trash' => __( 'No Subscription Found in Trash', 'wpuf' ),
-                'parent'             => __( 'Parent Subscription', 'wpuf' ),
+                'name'               => __( 'Subscription', 'wp-user-frontend' ),
+                'singular_name'      => __( 'Subscription', 'wp-user-frontend' ),
+                'menu_name'          => __( 'Subscription', 'wp-user-frontend' ),
+                'add_new'            => __( 'Add Subscription', 'wp-user-frontend' ),
+                'add_new_item'       => __( 'Add New Subscription', 'wp-user-frontend' ),
+                'edit'               => __( 'Edit', 'wp-user-frontend' ),
+                'edit_item'          => __( 'Edit Subscription', 'wp-user-frontend' ),
+                'new_item'           => __( 'New Subscription', 'wp-user-frontend' ),
+                'view'               => __( 'View Subscription', 'wp-user-frontend' ),
+                'view_item'          => __( 'View Subscription', 'wp-user-frontend' ),
+                'search_items'       => __( 'Search Subscription', 'wp-user-frontend' ),
+                'not_found'          => __( 'No Subscription Found', 'wp-user-frontend' ),
+                'not_found_in_trash' => __( 'No Subscription Found in Trash', 'wp-user-frontend' ),
+                'parent'             => __( 'Parent Subscription', 'wp-user-frontend' ),
             ),
         ) );
     }
@@ -387,19 +414,6 @@ class WPUF_Subscription {
         $this->update_user_subscription_meta( $payer->payer_id, $pack );
     }
 
-    function add_meta_box_subscription_post() {
-        add_meta_box( 'wpuf-metabox-subscription', __( 'Billing Details', 'wpuf' ), array($this, 'subscription_form_elements_post'), 'wpuf_subscription', 'normal', 'high' );
-    }
-
-    function subscription_form_elements_post() {
-        require_once dirname(__FILE__) . '/../admin/subscription.php';
-        ?>
-        <div class="wrap">
-            <?php WPUF_Admin_Subscription::getInstance()->form(); ?>
-        </div>
-        <?php
-    }
-
     /**
      * Get a subscription row from database
      *
@@ -419,17 +433,28 @@ class WPUF_Subscription {
         return $pack;
     }
 
-
-
     /**
      * Set the new post status if charging is active
      *
      * @param string $postdata
      * @return string
      */
-    function set_pending( $postdata ) {
+    function set_pending( $postdata, $form_id, $form_settings, $form_vars ) {
 
-        if ( wpuf_get_option( 'charge_posting', 'wpuf_payment' ) == 'yes' ) {
+        $form             = new WPUF_Form( $form_id );
+        $payment_options  = $form->is_charging_enabled();
+        $force_pack       = $form->is_enabled_force_pack();
+        $pay_per_post     = $form->is_enabled_pay_per_post();
+        $fallback_cost    = $form->is_enabled_fallback_cost();
+        $current_user     = wpuf_get_user();
+        $current_pack     = $current_user->subscription()->current_pack();
+        $has_post         = $current_user->subscription()->has_post_count( $form_settings['post_type'] );
+
+        if ( $payment_options && $force_pack && is_wp_error( $current_pack ) && $fallback_cost && !$has_post )  {
+            $postdata['post_status'] = 'pending';
+        }
+
+        if ( $payment_options && !$force_pack && ( $pay_per_post || ( $fallback_cost && !$has_post )))  {
             $postdata['post_status'] = 'pending';
         }
 
@@ -444,16 +469,80 @@ class WPUF_Subscription {
      * @param int $post_id
      */
     function monitor_new_post( $post_id, $form_id, $form_settings ) {
-        // check form if subscription is disabled
-        if ( isset( $form_settings['subscription_disabled'] ) && $form_settings['subscription_disabled'] == 'yes' ) {
+        global $wpdb, $userdata;
+        $post = get_post( $post_id );
+
+        // bail out if charging is not enabled
+        $form = new WPUF_Form( $form_id );
+
+        if ( !$form->is_charging_enabled() ) {
             return;
         }
+
+        $force_pack    = $form->is_enabled_force_pack();
+        $pay_per_post  = $form->is_enabled_pay_per_post();
+        $fallback_cost = $form->is_enabled_fallback_cost();
+        $current_user  = wpuf_get_user();
+        $current_pack  = $current_user->subscription()->current_pack();
+        $has_post      = $current_user->subscription()->has_post_count( $form_settings['post_type'] );
+
+        if ( $force_pack && ! is_wp_error( $current_pack ) && $has_post ) {
+
+            $sub_info    = self::get_user_pack( $userdata->ID );
+            $post_type   = isset( $form_settings['post_type'] ) ? $form_settings['post_type'] : 'post';
+            $count       = isset( $sub_info['posts'][$post_type] ) ? intval( $sub_info['posts'][$post_type] ) : 0;
+            $post_status = isset( $form_settings['post_status'] ) ? $form_settings['post_status'] : 'publish';
+
+            $old_status = $post->post_status;
+            wp_transition_post_status( $post_status, $old_status, $post );
+            // wp_update_post( array( 'ID' => $post_id , 'post_status' => $post_status) );
+
+            // decrease the post count, if not umlimited
+            $wpuf_post_status = get_post_meta( $post_id, 'wpuf_post_status', true );
+
+            if ( $wpuf_post_status != 'new_draft' ) {
+                if ( $count > 0 ) {
+                    $sub_info['posts'][$post_type] = $count - 1;
+                    $this->update_user_subscription_meta( $userdata->ID, $sub_info );
+                }
+            }
+            //meta added to make post have flag if post is published
+            update_post_meta( $post_id, 'wpuf_post_status', 'published' );
+
+
+        } elseif ( !$force_pack && ( $pay_per_post || ( $fallback_cost && !$has_post ) ) ) {
+            //there is some error and it needs payment
+            //add a uniqid to track the post easily
+            $order_id = uniqid( rand( 10, 1000 ), false );
+            update_post_meta( $post_id, '_wpuf_order_id', $order_id, true );
+            update_post_meta( $post_id, '_wpuf_payment_status', 'pending' );
+        }
+
+    }
+
+    /**
+     * Check if the post is draft and charging is enabled
+     *
+     * @global object $userdata
+     * @global object $wpdb
+     * @param int $post_id
+     */
+    function monitor_new_draft_post( $post_id, $form_id, $form_settings ) {
+
         global $wpdb, $userdata;
 
         // bail out if charging is not enabled
-        if ( wpuf_get_option( 'charge_posting', 'wpuf_payment', 'no' ) != 'yes' ) {
-            return;
+        $charging_enabled = '';
+        $form             = new WPUF_Form( $form_id );
+        $payment_options  = $form->is_charging_enabled();
+        if ( !$payment_options || !is_user_logged_in() ) {
+            $charging_enabled = 'no';
+        } else {
+            $charging_enabled = 'yes';
         }
+        // if ( wpuf_get_option( 'charge_posting', 'wpuf_payment', 'no' ) != 'yes' ) {
+        //     return;
+        // }
 
         $userdata = get_userdata( get_current_user_id() );
 
@@ -462,21 +551,6 @@ class WPUF_Subscription {
             //add a uniqid to track the post easily
             $order_id = uniqid( rand( 10, 1000 ), false );
             update_post_meta( $post_id, '_wpuf_order_id', $order_id, true );
-
-        } else {
-
-            $sub_info    = self::get_user_pack( $userdata->ID );
-            $post_type   = isset( $form_settings['post_type'] ) ? $form_settings['post_type'] : 'post';
-            $count       = isset( $sub_info['posts'][$post_type] ) ? intval( $sub_info['posts'][$post_type] ) : 0;
-            $post_status = isset( $form_settings['post_status'] ) ? $form_settings['post_status'] : 'publish';
-
-            wp_update_post( array( 'ID' => $post_id , 'post_status' => $post_status) );
-
-            // decrease the post count, if not umlimited
-            if ( $count > 0 ) {
-                $sub_info['posts'][$post_type] = $count - 1;
-                $this->update_user_subscription_meta( $userdata->ID, $sub_info );
-            }
         }
 
     }
@@ -490,23 +564,37 @@ class WPUF_Subscription {
      */
     function post_redirect( $response, $post_id, $form_id, $form_settings ) {
 
-        if ( self::has_user_error( $form_settings ) ) {
+        $form             = new WPUF_Form( $form_id );
+        $payment_options  = $form->is_charging_enabled();
+        $force_pack       = $form->is_enabled_force_pack();
+        $fallback_cost    = $form->is_enabled_fallback_cost();
+        $current_user     = wpuf_get_user();
+        $current_pack     = $current_user->subscription()->current_pack();
+        $has_pack         = $current_user->subscription()->has_post_count( $form_settings['post_type'] );
+        $ppp_cost_enabled = $form->is_enabled_pay_per_post();
+        $sub_expired      = $current_user->subscription()->expired();
 
+        if ( ( $payment_options && !$has_pack ) || ( $payment_options && $sub_expired ) ) {
             $order_id = get_post_meta( $post_id, '_wpuf_order_id', true );
 
             // check if there is a order ID
-            if ( $order_id ) {
+            if ( $order_id || ( $payment_options && $fallback_cost ) ) {
                 $response['show_message'] = false;
                 $response['redirect_to']  = add_query_arg( array(
                     'action'  => 'wpuf_pay',
                     'type'    => 'post',
                     'post_id' => $post_id
                 ), get_permalink( wpuf_get_option( 'payment_page', 'wpuf_payment' ) ) );
-
-                return $response;
+            }
+            if ( !$force_pack && $ppp_cost_enabled ) {
+                $response['show_message'] = false;
+                $response['redirect_to'] = add_query_arg( array(
+                    'action'  => 'wpuf_pay',
+                    'type'    => 'post',
+                    'post_id' => $post_id
+                ), get_permalink( wpuf_get_option( 'payment_page', 'wpuf_payment' ) ) );
             }
         }
-
         return $response;
     }
 
@@ -516,14 +604,21 @@ class WPUF_Subscription {
      * @param array $info payment info
      */
     function payment_received( $info, $recurring ) {
-
         if ( $info['post_id'] ) {
+            $order_id = get_post_meta( $info['post_id'], '_wpuf_order_id', true );
 
-            $this->handle_post_publish( $info['post_id'] );
+            $this->handle_post_publish( $order_id );
 
         } else if ( $info['pack_id'] ) {
-            $profile_id = isset( $info['profile_id'] ) ? $info['profile_id'] : null;
-            $this->new_subscription( $info['user_id'], $info['pack_id'], $profile_id, $recurring, $info['status'] );
+
+            if ( $recurring ) {
+                $profile_id = $info['profile_id'];
+            }else{
+                $profile_id = isset( $info['user_id'] ) ? $info['user_id'] : null;
+            }
+
+            wpuf_get_user( $info['user_id'] )->subscription()->add_pack( $info['pack_id'], $profile_id, $recurring, $info['status'] );
+
         }
     }
 
@@ -536,46 +631,23 @@ class WPUF_Subscription {
      * @param int $pack_id subscription pack id
      */
     public function new_subscription( $user_id, $pack_id, $profile_id = null, $recurring, $status = null ) {
+        // _deprecated_function( __FUNCTION__, '2.6.0', 'wpuf_get_user( $user_id )->subscription()->add_pack( $pack_id, $profile_id = null, $recurring, $status = null );' );
 
-        $subscription = $this->get_subscription( $pack_id );
-        if ( $user_id && $subscription ) {
-
-            $user_meta = array(
-                'pack_id' => $pack_id,
-                'posts'   => $subscription->meta_value['post_type_name'],
-                'status'  => $status
-            );
-
-            if ( $recurring ) {
-                $totla_date =  date( 'd-m-Y', strtotime('+' . $cycle_number . $cycle_period . 's') );
-                $user_meta['expire']     = '';
-                $user_meta['profile_id'] = $profile_id;
-                $user_meta['recurring']  = 'yes';
-            } else {
-
-                $period_type            = $subscription->meta_value['expiration_period'];
-                $period_number          = $subscription->meta_value['expiration_number'];
-                $date                   = date( 'd-m-Y', strtotime('+' . $period_number . $period_type . 's') );
-                $expired                = ( empty( $period_number ) || ( $period_number == 0 ) ) ? 'unlimited' : wpuf_date2mysql( $date );
-                $user_meta['expire']    = $expired;
-                $user_meta['recurring'] = 'no';
-            }
-
-            $user_meta = apply_filters( 'wpuf_new_subscription', $user_meta, $user_id, $pack_id, $recurring );
-            if($subscription->_enable_post_expiration){
-                $user_meta['_enable_post_expiration'] = $subscription->_enable_post_expiration;
-                $user_meta['_post_expiration_time'] = $subscription->_post_expiration_time;
-                $user_meta['_expired_post_status'] = $subscription->_expired_post_status;
-                $user_meta['_enable_mail_after_expired'] = $subscription->_enable_mail_after_expired;
-                $user_meta['_post_expiration_message'] = $subscription->_post_expiration_message;
-            }
-            $this->update_user_subscription_meta( $user_id, $user_meta );
-        }
+        wpuf_get_user( $user_id )->subscription()->add_pack( $pack_id, $profile_id = null, $recurring, $status = null );
     }
 
+    /**
+     * update user meta
+     *
+     * if data = 0, means 'unlimited'
+     *
+     * @param int $user_id
+     * @param array $data
+     */
     public static function update_user_subscription_meta( $user_id, $user_meta ) {
+        // _deprecated_function( __FUNCTION__, '2.6.0', 'wpuf_get_user( $user_id )->subscription()->update_meta( $user_meta );' );
 
-        update_user_meta( $user_id, '_wpuf_subscription_pack', $user_meta );
+        wpuf_get_user( $user_id )->subscription()->update_meta( $user_meta );
     }
 
     public static function post_by_orderid( $order_id ) {
@@ -597,8 +669,13 @@ class WPUF_Subscription {
     function handle_post_publish( $order_id ) {
         $post = self::post_by_orderid( $order_id );
 
-        if ( $post && $post->post_status != 'publish' ) {
-            $this->set_post_status( $post->ID );
+        if ( $post ) {
+            // set the payment status
+            update_post_meta( $post->ID, '_wpuf_payment_status', 'completed' );
+
+            if ( $post->post_status != 'publish' ) {
+                $this->set_post_status( $post->ID );
+            }
         }
     }
 
@@ -631,156 +708,86 @@ class WPUF_Subscription {
      * @global type $userdata
      */
     function subscription_info() {
-
-        if ( wpuf_get_option( 'charge_posting', 'wpuf_payment' ) != 'yes' || !is_user_logged_in() ) {
-            return;
-        }
-
-        global $userdata;
-
-        ob_start();
-
-        $userdata = get_userdata( $userdata->ID ); //wp 3.3 fix
-
-        $user_sub = self::get_user_pack( $userdata->ID );
-        if ( !isset( $user_sub['pack_id'] ) ) {
-            return;
-        }
-
-        $pack = $this->get_subscription( $user_sub['pack_id'] );
-
-        $details_meta = $this->get_details_meta_value();
-
-        $billing_amount = ( intval( $pack->meta_value['billing_amount'] ) > 0 ) ? $details_meta['symbol'] . $pack->meta_value['billing_amount'] : __( 'Free', 'wpuf' );
-        if ( $pack->meta_value['recurring_pay'] == 'yes' ) {
-            $recurring_des = sprintf( 'For each %s %s', $pack->meta_value['billing_cycle_number'], $pack->meta_value['cycle_period'], $pack->meta_value['trial_duration_type'] );
-            $recurring_des .= !empty( $pack->meta_value['billing_limit'] ) ? sprintf( ', for %s installments', $pack->meta_value['billing_limit'] ) : '';
-            $recurring_des = $recurring_des;
-        } else {
-            $recurring_des = '';
-        }
-
-        ?>
-        <div class="wpuf_sub_info">
-            <h3><?php _e( 'Subscription Details', 'wpuf' ); ?></h3>
-            <div class="wpuf-text">
-                <div><strong><?php _e( 'Subcription Name: ','wpuf' ); ?></strong><?php echo $pack->post_title; ?></div>
-                <div>
-                    <strong><?php _e( 'Package & billing details: '); ?></strong>
-
-                    <div class="wpuf-pricing-wrap">
-                        <div class="wpuf-sub-amount">
-                            <?php echo $billing_amount; ?>
-                            <?php echo $recurring_des; ?>
-                        </div>
-                    </div>
-
-                </div>
-                <div>
-                    <strong><?php _e( 'Remaining post: ', 'wpuf'); ?></strong>
-                    <?php
-                    foreach ($user_sub['posts'] as $key => $value) {
-                        $value = intval( $value );
-
-                        if ( $value === 0 ) {
-                            continue;
-                        }
-
-                        $post_type_obj = get_post_type_object( $key );
-                        if ( ! $post_type_obj ) {
-                            continue;
-                        }
-                        ?>
-                         <div><?php echo $post_type_obj->labels->name . ': ' . $value; ?></div>
-                        <?php
-                    }
-                    ?>
-                </div>
-                <?php
-                if ( $user_sub['recurring'] != 'yes' ) {
-                    if ( !empty( $user_sub['expire'] ) ) {
-
-                        $expire =  ( $user_sub['expire'] == 'unlimited' ) ? ucfirst( 'unlimited' ) : wpuf_date2mysql( $user_sub['expire'] );
-
-                        ?>
-                        <div class="wpuf-expire">
-                            <strong><?php echo _e('Expire date:'); ?></strong> <?php echo wpuf_get_date( $expire ); ?>
-                        </div>
-                        <?php
-                    }
-
-                } ?>
-            </div>
-            <?php
-            if ( $user_sub['recurring'] == 'yes' ) {
-                $payment_page = get_permalink( wpuf_get_option( 'payment_page', 'wpuf_payment' ) );
-                ?>
-                <form action="" method="post">
-                    <?php wp_nonce_field( '_wpnonce', 'wpuf_payment_cancel' ); ?>
-                    <input type="hidden" name="user_id" value="<?php echo $userdata->ID; ?>">
-                    <input type="hidden" name="action" value="wpuf_cancel_pay">
-                    <input type="hidden" name="gateway" value="paypal">
-                    <input type="submit" name="wpuf_payment_cancel_submit" value="cancel">
-                </form>
-                <?php $subscription_page = wpuf_get_option( 'subscription_page','wpuf_payment' ); ?>
-                <a href="<?php echo get_permalink( $subscription_page ); ?>"><? _e( 'Change', 'wpuf'); ?></a>
-                <?php
-            }
-        echo '</div>';
-
-        $content = ob_get_clean();
-
-        return apply_filters( 'wpuf_sub_info', $content, $userdata, $user_sub, $pack );
+        // _deprecated_function( __FUNCTION__, '2.6.0', 'wpuf_get_user()->subscription()->pack_info( $form_id );' );
+        // wpuf_get_user()->subscription()->pack_info( $form_id );
+        $sections        = wpuf_get_account_sections();
+        do_action( "wpuf_account_content_subscription", $sections, 'subscription' );
     }
-
 
     /**
      * Show the subscription packs that are built
      * from admin Panel
      */
-    function subscription_packs() {
-        $cost_per_post = wpuf_get_option( 'charge_posting', 'wpuf_payment' );
+    function subscription_packs( $atts = null ) {
+        //$cost_per_post = isset( $form_settings['pay_per_post_cost'] ) ? $form_settings['pay_per_post_cost'] : 0;
 
-        if ( $cost_per_post != 'yes' ) {
-            _e('Please enable force pack and charge posting from admin panel', 'wpuf' );
-            return;
+        $defaults = array(
+            'include' => '',
+            'exclude' => '',
+            'order'   => '',
+            'orderby' => ''
+        );
+
+        $arranged = array();
+        $args     = wp_parse_args( $atts, $defaults );
+
+        if ( $args['include'] != ""  ) {
+            $pack_order = explode(',', $args['include']);
+        } else {
+            $args['order'] = isset( $args['order'] ) ? $args['order'] : 'ASC';
         }
 
-        $packs = $this->get_subscriptions();
+        $packs = $this->get_subscriptions( $args );
+
         $details_meta = $this->get_details_meta_value();
 
         ob_start();
 
         if ( isset( $_GET['action'] ) && $_GET['action'] == 'wpuf_paypal_success' ) {
-            printf( '<h1>%1$s</h1><p>%2$s</p>', __( 'Payment is complete', 'wpuf' ), __( 'Congratulations, your payment has been completed!', 'wpuf' ) );
+            printf( '<h1>%1$s</h1><p>%2$s</p>', __( 'Payment is complete', 'wp-user-frontend' ), __( 'Congratulations, your payment has been completed!', 'wp-user-frontend' ) );
         }
 
-        $current_pack = self::get_user_pack( get_current_user_id());
-        if( isset( $current_pack['pack_id'] ) ) {
+        if ( isset( $_GET['pack_msg'] ) && $_GET['pack_msg'] == 'buy_pack' ) {
+            _e('Please buy a subscription pack to post', 'wp-user-frontend' );
+        }
+
+        if ( isset( $_GET['ppp_msg'] ) && $_GET['ppp_msg'] == 'pay_per_post' ) {
+            _e('Please buy a subscription pack to post', 'wp-user-frontend' );
+        }
+
+        $current_pack = self::get_user_pack( get_current_user_id() );
+
+        if ( isset( $current_pack['pack_id'] ) ) {
+            global $wpdb;
+
+            $user_id = get_current_user_id();
+            $payment_gateway = $wpdb->get_var( "SELECT payment_type FROM {$wpdb->prefix}wpuf_transaction WHERE user_id = {$user_id} AND status = 'completed' ORDER BY created DESC" );
+
+            $payment_gateway = strtolower( $payment_gateway );
             ?>
 
-            <?php  _e( '<p><i>You have a subscription pack activated. </i></p>', 'dps' ); ?>
-            <?php  _e( '<p><i>Pack name : '.get_the_title( $current_pack['pack_id'] ).' </i></p>', 'wpuf' ); ?>
-            <?php _e( '<p><i>To cancel the pack, press the following cancel button</i></p>', 'wpuf' ); ?>
+            <?php _e( '<p><i>You have a subscription pack activated. </i></p>', 'wp-user-frontend' ); ?>
+            <?php echo sprintf( __( "<p><i>Pack name: %s </i></p>", "wp-user-frontend" ), get_the_title( $current_pack['pack_id'] ) ); ?>
+
+            <?php _e( '<p><i>To cancel the pack, press the following cancel button</i></p>', 'wp-user-frontend' ); ?>
 
             <form action="" method="post">
                 <?php wp_nonce_field( 'wpuf-sub-cancel' ); ?>
-                <input type="submit" name="wpuf_cancel_subscription" class="btn btn-sm btn-danger" value="<?php _e( 'Cancel', 'wpuf' ); ?>">
+                <input type="hidden" name="user_id" value="<?php echo get_current_user_id(); ?>">
+                <input type="hidden" name="gateway" value="<?php echo $payment_gateway; ?>">
+                <input type="submit" name="wpuf_cancel_subscription" class="btn btn-sm btn-danger" value="<?php _e( 'Cancel', 'wp-user-frontend' ); ?>">
             </form>
             <?php
         }
-        if ( $packs ) {
-            echo '<ul class="wpuf_packs">';
-            foreach ($packs as $pack) {
-                $class = 'wpuf-pack-' . $pack->ID;
-                ?>
-                <li class="<?php echo $class; ?>">
-                <?php $this->pack_details( $pack, $details_meta, isset( $current_pack['pack_id'] ) ? $current_pack['pack_id'] : '' ); ?>
-                </li>
-                <?php
-            }
-            echo '</ul>';
-        }
+
+        wpuf_load_template( 'subscriptions/listing.php', apply_filters( 'wpuf_subscription_listing_args', array(
+            'subscription' => $this,
+            'args'         => $args,
+            'packs'        => $packs,
+            'pack_order'   => isset( $pack_order ) ? $pack_order : '',
+            'details_meta' => $details_meta,
+            'current_pack' => $current_pack
+        ) ) );
 
         $contents = ob_get_clean();
 
@@ -791,95 +798,130 @@ class WPUF_Subscription {
 
         $meta['payment_page'] = get_permalink( wpuf_get_option( 'payment_page', 'wpuf_payment' ) );
         $meta['onclick'] = '';
-        $meta['symbol'] = wpuf_get_option( 'currency_symbol', 'wpuf_payment' );
+        $meta['symbol']  = wpuf_get_currency( 'symbol' );
 
         return $meta;
     }
 
-    function pack_details( $pack, $details_meta, $current_pack_id = '', $coupon_satus = false ) {
+    /**
+     * Render Subscription Pack details
+     *
+     * @param $pack
+     * @param $details_meta
+     * @param string $current_pack_id
+     * @param bool $coupon_status
+     */
+    function pack_details( $pack, $details_meta, $current_pack_id = '', $coupon_status = false ) {
+
+        if ( function_exists( 'wpuf_prices_include_tax' ) ) {
+            $price_with_tax = wpuf_prices_include_tax();
+        }
 
         $billing_amount = ( $pack->meta_value['billing_amount'] >= 0 && !empty( $pack->meta_value['billing_amount'] ) ) ? $pack->meta_value['billing_amount'] : '0.00';
+        $trial_des     = '';
+        $recurring_des = '<div class="wpuf-pack-cycle wpuf-nullamount-hide">' . __( 'One time payment', 'wp-user-frontend' ) . '</div>';
+
+        if ( isset( $price_with_tax ) && $price_with_tax ) {
+            $billing_amount = apply_filters( 'wpuf_payment_amount', $billing_amount);
+        }
 
         if ( $billing_amount && $pack->meta_value['recurring_pay'] == 'yes' ) {
-            $recurring_des = sprintf( 'Every %s %s', $pack->meta_value['billing_cycle_number'], $pack->meta_value['cycle_period'], $pack->meta_value['trial_duration_type'] );
-            $recurring_des .= !empty( $pack->meta_value['billing_limit'] ) ? sprintf( ', for %s installments', $pack->meta_value['billing_limit'] ) : '';
+            $recurring_des = sprintf( __('Every', 'wp-user-frontend').' %s %s', $pack->meta_value['billing_cycle_number'], $pack->meta_value['cycle_period'], $pack->meta_value['trial_duration_type'] );
+            $recurring_des .= !empty( $pack->meta_value['billing_limit'] ) ? __( sprintf( ', '.__('for', 'wp-user-frontend').' %s '.__( 'installments', 'wp-user-frontend' ), $pack->meta_value['billing_limit'] ), 'wpuf' ) : '';
             $recurring_des = '<div class="wpuf-pack-cycle wpuf-nullamount-hide">'.$recurring_des.'</div>';
-        } else {
-            $recurring_des = '<div class="wpuf-pack-cycle wpuf-nullamount-hide">' . __( 'One time payment', 'wpuf' ) . '</div>';
         }
 
         if ( $billing_amount && $pack->meta_value['recurring_pay'] == 'yes' && $pack->meta_value['trial_status'] == 'yes' ) {
-
-            $trial_cost = ( empty( $pack->meta_value['trial_cost'] ) || $pack->meta_value['trial_cost'] == 0 ) ? __( 'Free', 'wpuf' ) : $details_meta['symbol'].$pack->meta_value['trial_cost'];
-            $trial_des = sprintf( '%s for the first %s %s', $trial_cost, $pack->meta_value['trial_duration'], $pack->meta_value['trial_duration_type']  );
-
-        } else {
-            $trial_des = '';
+            $duration  = _n( $pack->meta_value['trial_duration_type'], $pack->meta_value['trial_duration_type'].'s', $pack->meta_value['trial_duration'], 'wp-user-frontend'  );
+            $trial_des = sprintf( __( 'Trial available for first %s %s','wp-user-frontend' ), $pack->meta_value['trial_duration'], $duration );
         }
 
-        if (  ! is_user_logged_in()  ) {
-            $button_name = __( 'Sign Up', 'wpuf' );
-            $url = wp_login_url();
+        $label       = wpuf_get_option( 'logged_in_label','wpuf_subscription_settings', false );
+        $button_name = $label ? $label : __('Buy Now', 'wp-user-frontend');
+
+        if ( ! is_user_logged_in() ) {
+            $label = wpuf_get_option( 'logged_out_label','wpuf_subscription_settings', false );
+            $button_name = $label ? $label : __( 'Sign Up', 'wp-user-frontend' );
         } else if ( $billing_amount == '0.00' ) {
-            $button_name = __( 'Free', 'wpuf' );
-        } else {
-            $button_name = __( 'Buy Now', 'wpuf' );
-        }
-        ?>
-        <div class="wpuf-pricing-wrap">
-            <h3><?php echo wp_kses_post( $pack->post_title ); ?> </h3>
-            <div class="wpuf-sub-amount">
-
-                <?php if ( $billing_amount != '0.00' ) { ?>
-                    <sup class="wpuf-sub-symbol"><?php echo $details_meta['symbol']; ?></sup>
-                    <span class="wpuf-sub-cost"><?php echo $billing_amount; ?></span>
-                <?php } else { ?>
-                    <span class="wpuf-sub-cost"><?php _e( 'Free', 'wpuf' ); ?></span>
-                <?php } ?>
-
-                <?php echo $recurring_des; ?>
-
-            </div>
-            <?php
-            if ( $pack->meta_value['recurring_pay'] == 'yes' ) {
-            ?>
-                <div class="wpuf-sub-body wpuf-nullamount-hide">
-                    <div class="wpuf-sub-terms"><?php echo $trial_des; ?></div>
-                </div>
-            <?php
-            }
-            ?>
-        </div>
-        <div class="wpuf-sub-desciption">
-            <?php echo wpautop( wp_kses_post( $pack->post_content ) ); ?>
-        </div>
-        <?php
-
-        if ( isset( $_GET['action'] ) && $_GET['action'] == 'wpuf_pay' || $coupon_satus ) {
-            return;
-        }
-        if ( $coupon_satus === false && is_user_logged_in() ) {
-            ?>
-                <div class="wpuf-sub-button"><a <?php echo ( $current_pack_id != '' ) ? ' class = "wpuf-disabled-link" ' : '' ;?> href="<?php echo ( $current_pack_id != '' ) ? 'javascript:' : add_query_arg( array('action' => 'wpuf_pay', 'type' => 'pack', 'pack_id' => $pack->ID ), $details_meta['payment_page'] ); ?>" onclick="<?php echo esc_attr( $details_meta['onclick'] ); ?>"><?php echo $button_name; ?></a></div>
-            <?php
-        } else {
-            ?>
-                <div class="wpuf-sub-button"><a <?php echo ( $current_pack_id != '' ) ? ' class = "wpuf-disabled-link" ' : '' ;?>  href="<?php echo ( $current_pack_id != '' ) ? 'javascript:' : add_query_arg( array( 'action' => 'register', 'type' => 'wpuf_sub', 'pack_id' => $pack->ID ), wp_registration_url() ); ?>" onclick="<?php echo esc_attr( $details_meta['onclick'] ); ?>"><?php echo $button_name; ?></a></div>
-            <?php
-            //wp_registration_url()
+            $label = wpuf_get_option( 'free_label','wpuf_subscription_settings', false );
+            $button_name = $label ? $label : __( 'Free', 'wp-user-frontend' );
         }
 
+        $query_args = array(
+            'action' => 'register',
+            'type'   => 'wpuf_sub',
+            'pack_id' => $pack->ID,
+        );
+        $query_url = wp_registration_url();
+
+        if ( $coupon_status === false && is_user_logged_in() ) {
+            $query_args = array(
+                'action' => 'wpuf_pay',
+                'type'   => 'pack',
+                'pack_id' => $pack->ID
+            );
+            $query_url = $details_meta['payment_page'];
+        }
+
+        wpuf_load_template( 'subscriptions/pack-details.php', apply_filters( 'wpuf_subscription_pack_details_args', array(
+            'pack'            => $pack,
+            'billing_amount'  => $billing_amount,
+            'details_meta'    => $details_meta,
+            'recurring_des'   => $recurring_des,
+            'trial_des'       => $trial_des,
+            'coupon_status'   => $coupon_status,
+            'current_pack_id' => $current_pack_id,
+            'button_name'     => $button_name,
+            'query_args'      => $query_args,
+            'query_url'       => $query_url,
+        ) ) );
     }
 
     /**
      * Show a info message when posting if payment is enabled
      */
     function add_post_info( $form_id, $form_settings ) {
-        if ( self::has_user_error( $form_settings ) ) {
+        $form              = new WPUF_Form( $form_id );
+        $pay_per_post      = $form->is_enabled_pay_per_post();
+        $pay_per_post_cost = (float) $form->get_pay_per_post_cost();
+        $force_pack        = $form->is_enabled_force_pack();
+        $current_user      = wpuf_get_user();
+        $current_pack      = $current_user->subscription()->current_pack();
+        $payment_enabled   = $form->is_charging_enabled();
+
+        if ( function_exists( 'wpuf_prices_include_tax' ) ) {
+            $price_with_tax = wpuf_prices_include_tax();
+        }
+
+        if ( self::has_user_error( $form_settings ) || ( $payment_enabled && $pay_per_post && !$force_pack ) ) {
             ?>
             <div class="wpuf-info">
                 <?php
-                $text = sprintf( __( 'This will cost you <strong>%s</strong> to add a new post. ', 'wpuf' ), wpuf_get_option( 'currency_symbol', 'wpuf_payment' ) . wpuf_get_option( 'cost_per_post', 'wpuf_payment' ) );
+                $form              = new WPUF_Form( $form_id );
+                $pay_per_post_cost = (float) $form->get_pay_per_post_cost();
+
+                if ( isset( $price_with_tax ) && $price_with_tax ) {
+                    $pay_per_post_cost = apply_filters( 'wpuf_payment_amount', $pay_per_post_cost );
+                }
+
+                $text              = sprintf( __( 'There is a <strong>%s</strong> charge to add a new post.', 'wp-user-frontend' ), wpuf_format_price( $pay_per_post_cost ));
+
+                echo apply_filters( 'wpuf_ppp_notice', $text, $form_id, $form_settings );
+                ?>
+            </div>
+            <?php
+        } elseif ( self::has_user_error( $form_settings ) || ( $payment_enabled && $force_pack &&  !is_wp_error( $current_pack ) && !$current_user->subscription()->has_post_count( $form_settings['post_type'] ) ) ) {
+            ?>
+            <div class="wpuf-info">
+                <?php
+                $form              = new WPUF_Form( $form_id );
+                $fallback_cost     = (int )$form->get_subs_fallback_cost();
+
+                if ( isset( $price_with_tax ) && $price_with_tax ) {
+                    $fallback_cost     = apply_filters( 'wpuf_payment_amount', $fallback_cost );
+                }
+
+                $text              = sprintf( __( 'Your Subscription pack exhausted. There is a <strong>%s</strong> charge to add a new post.', 'wp-user-frontend' ), wpuf_format_price( $fallback_cost ));
 
                 echo apply_filters( 'wpuf_ppp_notice', $text, $form_id, $form_settings );
                 ?>
@@ -892,13 +934,39 @@ class WPUF_Subscription {
         return get_user_meta( $user_id, '_wpuf_subscription_pack', $status );
     }
 
-    function force_pack_notice( $text, $id, $form_settings ) {
-        $force_pack = wpuf_get_option( 'force_pack', 'wpuf_payment' );
+    public function subscription_pack_users( $pack_id = '', $status = '' ) {
+        global $wpdb;
+        $sql = 'SELECT user_id FROM ' . $wpdb->prefix . 'wpuf_subscribers';
+        $sql .= $pack_id ? ' WHERE subscribtion_id = ' . $pack_id : '';
+        $sql .= $status ? ' AND subscribtion_status = ' . $status : '';
 
-        if ( $force_pack == 'yes' && WPUF_Subscription::has_user_error($form_settings) ) {
+        $rows = $wpdb->get_results( $sql );
+
+        if ( empty( $rows ) ) {
+            return $rows;
+        }
+
+        $results = array();
+        foreach ( $rows as $row) {
+            if ( !in_array( $row->user_id, $results ) ) {
+                $results[] = $row->user_id;
+            }
+        }
+
+        $users = get_users( array( 'include' => $results ) );
+        return $users;
+    }
+
+    function force_pack_notice( $text, $id, $form_settings ) {
+
+        $form = new WPUF_Form( $id );
+
+        $force_pack = $form->is_enabled_force_pack();
+
+        if ( $force_pack && self::has_user_error($form_settings) ) {
             $pack_page = get_permalink( wpuf_get_option( 'subscription_page', 'wpuf_payment' ) );
 
-            $text = sprintf( __( 'You must <a href="%s">purchase a pack</a> before posting', 'wpuf' ), $pack_page );
+            $text = sprintf( __( 'You must <a href="%s">purchase a pack</a> before posting', 'wp-user-frontend' ), $pack_page );
         }
 
         return apply_filters( 'wpuf_pack_notice', $text, $id, $form_settings );
@@ -906,26 +974,77 @@ class WPUF_Subscription {
 
     function force_pack_permission( $perm, $id, $form_settings ) {
 
-        $force_pack = wpuf_get_option( 'force_pack', 'wpuf_payment' );
+        $form         = new WPUF_Form( $id );
+        $force_pack   = $form->is_enabled_force_pack();
+        $pay_per_post = $form->is_enabled_pay_per_post();
+        $fallback_enabled  = $form->is_enabled_fallback_cost();
+        $fallback_cost     = $form->get_subs_fallback_cost();
+
+        $current_user = wpuf_get_user();
+        $current_pack = $current_user->subscription()->current_pack();
+        $has_post_count = isset( $form_settings['post_type'] ) ? $current_user->subscription()->has_post_count( $form_settings['post_type'] ) : false;
 
         if ( is_user_logged_in() ) {
 
-            $is_user_postlock =  get_user_meta( get_current_user_id(), 'wpuf_postlock', true );
-
-            if ( $is_user_postlock == 'yes' )  {
+            if ( wpuf_get_user()->post_locked() ) {
                 return 'no';
             } else {
 
-                if ( $force_pack == 'yes' && WPUF_Subscription::has_user_error( $form_settings ) ) {
-                    return 'no';
-                } else {
+                // if post locking not enabled
+                if ( !$form->is_charging_enabled() ) {
                     return 'yes';
+                } else {
+                    //if charging is enabled
+                    if ( $force_pack ) {
+                        if ( ! is_wp_error( $current_pack ) ) {
+                            // current pack has no error
+                            if ( ! $fallback_enabled ) {
+                                //fallback cost enabled
+                                if ( !$current_user->subscription()->current_pack_id() ) {
+                                    return 'no';
+                                } elseif ( $current_user->subscription()->has_post_count( $form_settings['post_type'] ) ) {
+                                    return 'yes';
+                                }
+                            } else {
+                                //fallback cost disabled
+                                if ( !$current_user->subscription()->current_pack_id() ) {
+                                    return 'no';
+                                } elseif ( $has_post_count ) {
+                                    return 'yes';
+                                } elseif ( $current_user->subscription()->current_pack_id() && !$has_post_count ) {
+                                    return 'yes';
+                                }
+                            }
+                        } else {
+                            return 'no';
+                        }
+                    }
+                    if ( !$force_pack && $pay_per_post ) {
+                        return 'yes';
+                    }
                 }
+            }
 
+        }
+
+        if ( !is_user_logged_in() && isset( $form_settings['guest_post'] ) && $form_settings['guest_post'] == 'true' ) {
+            if ( $form->is_charging_enabled() ) {
+                if ( $force_pack ) {
+                    return 'no';
+                }
+                if ( !$force_pack && $pay_per_post ) {
+                    return 'yes';
+                } elseif ( !$force_pack && !$pay_per_post ) {
+                    return 'no';
+                }
+            }
+            else {
+                return 'yes';
             }
         }
 
         return $perm;
+
     }
 
     /**
@@ -935,56 +1054,10 @@ class WPUF_Subscription {
      * @return bool
      */
     public static function has_user_error( $form_settings = null ) {
-        global $userdata;
-        $user_id = isset( $userdata->ID ) ? $userdata->ID : '';
-        // bail out if charging is not enabled
-        if ( wpuf_get_option( 'charge_posting', 'wpuf_payment' ) != 'yes' ) {
-            return false;
-        }
 
-        // check form if subscription is disabled
-        if ( isset( $form_settings['subscription_disabled'] ) && $form_settings['subscription_disabled'] == 'yes' ) {
-            return false;
-        }
+        // _deprecated_function( __FUNCTION__, '2.6.0', 'wpuf_get_user()->subscription()->has_error( $form_settings = null );' );
 
-        $user_sub_meta  = self::get_user_pack( $user_id );
-        $form_post_type = isset( $form_settings['post_type'] ) ? $form_settings['post_type'] : 'post';
-        $post_count     = isset( $user_sub_meta['posts'][$form_post_type] ) ? $user_sub_meta['posts'][$form_post_type] : 0;
-
-        if ( isset( $user_sub_meta['recurring'] ) && $user_sub_meta['recurring'] == 'yes' ) {
-
-            // user has recurring subscription
-            if ( $post_count > 0 || $post_count == '-1' ) {
-                return false;
-            } else {
-                return true;
-            }
-
-        } else {
-            $expire = isset( $user_sub_meta['expire'] ) ? $user_sub_meta['expire'] : 0;
-
-            if ( strtolower( $expire ) == 'unlimited' || empty( $expire ) ) {
-                $expire_status = false;
-            } else if ( ( strtotime( date( 'Y-m-d', strtotime( $expire ) ) ) >= strtotime( date( 'Y-m-d', time() ) ) ) && ( $post_count > 0  || $post_count == '-1' ) ) {
-                $expire_status = false;
-            } else {
-                $expire_status = true;
-            }
-
-
-
-            if ( $post_count > 0 || $post_count == '-1' ) {
-                $post_count_status = false;
-            } else {
-                $post_count_status = true;
-            }
-
-            if( $expire_status || $post_count_status ) {
-                return true;
-            }
-        }
-
-        return false;
+        wpuf_get_user()->subscription()->has_error( $form_settings = null );
     }
 
     /**
@@ -997,17 +1070,9 @@ class WPUF_Subscription {
      * @return boolean
      */
     public static function has_used_free_pack( $user_id, $pack_id ) {
-        $has_used = get_user_meta( $user_id, 'wpuf_fp_used', true );
+        // _deprecated_function( __FUNCTION__, '2.6.0', 'wpuf_get_user( $user_id )->subscription()->used_free_pack( $pack_id );' );
 
-        if ( $has_used == '' ) {
-            return false;
-        }
-
-        if ( is_array( $has_used ) && isset( $has_used[$pack_id] ) ) {
-            return true;
-        }
-
-        return false;
+        wpuf_get_user( $user_id )->subscription()->used_free_pack( $pack_id );
     }
 
     /**
@@ -1018,12 +1083,10 @@ class WPUF_Subscription {
      * @param int $user_id
      * @param int $pack_id
      */
-    public static function add_used_free_pack( $user_id, $pack_id ) {
-        $has_used = get_user_meta( $user_id, 'wpuf_fp_used', true );
-        $has_used = is_array( $has_used ) ? $has_used : array();
+    public static function add_free_pack( $user_id, $pack_id ) {
+        // _deprecated_function( __FUNCTION__, '2.6.0', 'wpuf_get_user( $user_id )->subscription()->add_free_pack( $pack_id );' );
 
-        $has_used[$pack_id] = $pack_id;
-        update_user_meta( $user_id, 'wpuf_fp_used', $has_used );
+        wpuf_get_user( $user_id )->subscription()->add_free_pack( $user_id, $pack_id );
     }
 
     function packdropdown( $packs, $selected = '' ) {
@@ -1032,6 +1095,72 @@ class WPUF_Subscription {
             ?>
             <option value="<?php echo $pack->ID; ?>" <?php selected( $selected, $pack->ID ); ?>><?php echo $pack->post_title; ?></option>
             <?php
+        }
+    }
+
+
+    /**
+     * Reset the post count of a subscription of a user
+     *
+     * @since 2.3.11
+     *
+     * @param $post_id
+     * @param $form_id
+     * @param $form_settings
+     * @param $form_vars
+     */
+    public function reset_user_subscription_data( $post_id, $form_id, $form_settings, $form_vars ) {
+        // _deprecated_function( __FUNCTION__, '2.6.0', 'wpuf_get_user()->subscription()->reset_subscription_data( $post_id, $form_id, $form_settings, $form_vars );' );
+
+        wpuf_get_user()->subscription()->reset_subscription_data( $post_id, $form_id, $form_settings, $form_vars );
+
+    }
+
+    /**
+     * Returns the payment status of a post
+     *
+     * @since 2.5.9
+     *
+     * @param $post_id
+     * @return string
+     */
+
+    public function get_payment_status( $post_id ) {
+        return get_post_meta( $post_id, '_wpuf_payment_status', true);
+    }
+
+    /**
+     * Insert Free pack users to subscribers list
+     *
+     * @since 2.8.8
+     *
+     * @param $post_id
+     * @return void
+     */
+
+    public function insert_free_pack_subscribers( $pack_id, $userdata ) {
+        global $wpdb;
+
+        $subscription = wpuf()->subscription->get_subscription( $pack_id );
+        if ( $userdata->id && $subscription ) {
+
+            $user_meta = array(
+                'pack_id' => $pack_id,
+                'posts'   => $subscription->meta_value['post_type_name'],
+            );
+
+            $table_data = array(
+                'user_id'             => $userdata->id,
+                'name'                => $userdata->user->data->display_name,
+                'subscribtion_id'     => $pack_id,
+                'subscribtion_status' => 'free',
+                'gateway'             => 'free',
+                'transaction_id'      => 'free',
+                'starts_from'         => date( 'd-m-Y' ),
+                'expire'              => $user_meta['expire'] == '' ? 'recurring' : $user_meta['expire'],
+            );
+
+            $wpdb->insert( $wpdb->prefix . 'wpuf_subscribers', $table_data );
         }
     }
 

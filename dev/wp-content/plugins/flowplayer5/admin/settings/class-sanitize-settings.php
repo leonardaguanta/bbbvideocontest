@@ -5,7 +5,7 @@
  * @package   Flowplayer 5 for WordPress
  * @author    Ulrich Pogson <ulrich@pogson.ch>
  * @license   GPL-2.0+
- * @link      http://flowplayer.org/
+ * @link      https://flowplayer.org/
  * @copyright 2013 Flowplayer Ltd
  */
 
@@ -24,15 +24,8 @@ class Flowplayer5_Sanitize_Settings {
 	 * @since 2.0
 	 * @return void
 	*/
-	public function __construct() {
-
-		$this->options  = get_option( 'fp5_settings_general', array() );
-
-		add_filter( 'fp5_settings_sanitize_checkbox', array( $this, 'sanitize_checkbox' ), 10, 2 );
-		add_filter( 'fp5_settings_sanitize_text', array( $this, 'sanitize_text' ), 10, 2 );
-		add_filter( 'fp5_settings_sanitize_password', array( $this, 'sanitize_password' ), 10, 2 );
-		add_filter( 'fp5_settings_sanitize_select', array( $this, 'sanitize_select' ), 10, 2 );
-		add_filter( 'fp5_settings_sanitize_upload', array( $this, 'sanitize_upload' ), 10, 2 );
+	public function __construct( array $settings ) {
+		$this->options = $settings;
 	}
 
 	/**
@@ -71,6 +64,9 @@ class Flowplayer5_Sanitize_Settings {
 			case 'skin':
 			case 'swf':
 				$value = esc_url_raw( $value );
+				break;
+			case 'vast_redirects_global':
+				$value = intval( sanitize_text_field( $value ) );
 				break;
 			default:
 				$value = sanitize_text_field( $value );
@@ -114,7 +110,7 @@ class Flowplayer5_Sanitize_Settings {
 
 		switch ( $key ) {
 			case 'fp_version':
-				if ( ! in_array( $value, array( 'fp5', 'fp6' ), true ) ) {
+				if ( ! in_array( $value, array( 'fp7', 'fp6' ), true ) ) {
 					return false;
 				}
 				break;

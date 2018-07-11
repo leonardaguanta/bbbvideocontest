@@ -8,7 +8,6 @@ class nggLoader
 	var $version     = NGG_PLUGIN_VERSION;
 	var $dbversion   = '1.8.1';
 	var $minimum_WP  = '3.6.1';
-	var $donators    = 'http://www.nextgen-gallery.com/donators.php';
 	var $options     = '';
 	var $manage_page;
 	var $add_PHP5_notice = false;
@@ -21,7 +20,7 @@ class nggLoader
 			return;
 
 		// Determine plugin basename based on whether NGG is being used in
-		// it's legacy form, or as a Photocrati Gallery
+		// it's legacy form, or as a Photocrati-theme Gallery
 		if (defined('NGG_PLUGIN_BASENAME')) $this->plugin_name = NGG_PLUGIN_BASENAME;
 		else $this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
 
@@ -57,7 +56,7 @@ class nggLoader
 		global $nggRewrite;
 
 		// All credits to the tranlator
-		$this->translator  = '<p class="hint">'. __('<strong>Translation by : </strong><a target="_blank" href="http://www.nextgen-gallery.com/languages/">See here</a>', 'nggallery') . '</p>';
+		$this->translator  = '<p class="hint">'. __('<strong>Translation by : </strong><a target="_blank" href="https://www.imagely.com/wordpress-gallery-plugin/nextgen-pro/">See here</a>', 'nggallery') . '</p>';
 
 		// Content Filters
 		add_filter('ngg_gallery_name', 'sanitize_title');
@@ -67,15 +66,20 @@ class nggLoader
 
 			// Pass the init check or show a message
 			if (get_option( 'ngg_init_check' ) != false )
-				add_action( 'admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>' . get_option( "ngg_init_check" ) . '</strong></p></div>\';') );
+				add_action( 'admin_notices', array($this, 'output_init_check_error'));
 
 		} else {
 
 			// Add MRSS to wp_head
-			if ( $this->options['useMediaRSS'] )
+			if ( isset( $this->options['useMediaRSS'] ) && $this->options['useMediaRSS'] )
 				add_action('wp_head', array('nggMediaRss', 'add_mrss_alternate_link'));
 
 		}
+	}
+
+	function output_init_check_error()
+	{
+		echo sprintf("<div id='message' class='error'><p><strong>%s</strong></p></div>", esc_html(get_option('ngg_init_check')));
 	}
 
 	function required_version() {
@@ -88,16 +92,21 @@ class nggLoader
 		if ( ($wp_ok == FALSE) ) {
 			add_action(
 				'admin_notices',
-				create_function(
-					'',
-					'global $ngg; printf (\'<div id="message" class="error"><p><strong>\' . __(\'Sorry, NextGEN Gallery works only under WordPress %s or higher\', "nggallery" ) . \'</strong></p></div>\', $ngg->minimum_WP );'
-				)
+				array($this, 'output_minimum_wp_version_error')
 			);
 			return false;
 		}
 
 		return true;
 
+	}
+
+	function output_minimum_wp_version_error()
+	{
+		echo sprintf(
+			"<div id='message' class='error'><p><strong>%s</strong></p></div>",
+			sprintf(__("Sorry, NextGEN Gallery works only under WordPress %s or higher.", 'nggallery'), $this->minimum_WP)
+		);
 	}
 
 	function check_memory_limit() {
@@ -114,13 +123,10 @@ class nggLoader
 			$this->memory_limit = (int) substr( $this->memory_limit, 0, -1);
 
 			//This works only with enough memory, 16MB is silly, wordpress requires already 16MB :-)
-			if ( ($this->memory_limit != 0) && ($this->memory_limit < 16 ) ) {
+			if ( ($this->memory_limit != 0) && ($this->memory_limit < 32 ) ) {
 				add_action(
 					'admin_notices',
-					create_function(
-						'',
-						'echo \'<div id="message" class="error"><p><strong>' . __('Sorry, NextGEN Gallery works only with a Memory Limit of 16 MB or higher', 'nggallery') . '</strong></p></div>\';'
-					)
+					array($this, 'output_memory_limit_error')
 				);
 				return false;
 			}
@@ -128,6 +134,14 @@ class nggLoader
 
 		return true;
 
+	}
+
+	function output_memory_limit_error()
+	{
+		echo sprintf(
+			"<div id='message' class='error'><p><strong>%s</strong></p>",
+			__("Sorry, NextGEN Gallery works only with a memory limit of 32MB or higher")
+		);
 	}
 
 	function define_tables() {
@@ -199,7 +213,7 @@ class nggLoader
 
 		// Load global libraries												// average memory usage (in bytes)
 		require_once (dirname (__FILE__) . '/lib/core.php');					//  94.840
-		require_once (dirname (__FILE__) . '/lib/class.ngg_serializable.php');					//  94.840
+		require_once (dirname (__FILE__) . '/lib/class.ngg_serializable.php');
 		require_once (dirname (__FILE__) . '/lib/ngg-db.php');					// 132.400
 		require_once (dirname (__FILE__) . '/lib/image.php');					//  59.424
 		require_once (dirname (__FILE__) . '/lib/tags.php');				    // 117.136
@@ -219,12 +233,17 @@ class nggLoader
 			require_once (dirname (__FILE__) . '/lib/rewrite.php');				//  71.936
 
 			// Load backend libraries
-			if ( is_admin() ) {
+			if ( is_admin() && !$this->is_rest_url()) {
 				require_once (dirname (__FILE__) . '/admin/admin.php');
 				require_once (dirname (__FILE__) . '/admin/media-upload.php');
 				$this->nggAdminPanel = new nggAdminPanel();
 			}
 		}
+	}
+
+	function is_rest_url()
+	{
+		return strpos($_SERVER['REQUEST_URI'], 'wp-json') !== FALSE;
 	}
 
 	function load_thickbox_images() {
@@ -262,12 +281,6 @@ class nggLoader
 		if( isset($option->response[ $this->plugin_name ]) ){
 			//Clear it''s download link
 			$option->response[ $this->plugin_name ]->package = '';
-
-			//Add a notice message
-			if ($this->add_PHP5_notice == false){
-				add_action( "in_plugin_update_message-$this->plugin_name", create_function('', 'echo \'<br /><span style="color:red">Please update to PHP5.2 as soon as possible, the plugin is not tested under PHP4 anymore</span>\';') );
-				$this->add_PHP5_notice = true;
-			}
 		}
 		return $option;
 	}
@@ -287,11 +300,21 @@ class nggLoader
 
 		// If test-head query var exists hook into wp_head
 		if ( isset( $_GET['test-head'] ) )
-			add_action( 'wp_head', create_function('', 'echo \'<!--wp_head-->\';'), 99999 );
+			add_action( 'wp_head', array($this, 'output_wp_head_comment'), 99999 );
 
 		// If test-footer query var exists hook into wp_footer
 		if ( isset( $_GET['test-footer'] ) )
-			add_action( 'wp_footer', create_function('', 'echo \'<!--wp_footer-->\';'), 99999 );
+			add_action( 'wp_footer', array($this, 'output_wp_footer_comment'), 99999 );
+	}
+
+	function output_wp_head_comment()
+	{
+		echo "<!--wp_user-->";
+	}
+
+	function output_wp_footer_comment()
+	{
+		echo "<!--wp_footer-->";
 	}
 }
 

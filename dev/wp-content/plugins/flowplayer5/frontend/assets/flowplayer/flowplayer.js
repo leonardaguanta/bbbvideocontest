@@ -724,10 +724,10 @@ flowplayer.engine.flash = function(player, root) {
             flashprops = (flashvars.attr("value") || '').split("&");
 
          $.each(flashprops, function (i, prop) {
-         prop = prop.split("=");
+			prop = prop.split("=");
             if (prop[0] == "url" && prop[1] != player.video.url) {
-            flashprops[i] = "url=" + player.video.url;
-            flashvars.attr({value: flashprops.join("&")});
+			   flashprops[i] = "url=" + player.video.url;
+			   flashvars.attr({value: flashprops.join("&")});
                return false;
             }
          });
@@ -1031,17 +1031,14 @@ var createVideoTag = function(video) {
       return videoTagCache.attr({type: getType(video.type), src: video.src});
    }
    return (videoTagCache = $("<video/>", {
-            src: video.src,
-            type: getType(video.type),
-            'class': 'fp-engine',
-            'autoplay': 'autoplay',
-            preload: 'none',
-            'x-webkit-airplay': 'allow',
-            'controls': true,
-            'webkit-playsinline': true,
-            'playsinline': true
+               src: video.src,
+               type: getType(video.type),
+               'class': 'fp-engine',
+               'autoplay': 'autoplay',
+               preload: 'none',
+               'x-webkit-airplay': 'allow'
           }));
-};
+}
 
 flowplayer.engine.html5 = function(player, root) {
 
@@ -1075,10 +1072,10 @@ flowplayer.engine.html5 = function(player, root) {
             videoTag = createVideoTag(video).prependTo(root);
 
             if (!support.inlineVideo) {
-//               videoTag.css({
-//                  position: 'absolute',
-//                  top: '-9999em'
-//               });
+               videoTag.css({
+                  position: 'absolute',
+                  top: '-9999em'
+               });
             }
 
             //if (track.length) videoTag.append(track.prop("default", true));
@@ -2585,13 +2582,14 @@ flowplayer(function(player, root) {
 
    // no embedding
    if (player.conf.embed === false) return;
-  //  console.log(location);
+
    var conf = player.conf,
       ui = $(".fp-ui", root),
-      trigger = $("<a/>", { "class": "fp-embed", title: 'Share to your site'}).appendTo(ui),
+      trigger = $("<a/>", { "class": "fp-embed", title: 'Copy to your site'}).appendTo(ui),
       target = $("<div/>", { 'class': 'fp-embed-code'})
-         .append("<label>Share this video:<br> <p class='share-link'>"+$(location).attr('href')+"</p></label><br><label>Paste this HTML code on your site to embed.</label><textarea style='overflow-x:auto;height:45px;padding:0;background:#f6f6f6;color:#333;'><textarea/><br><a target='_blank' href='http://www.facebook.com/sharer.php?s=100&p[title]=&p[url]="+$(location).attr('href')+"' alt='Share this video on Facebook'><img style='width:40px;position:relative;bottom:4px;' src='https://platypus-dallas.s3.amazonaws.com/wp-content/uploads/2015/11/10183344/FB-f-Logo.png' border='0'></a><a target='_blank' href='https://twitter.com/share?url="+$(location).attr('href')+"' alt='Tweet this video'><img style='width:39px;position:relative;bottom:4px;margin-left:3px;' src='https://s3.amazonaws.com/platypus-dallas/dallas/wp-content/uploads/2016/09/20050600/twitter-logo.png' border='0'></a><a target='_blank' href='https://plus.google.com/share?url="+$(location).attr('href')+"' alt='Add to Google+'><img src='https://platypus-dallas.s3.amazonaws.com/wp-content/uploads/2015/11/10183349/btn_google.png' border='0'></a>").appendTo(ui),
+         .append("<label>Paste this HTML code on your site to embed.</label><textarea/>").appendTo(ui),
       area = $("textarea", target);
+
    player.embedCode = function() {
 
       var video = player.video,
@@ -2613,16 +2611,11 @@ flowplayer(function(player, root) {
       }
 
       // sources
-      var videoSourcePlayer = $('.fp-playlist a').not('.is-advert');
-     $.each(videoSourcePlayer, function(i, src) {
-         //var path = src.src;
-         var path = src.getAttribute('href'); 
-         if(src.type == '' && path.indexOf('.mp4')){
-            src.type = 'mp4';
-         }
-         /*if (!/^https?:/.test(src.src) && src.type !== 'flash' || !conf.rtmp) {
+      $.each(video.sources, function(i, src) {
+         var path = src.src;
+         if (!/^https?:/.test(src.src) && src.type !== 'flash' || !conf.rtmp) {
             path = $("<img/>").attr("src", src.src)[0].src;
-         }*/
+         }
          tag.append($("<source/>",
                { type: src.type != "mpegurl" ? "video/" + src.type : "application/x-mpegurl", src: path }));
       });
@@ -2651,9 +2644,8 @@ flowplayer(function(player, root) {
       area[0].select();
    });
 
-
-
 });
+
 
 $.fn.fptip = function(trigger, active) {
 
@@ -2690,4 +2682,4 @@ $.fn.fptip = function(trigger, active) {
 };
 
 }(jQuery);
-flowplayer(function(e,o){function l(e){var o=a("<a/>")[0];return o.href=e,o.hostname}var a=jQuery,r=e.conf,i=r.swf.indexOf("flowplayer.org")&&r.e&&o.data("origin"),n=i?l(i):location.hostname,t=r.key;if("file:"==location.protocol&&(n="localhost"),e.load.ed=1,r.hostname=n,r.origin=i||location.href,i&&o.addClass("is-embedded"),"string"==typeof t&&(t=t.split(/,\s*/)),t&&"function"==typeof key_check&&key_check(t,n))r.logo&&o.append(a("<a>",{"class":"fp-logo",href:i}).append(a("<img/>",{src:r.logo})));else{var s=a("<a/>").attr("href","http://flowplayer.org").appendTo(o);a(".fp-controls",o);var p=a('<div class="fp-context-menu"><ul><li class="copyright">&copy; 2014</li><li><a href="http://flowplayer.org">About Flowplayer</a></li><li><a href="http://flowplayer.org/license">GPL based license</a></li></ul></div>').appendTo(o);e.bind("pause resume finish unload",function(e,l){var r=-1;l.video.src&&a.each([["org","flowplayer","drive"],["org","flowplayer","my"]],function(e,o){return r=l.video.src.indexOf("://"+o.reverse().join(".")),-1===r}),/pause|resume/.test(e.type)&&"flash"!=l.engine&&4!=r&&5!=r?(s.show().css({position:"absolute",left:16,bottom:36,zIndex:99999,width:100,height:20,backgroundImage:"url("+[".png","logo","/",".net",".cloudfront","d32wqyuo10o653","//"].reverse().join("")+")"}),l.load.ed=s.is(":visible")&&a.contains(o[0],p[0]),l.load.ed||l.pause()):s.hide()})}});
+flowplayer(function(e,o){function l(e){var o=a("<a/>")[0];return o.href=e,o.hostname}var a=jQuery,r=e.conf,i=r.swf.indexOf("flowplayer.org")&&r.e&&o.data("origin"),n=i?l(i):location.hostname,t=r.key;if("file:"==location.protocol&&(n="localhost"),e.load.ed=1,r.hostname=n,r.origin=i||location.href,i&&o.addClass("is-embedded"),"string"==typeof t&&(t=t.split(/,\s*/)),t&&"function"==typeof key_check&&key_check(t,n))r.logo&&o.append(a("<a>",{"class":"fp-logo",href:i}).append(a("<img/>",{src:r.logo})));else{var s=a("<a/>").attr("href","https://flowplayer.org").appendTo(o);a(".fp-controls",o);var p=a('<div class="fp-context-menu"><ul><li class="copyright">&copy; 2014</li><li><a href="https://flowplayer.org">About Flowplayer</a></li><li><a href="https://flowplayer.org/license">GPL based license</a></li></ul></div>').appendTo(o);e.bind("pause resume finish unload",function(e,l){var r=-1;l.video.src&&a.each([["org","flowplayer","drive"],["org","flowplayer","my"]],function(e,o){return r=l.video.src.indexOf("://"+o.reverse().join(".")),-1===r}),/pause|resume/.test(e.type)&&"flash"!=l.engine&&4!=r&&5!=r?(s.show().css({position:"absolute",left:16,bottom:36,zIndex:99999,width:100,height:20,backgroundImage:"url("+[".png","logo","/",".net",".cloudfront","d32wqyuo10o653","//"].reverse().join("")+")"}),l.load.ed=s.is(":visible")&&a.contains(o[0],p[0]),l.load.ed||l.pause()):s.hide()})}});

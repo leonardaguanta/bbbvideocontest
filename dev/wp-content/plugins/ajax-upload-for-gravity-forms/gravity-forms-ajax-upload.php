@@ -2,7 +2,7 @@
 /*
 Plugin Name: Ajax Upload for Gravity Forms
 Description: Provides two ajax file upload fields - a single field and the ability to make a list field column an upload field.
-Version: 2.3.1
+Version: 2.8.0
 Author: Adrian Gordon
 Author URI: http://www.itsupportguides.com
 License: GPL2
@@ -41,7 +41,7 @@ if ( !class_exists('UploadHandler') && version_compare( phpversion(), '5.3', '>=
 			// get Ajax Upload options
 			$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
 
-			if ( true == rgar( $ajax_upload_options, 'exclude_special_characters' ) ) {
+			if ( rgar( $ajax_upload_options, 'exclude_special_characters' ) ) {
 				$exclude_characters = array(
 					'\\',
 					'/',
@@ -90,7 +90,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 		function __construct() {
 			// register plugin functions through 'gform_loaded' -
 			// this delays the registration until Gravity Forms has loaded, ensuring it does not run before Gravity Forms is available.
-            add_action( 'gform_loaded', array( &$this, 'register_actions' ) );
+            add_action( 'gform_loaded', array( $this, 'register_actions' ) );
 		} // END __construct
 
 		/*
@@ -111,40 +111,40 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 				require_once( plugin_dir_path( __FILE__ ).'gravity-forms-ajax-upload-addon.php' );
 
 				// ajax hook - upload file for users that are logged in
-				add_action( 'wp_ajax_itsg_ajaxupload_upload_file', array( &$this, 'itsg_ajaxupload_upload_file' ) );
+				add_action( 'wp_ajax_itsg_ajaxupload_upload_file', array( $this, 'itsg_ajaxupload_upload_file' ) );
 
 				// ajax hook - upload file for users that are not logged in
-				add_action( 'wp_ajax_nopriv_itsg_ajaxupload_upload_file', array( &$this, 'itsg_ajaxupload_upload_file' ) );
+				add_action( 'wp_ajax_nopriv_itsg_ajaxupload_upload_file', array( $this, 'itsg_ajaxupload_upload_file' ) );
 
 				// get Ajax Upload options
 				$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
 
 				// ajax hook - delete file for users that are logged in
-				if ( true == rgar( $ajax_upload_options, 'allowdelete' ) ) {
-					add_action( 'wp_ajax_itsg_ajaxupload_delete_file', array( &$this, 'itsg_ajaxupload_delete_file' ) );
+				if ( rgar( $ajax_upload_options, 'allowdelete' ) ) {
+					add_action( 'wp_ajax_itsg_ajaxupload_delete_file', array( $this, 'itsg_ajaxupload_delete_file' ) );
 				}
 
 				// ajax hook - delete file for users that are not logged in
-				if ( true == rgar( $ajax_upload_options, 'allownoprivdelete' ) ) {
-					add_action( 'wp_ajax_nopriv_itsg_ajaxupload_delete_file', array( &$this, 'itsg_ajaxupload_delete_file' ) );
+				if ( rgar( $ajax_upload_options, 'allownoprivdelete' ) ) {
+					add_action( 'wp_ajax_nopriv_itsg_ajaxupload_delete_file', array( $this, 'itsg_ajaxupload_delete_file' ) );
 				}
 
 				// handles the change upload path settings
-				add_filter( 'gform_upload_path', array( &$this, 'change_upload_path' ), 999, 2 );
+				add_filter( 'gform_upload_path', array( $this, 'change_upload_path' ), 999, 2 );
 
-				add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), array( &$this, 'plugin_action_links' ) );
+				add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), array( $this, 'plugin_action_links' ) );
 
 				// woocommerce fix
-				add_filter( 'woocommerce_gforms_strip_meta_html', array( &$this, 'configure_woocommerce_gforms_strip_meta_html' ), 5, 10 );
+				add_filter( 'woocommerce_gforms_strip_meta_html', array( $this, 'configure_woocommerce_gforms_strip_meta_html' ), 5, 10 );
 
 				// attach to notification
-				add_filter('gform_notification', array( &$this, 'notification_attachments' ), 10, 3 );
+				add_filter( 'gform_notification', array( $this, 'notification_attachments' ), 10, 3 );
 
-				add_filter( 'gform_notification_ui_settings', array( &$this, 'notification_setting' ), 10, 3 );
+				add_filter( 'gform_notification_ui_settings', array( $this, 'notification_setting' ), 10, 3 );
 
-				add_filter( 'gform_pre_notification_save', array( &$this, 'notification_save' ), 10, 2 );
+				add_filter( 'gform_pre_notification_save', array( $this, 'notification_save' ), 10, 2 );
 
-				add_action( 'gform_entry_info', array( &$this, 'entry_download_attachments_button' ), 10, 2 );
+				add_action( 'gform_entry_info', array( $this, 'entry_download_attachments_button' ), 10, 2 );
 
 				add_action( 'init', array( $this, 'maybe_process_zip_url' ) );
 
@@ -159,15 +159,15 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 
 				}
 
-				add_action( 'gform_entries_first_column_actions', array ( &$this, 'first_column_actions' ), 10, 4 );
+				add_action( 'gform_entries_first_column_actions', array ( $this, 'first_column_actions' ), 10, 4 );
 
 				// patch to allow JS and CSS to load when loading forms through wp-ajax requests
-				add_action( 'gform_enqueue_scripts', array( &$this, 'enqueue_scripts' ), 90, 2 );
+				add_action( 'gform_enqueue_scripts', array( $this, 'enqueue_scripts' ), 90, 2 );
 
 			}
 		} // END register_actions
 
-		/**
+	/**
 	 * BEGIN: patch to allow JS and CSS to load when loading forms through wp-ajax requests
 	 *
 	 */
@@ -177,7 +177,9 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
          */
 		public function enqueue_scripts( $form, $is_ajax ) {
 			if ( $this->requires_scripts( $form, $is_ajax ) ) {
-				$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+				$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
+
+				$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) || rgar( $ajax_upload_options, 'displayscripterrors' ) ? '' : '.min';
 
 				wp_enqueue_script( 'gform_jquery_ui_widget', plugins_url( '/js/jquery.ui.widget.js', __FILE__ ), array( 'jquery' ) );
 				wp_enqueue_script( 'gform_jquery_iframe', plugins_url( '/js/jquery.iframe-transport.js', __FILE__ ), array( 'jquery' ) );
@@ -218,10 +220,11 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 
 			$settings_array = array(
 				'ajax_url' => admin_url('admin-ajax.php'),
-				'allowdelete' => ( is_user_logged_in() && true == rgar( $ajax_upload_options, 'allowdelete' ) ) || ( !is_user_logged_in() && true == rgar( $ajax_upload_options, 'allownoprivdelete' ) ),
+				'allowdelete' => ( is_user_logged_in() && rgar( $ajax_upload_options, 'allowdelete' ) ) || ( !is_user_logged_in() && rgar( $ajax_upload_options, 'allownoprivdelete' ) ),
 				'form_id' => $form_id,
 				'entry_user_id' => $entry_user_id,
 				'thumbnail_enable' => rgar( $ajax_upload_options, 'thumbnail_enable' ),
+				'thumbnail_file_name_enable' => rgar( $ajax_upload_options, 'thumbnail_file_name_enable' ),
 				'thumbnail_width' => floatval( rgar( $ajax_upload_options, 'thumbnail_width' ) ),
 				'file_chunk_size' => floatval( rgar( $ajax_upload_options, 'file_chunk_size' ) ) * 1024 * 1024,
 				'file_size_kb' => floatval( rgar( $ajax_upload_options, 'filesize' ) ) * 1024 * 1024,
@@ -245,6 +248,9 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 				'text_error_timeout' => esc_js( __( 'Time out error.', 'ajax-upload-for-gravity-forms' ) ),
 				'text_error_uncaught' => esc_js( __( 'Uncaught Error.\n', 'ajax-upload-for-gravity-forms' ) ),
 				'text_line_number' => esc_js( __( 'Line Number', 'ajax-upload-for-gravity-forms' ) ),
+				'text_only_one_file_message' => esc_js( __( 'Error: only 1 file can be uploaded at a time.', 'ajax-upload-for-gravity-forms' ) ),
+				'apostrophe_error_enable' => rgar( $ajax_upload_options, 'apostrophe_error_enable' ),
+				'text_apostrophe_error_message' => esc_js( __( "Error: file name contains an apostrophe/quote (&lsquo;). Remove apostrophe/quote (&lsquo;) from file name and try again.", 'ajax-upload-for-gravity-forms' ) ),
 				'is_entry_detail' => $is_entry_detail ? $is_entry_detail : 0,
 			);
 
@@ -274,7 +280,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 
 			$url = $this->get_zip_url( $entry );
 			if ( ! is_Null ( $url ) ) {
-				echo "| <span><a href=\"{$this->get_zip_url( $entry )}\">". __( 'Download File(s)', 'ajax-upload-for-gravity-forms' ) ."</a></span>";
+				echo "| <span><a href=\"{$url}\">". __( 'Download File(s)', 'ajax-upload-for-gravity-forms' ) ."</a></span>";
 			}
 		} // END first_column_actions
 
@@ -313,10 +319,13 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 			$uploaded_files = (array) $this->get_uploaded_files( $fileupload_fields, $entry );
 
 			if ( sizeof( $uploaded_files ) >= 1 ) {
+				printf( '<h4>%s</h4>',
+					esc_html__( 'Uploaded File(s)', 'ajax-upload-for-gravity-forms' )
+				);
+
 				$url =  $this->get_zip_url( $entry );
 				if ( !is_Null( $url) ) {
-					printf( '<h4>%s</h4>%s<br><br>',
-						esc_html__( 'Uploaded File(s)', 'ajax-upload-for-gravity-forms' ),
+					printf( '%s<br><br>',
 						sprintf( "<a href='{$url}' class='button'>%s</a>",
 							esc_html__( 'Download ZIP', 'ajax-upload-for-gravity-forms' )
 						)
@@ -326,7 +335,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 				foreach ( $uploaded_files as $field_id => $uploaded_file ) {
 					foreach ( $form['fields'] as $field ) {
 						$links = array();
-						if ( $field_id == $field['id'] ) {
+						if ( $field_id == $field->id ) {
 							$field_label = $field->label;
 
 							if( 0 == strlen( $field_label ) ) {
@@ -335,18 +344,19 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 
 							foreach ( $uploaded_file as $file_url ) {
 								if ( GFCommon::is_valid_url( $file_url ) ) {
-									$file_name = pathinfo( $file_url, PATHINFO_FILENAME ) . '.' . pathinfo( $file_url, PATHINFO_EXTENSION );  // get the file name
+									$file_name = pathinfo( $file_url, PATHINFO_BASENAME );  // get the file name out of the URL
+									$file_name = parse_url( $file_name );
+									$file_name = $file_name['path'];
+									$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
 
 									$file_url = $this->get_download_url( $file_url, false, $field );
-
-									$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
 
 									$links[] = "<li><a href='{$file_url}' target='_blank' >{$file_name_decode}</a></li>";
 								}
 
 							}
 							if ( sizeof( $links ) >= 1 ) {
-								printf( '<em>%s</em><ul>%s</ul><br>', esc_html( $field_label ), implode ( $links ) );
+								printf( '<em>%s</em><ul style="overflow-wrap: break-word;">%s</ul><br>', esc_html( $field_label ), implode ( $links ) );
 							}
 						}
 					}
@@ -378,7 +388,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 
 			if ( sizeof( $uploaded_files ) >= 1 ) {
 
-				$zip_file = $this->create_zip_file( $form, $entry_id, $uploaded_files );
+				$zip_file = $this->create_zip_file( $form, $entry_id, $uploaded_files, $notification = null );
 
 				$delete_after_download = true;
 
@@ -387,10 +397,11 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 			}
 		} // END process_zip_download
 
-		function create_zip_file( $form, $entry_id, $uploaded_files ) {
+		function create_zip_file( $form, $entry_id, $uploaded_files, $notification ) {
 			$form_id = $form['id'];
+			$entry = GFAPI::get_entry( $entry_id );
 			$upload_root = RGFormsModel::get_upload_root();
-			$zip_file_name = $this->get_zip_file_name( $form_id, $entry_id );
+			$zip_file_name = $this->get_zip_file_name( $form_id, $entry_id, $form, $entry, $notification );
 
 			$zip = new ZipArchive();
 			$zip_file = $upload_root . '/'. $zip_file_name;
@@ -401,7 +412,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 			foreach ( $uploaded_files as $field_id => $uploaded_file ) {
 				foreach ( $form['fields'] as $field ) {
 					$links = array();
-					if ( $field_id == $field['id'] ) {
+					if ( $field_id == $field->id ) {
 						$field_label = $field->label;
 						// remove non-english characters
 						$field_label = preg_replace( '/[^A-Za-z0-9 ]/', '', $field_label );
@@ -419,13 +430,15 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 
 						foreach ( $uploaded_file as $file_url ) {
 							if ( GFCommon::is_valid_url( $file_url ) ) {
-								$file_name = pathinfo( $file_url, PATHINFO_FILENAME ) . '.' . pathinfo( $file_url, PATHINFO_EXTENSION );  // get the file name
+								$file_name = pathinfo( $file_url, PATHINFO_BASENAME );  // get the file name out of the URL
+								$file_name = parse_url( $file_name );
+								$file_name = $file_name['path'];
 								$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
 								//$attachment = $target_path['dirname'] . '/' . $file_name_decode;
-								$attachment = $_SERVER['DOCUMENT_ROOT'] . parse_url( rawurldecode( $file_url ), PHP_URL_PATH);
+								$attachment = $_SERVER['DOCUMENT_ROOT'] . parse_url( rawurldecode( $file_url ), PHP_URL_PATH );
 								$upload_dir = wp_upload_dir();
 
-								$file_in_upload_dir = substr($upload_dir['basedir'], 0, strlen($attachment)) === $upload_dir['basedir'];
+								$file_in_upload_dir = substr( $upload_dir['basedir'], 0, strlen( $attachment ) ) === $upload_dir['basedir'];
 
 								if ( is_file( $attachment ) && $file_in_upload_dir ) {
 									$new_filename = substr( $attachment, strrpos( $attachment, '/' ) + 1 );
@@ -521,37 +534,63 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 		} // END readfile_chunked
 
 		function notification_setting( $ui_settings, $notification, $form ) {
-			$setting_title = __( 'Ajax Upload', 'ajax-upload-for-gravity-forms' );
-			$setting_option_include = __( 'Include uploads in notification', 'ajax-upload-for-gravity-forms' );
-			$setting_option_delete = __( 'Delete files after notification sent', 'ajax-upload-for-gravity-forms' );
+			if ( 'form_saved' != rgar( $notification, 'event' ) && 'form_save_email_requested' != rgar( $notification, 'event' ) ) {
+				$setting_title = __( 'Ajax Upload', 'ajax-upload-for-gravity-forms' );
+				$setting_option_include = __( 'Include uploads in notification', 'ajax-upload-for-gravity-forms' );
+				$setting_option_include_zip = __( 'Zip uploads', 'ajax-upload-for-gravity-forms' );
+				$setting_option_include_filename = __( 'Zip file name', 'ajax-upload-for-gravity-forms' );
+				$setting_option_delete = __( 'Delete files after notification sent', 'ajax-upload-for-gravity-forms' );
 
-			$value = empty( $notification['itsg_ajaxupload_include_files_email'] ) ? '' : "checked='checked'";
-			$ui_settings['itsg_ajaxupload_include_files_email'] = '
-				<tr>
-					<th scope="row">
-						<label for="itsg_ajaxupload_include_files_email">'. $setting_title .'</label>
-					</th>
-					<td>
-						<input id="itsg_ajaxupload_include_files_email" type="checkbox" '. $value .' value="1" name="itsg_ajaxupload_include_files_email">
-						<label class="inline" for="itsg_ajaxupload_include_files_email">'. $setting_option_include .'</label>
-					</td>
-				</tr>';
-			$value = empty( $notification['itsg_ajaxupload_delete_files_submit'] ) ? '' : "checked='checked'";
-			$ui_settings['itsg_ajaxupload_delete_files_submit'] = '
-				<tr>
-					<th scope="row"></th>
-					<td>
-						<input id="itsg_ajaxupload_delete_files_submit" type="checkbox" '. $value .' value="1" name="itsg_ajaxupload_delete_files_submit">
-						<label class="inline" for="itsg_ajaxupload_delete_files_submit">'. $setting_option_delete .'</label>
-					</td>
-				</tr>';
+				$value = empty( $notification['itsg_ajaxupload_include_files_email'] ) ? '' : "checked='checked'";
+				$ui_settings['itsg_ajaxupload_include_files_email'] = '
+					<tr>
+						<th scope="row">
+							<label for="itsg_ajaxupload_include_files_email">'. $setting_title .'</label>
+						</th>
+						<td>
+							<input id="itsg_ajaxupload_include_files_email" type="checkbox" '. $value .' name="itsg_ajaxupload_include_files_email">
+							<label class="inline" for="itsg_ajaxupload_include_files_email">'. $setting_option_include .'</label>
+						</td>
+					</tr>';
+				$value = empty( $notification['itsg_ajaxupload_include_files_email'] ) || 'on' !== rgar( $notification, 'itsg_ajaxupload_include_files_zip_email') && isset( $notification['itsg_ajaxupload_include_files_zip_email'] ) ? '' : "checked='checked'";
+				$ui_settings['itsg_ajaxupload_include_files_zip_email'] = '
+					<tr>
+						<th scope="row"></th>
+						<td>
+							<input id="itsg_ajaxupload_include_files_zip_email" type="checkbox" '. $value .' name="itsg_ajaxupload_include_files_zip_email">
+							<label class="inline" for="itsg_ajaxupload_include_files_zip_email">'. $setting_option_include_zip .'</label>
+						</td>
+					</tr>';
+				
+				$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
+				$zip_file_name = rgar( $ajax_upload_options, 'zip_file_name' );
+				$value = empty( $notification['itsg_ajaxupload_include_files_email_filename'] ) ? $zip_file_name : $notification['itsg_ajaxupload_include_files_email_filename'];
+				$ui_settings['itsg_ajaxupload_include_files_email_filename'] = '
+					<tr>
+						<th scope="row"></th>
+						<td><label class="inline" for="itsg_ajaxupload_include_files_email_filename" style="font-weight:600;" >'. $setting_option_include_filename .'</label><br>
+							<input id="itsg_ajaxupload_include_files_email_filename" class="merge-tag-support mt-hide_all_fields fieldwidth-2" type="text" value="'. $value .'" name="itsg_ajaxupload_include_files_email_filename">
+						</td>
+					</tr>';
+				$value = empty( $notification['itsg_ajaxupload_delete_files_submit'] ) ? '' : "checked='checked'";
+				$ui_settings['itsg_ajaxupload_delete_files_submit'] = '
+					<tr>
+						<th scope="row"></th>
+						<td>
+							<input id="itsg_ajaxupload_delete_files_submit" type="checkbox" '. $value .' name="itsg_ajaxupload_delete_files_submit">
+							<label class="inline" for="itsg_ajaxupload_delete_files_submit">'. $setting_option_delete .'</label>
+						</td>
+					</tr>';
+			}
 
 			return $ui_settings;
 		} // END notification_setting
 
 		function notification_save( $notification, $form ) {
 			$notification['itsg_ajaxupload_include_files_email'] = rgpost( 'itsg_ajaxupload_include_files_email' );
+			$notification['itsg_ajaxupload_include_files_zip_email'] = rgpost( 'itsg_ajaxupload_include_files_zip_email' );
 			$notification['itsg_ajaxupload_delete_files_submit'] = rgpost( 'itsg_ajaxupload_delete_files_submit' );
+			$notification['itsg_ajaxupload_include_files_email_filename'] = rgpost( 'itsg_ajaxupload_include_files_email_filename' );
 			return $notification;
 		} // END notification_save
 
@@ -594,6 +633,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 		public static function itsg_ajaxupload_upload_file() {
 			// get form_id from post request
 			$form_id = isset( $_POST['form_id'] ) ? $_POST['form_id'] : null;
+			$field_id = isset( $_POST['field_id'] ) ? $_POST['field_id'] : null;
 
 			// get target path - also responsible for creating directories if path doesnt exist
 			$target = GFFormsModel::get_file_upload_path( $form_id, null );
@@ -601,7 +641,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 			$target_url = pathinfo( $target['url'] );
 
 			// get Ajax Upload options
-			$ajax_upload_options = apply_filters( 'itsg_gf_ajaxupload_options', ITSG_GF_AjaxUpload::get_options(), $form_id );
+			$ajax_upload_options = apply_filters( 'itsg_gf_ajaxupload_options', ITSG_GF_AjaxUpload::get_options(), $form_id, $field_id );
 
 			// calculate file size in KB from MB
 			$file_size = $ajax_upload_options['filesize'];
@@ -624,7 +664,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 				'max_file_size' => $file_size_kb
 			);
 
-			if( true == rgar( $ajax_upload_options, 'thumbnail_enable' ) ) {
+			if( rgar( $ajax_upload_options, 'thumbnail_enable' ) ) {
 				$options['image_versions']['thumbnail'] = array(
 					'max_width' => $ajax_upload_options['thumbnail_width'],
 					'max_height' => $ajax_upload_options['thumbnail_height'],
@@ -657,7 +697,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 				$attach_id = wp_insert_attachment( $attachment, $media_srv_path, 0 );
 
 				// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it
-				require_once(ABSPATH . 'wp-admin/includes/image.php');
+				require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
 				// Generate the metadata for the attachment, and update the database record
 				$attach_data = wp_generate_attachment_metadata($attach_id, $media_srv_path);
@@ -674,11 +714,19 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 			// terminate the function
 			$upload_hander_response = get_object_vars( $upload_handler );
 			$upload_file['files'] =  $upload_hander_response['response']['files'];
-			die( json_encode($upload_file) );
+
+			$upload_file = apply_filters( 'itsg_gf_ajaxupload_response', $upload_file, $form_id, $field_id );
+
+			//length or false if no buffer - clean buffer
+			if ( ob_get_length() ) {
+				ob_clean();
+			}
+
+			die( json_encode( $upload_file ) );
 		} // END itsg_ajaxupload_upload_file
 
 		function notification_attachments( $notification, $form, $entry ) {
-			if( true == rgar( $notification, 'itsg_ajaxupload_include_files_email') ) {
+			if( rgar( $notification, 'isActive') && rgar( $notification, 'itsg_ajaxupload_include_files_email') ) {
 				$form_id = $form['id'];
 				$entry_id = $entry['id'];
 
@@ -693,9 +741,26 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 
 				if ( sizeof( $uploaded_files ) >= 1 ) {
 
-					$zip_file = $this->create_zip_file( $form, $entry_id, $uploaded_files );
+					if ( class_exists( 'ZipArchive' ) && ! ( 'on' !== rgar( $notification, 'itsg_ajaxupload_include_files_zip_email') && isset( $notification['itsg_ajaxupload_include_files_zip_email'] ) ) ) {
+						$zip_file = $this->create_zip_file( $form, $entry_id, $uploaded_files, $notification );
+						$attachments[] = $zip_file;
+					} else {
 
-					$attachments[] = $zip_file;
+						$target = GFFormsModel::get_file_upload_path( $form_id, null );
+						$target_path = pathinfo( $target['path'] );
+						foreach ( $uploaded_files as $field_id => $uploaded_file ) {
+							foreach ( $uploaded_file as $file_url ) {
+								if ( GFCommon::is_valid_url( $file_url ) ) {
+									$file_name = pathinfo( $file_url, PATHINFO_BASENAME );  // get the file name
+									$file_name = parse_url( $file_name );
+									$file_name = $file_name['path'];
+									$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
+									$attachment = $target_path['dirname'] . '/' . $file_name_decode;
+									$attachments[] = $attachment;
+								}
+							}
+						}
+					}
 				}
 
 				if ( $notification['itsg_ajaxupload_delete_files_submit'] ) {
@@ -706,6 +771,8 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 						foreach ( $uploaded_file as $file_url ) {
 							if ( GFCommon::is_valid_url( $file_url ) ) {
 								$file_name = pathinfo( $file_url, PATHINFO_BASENAME );  // get the file name
+								$file_name = parse_url( $file_name );
+								$file_name = $file_name['path'];
 								$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
 								$attachment = $target_path['dirname'] . '/' . $file_name_decode;
 								if ( is_file( $attachment ) ) {
@@ -720,7 +787,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 					}
 				}
 
-				add_filter( 'gform_confirmation', array( &$this, 'remove_zip_attachment' ), 10, 4 );
+				add_filter( 'gform_confirmation', array( $this, 'remove_zip_attachment' ), 10, 4 );
 
 				$notification['attachments'] = $attachments;
 			}
@@ -729,17 +796,21 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 		} // END notification_attachments
 
 		function remove_zip_attachment( $confirmation, $form, $entry, $ajax ) {
-			$form_id = $form['id'];
-			$entry_id = $entry['id'];
+			foreach ( $form['notifications'] as $notification ) {
+				if( rgar( $notification, 'isActive') && rgar( $notification, 'itsg_ajaxupload_include_files_email') ) {
+					$form_id = $form['id'];
+					$entry_id = $entry['id'];
 
-			$upload_root = RGFormsModel::get_upload_root();
+					$upload_root = RGFormsModel::get_upload_root();
 
-			$zip_file_name = $this->get_zip_file_name( $form_id, $entry_id );
+					$zip_file_name = $this->get_zip_file_name( $form_id, $entry_id, $form, $entry, $notification );
 
-			$zip_file = $upload_root . '/'. $zip_file_name;
+					$zip_file = $upload_root . '/'. $zip_file_name;
 
-			if ( is_file( $zip_file ) ) {
-				unlink( $zip_file );
+					if ( is_file( $zip_file ) ) {
+						unlink( $zip_file );
+					}
+				}
 			}
 			return $confirmation;
 		} // END remove_zip_attachment
@@ -748,12 +819,12 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 			$uploaded_files = array();
 			foreach( $fileupload_fields as $field ) {
 				$uploaded_file = array();
-				if ( 'list' == $field['type'] ) {
-					$has_columns = is_array( $field['choices'] );
+				if ( 'list' == $field->get_input_type() ) {
+					$has_columns = is_array( $field->choices );
 						if ( $has_columns ) {
-							$number_of_columns = sizeof( $field['choices'] );
+							$number_of_columns = sizeof( $field->choices );
 							$column_number = 0;
-							$value = unserialize( $entry[ $field['id'] ] );
+							$value = unserialize( $entry[ $field->id ] );
 							if ( is_array( $value ) ) {
 								foreach( $value as $row_number => $row_array ) {
 									foreach( $row_array as $column_value ) {
@@ -771,11 +842,11 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 									}
 								}
 								if ( sizeof( $uploaded_file ) >= 1 ) {
-									$uploaded_files[ $field['id'] ] = $uploaded_file;
+									$uploaded_files[ $field->id ] = $uploaded_file;
 								}
 							}
-						} elseif ( true == rgar( $field, 'itsg_list_field_ajaxupload' ) ) {
-							$value = unserialize( $entry[ $field['id'] ] );
+						} elseif ( $field->itsg_list_field_ajaxupload ) {
+							$value = unserialize( $entry[ $field->id ] );
 							if ( is_array( $value ) ) {
 								foreach( $value as $key => $column_value ) {
 									$value = $column_value;
@@ -784,38 +855,41 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 									}
 								}
 								if ( sizeof( $uploaded_file ) >= 1 ) {
-									$uploaded_files[ $field['id'] ] = $uploaded_file;
+									$uploaded_files[ $field->id ] = $uploaded_file;
 								}
 							}
 						}
-				} elseif ( 'itsg_single_ajax' == $field['type'] ) {
-					$value = $entry[ $field['id'] ];
+				} elseif ( 'itsg_single_ajax' == $field->get_input_type() ) {
+					$value = $entry[ $field->id ];
 					if ( ! empty( $value ) && GFCommon::is_valid_url( $value ) ) {
 						$uploaded_file[] = $value;
 					}
 					if ( sizeof( $uploaded_file ) >= 1 ) {
-						$uploaded_files[ $field['id'] ] = $uploaded_file;
+						$uploaded_files[ $field->id ] = $uploaded_file;
 					}
 				}
 			}
 			return $uploaded_files;
 		} // END get_uploaded_files
 
-		function get_zip_file_name( $form_id, $entry_id ) {
+		function get_zip_file_name( $form_id, $entry_id, $form, $entry, $notification ) {
 			$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
-			$zip_file_name = rgar( $ajax_upload_options, 'zip_file_name' );
+			$nofification_file_name = rgar( $notification, 'itsg_ajaxupload_include_files_email_filename' );
+			$zip_file_name = $nofification_file_name ? $nofification_file_name : rgar( $ajax_upload_options, 'zip_file_name' );
 
 			// check for tags
+			$zip_file_name = str_replace( '{all_fields}', '', $zip_file_name );
 
+			$zip_file_name = GFCommon::replace_variables( $zip_file_name, $form, $entry, false, false, false );
 			// if {form_id} keyword used, replace with current form id
-			if ( false !== strpos( $zip_file_name,'{form_id}' ) ) {
-				$zip_file_name = str_replace( '{form_id}', $form_id, $zip_file_name );
-			}
+			//if ( false !== strpos( $zip_file_name,'{form_id}' ) ) {
+			//	$zip_file_name = str_replace( '{form_id}', $form_id, $zip_file_name );
+			//}
 
 			// if {entry_id} keyword used, replace with current form id
-			if ( false !== strpos( $zip_file_name,'{entry_id}' ) ) {
-				$zip_file_name = str_replace( '{entry_id}', $entry_id, $zip_file_name );
-			}
+			//if ( false !== strpos( $zip_file_name,'{entry_id}' ) ) {
+			//	$zip_file_name = str_replace( '{entry_id}', $entry_id, $zip_file_name );
+			//}
 
 			// if {timestamp} keyword used, replace with current form id
 			if ( false !== strpos( $zip_file_name,'{timestamp}' ) ) {
@@ -823,10 +897,23 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 			}
 
 			// make sure file name doesn't include .zip - this is added below
-			$zip_file_name  = str_replace( '.zip', '', $zip_file_name );
+			$zip_file_name = str_replace( '.zip', '', $zip_file_name );
+
+			// Decode HTML entities
+			$zip_file_name = wp_specialchars_decode( $zip_file_name, ENT_QUOTES );
+
+			// Remove any characters that cannot be present in a filename
+			$characters = array( '/', '\\', '"', '*', '?', '|', ':', '<', '>' );
+			$zip_file_name =  str_replace( $characters, '', $zip_file_name );
 
 			// clean file name of any unsupported characters
 			$zip_file_name = mb_ereg_replace( '([^\w\s\d\-_~,;\[\]\(\).])', '', $zip_file_name );
+
+			$zip_file_name = trim( $zip_file_name );
+
+			if ( empty( $zip_file_name ) ) {
+				$zip_file_name = $entry_id;
+			}
 
 			return $zip_file_name . '.zip';
 		} // END get_zip_file_name
@@ -1008,9 +1095,11 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 		 */
 		public static function return_bytes( $val ) {
 			$val = trim( $val );
-			$last = strtolower( $val[strlen($val)-1] );
+			$last = strtolower( $val[strlen( $val )-1] );
 
-			switch($last) {
+			$val = intval( $val );
+
+			switch( $last ) {
 				case 'g':
 					$val *= 1024;
 				case 'm':
@@ -1040,19 +1129,19 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
          * Warning message if Gravity Forms is installed and enabled
          */
 		public static function admin_warnings() {
-			if ( !self::is_gravityforms_installed() ) {
+			if ( ! self::is_gravityforms_installed() ) {
 				printf(
 					'<div class="error"><h3>%s</h3><p>%s</p><p>%s</p></div>',
 						__( 'Warning', 'ajax-upload-for-gravity-forms' ),
-						sprintf ( __( 'The plugin %s requires Gravity Forms to be installed.', 'ajax-upload-for-gravity-forms' ), '<strong>'.self::$name.'</strong>' ),
+						sprintf ( __( 'The plugin %s requires Gravity Forms to be installed.', 'ajax-upload-for-gravity-forms' ), '<strong>'. self::$name .'</strong>' ),
 						sprintf ( esc_html__( 'Please %sdownload the latest version of Gravity Forms%s and try again.', 'ajax-upload-for-gravity-forms' ), '<a href="https://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=299380" target="_blank">', '</a>' )
 				);
 			}
-			if ( !version_compare( phpversion(), '5.3', '>=' ) ) {
+			if ( ! version_compare( phpversion(), '5.3', '>=' ) ) {
 				printf(
 					'<div class="error"><h3>%s</h3><p>%s</p><p>%s</p></div>',
 						__( 'Warning', 'ajax-upload-for-gravity-forms' ),
-						sprintf ( __( 'The plugin %s requires PHP version 5.3 or higher.', 'ajax-upload-for-gravity-forms' ), '<strong>'.self::$name.'</strong>' ),
+						sprintf ( __( 'The plugin %s requires PHP version 5.3 or higher.', 'ajax-upload-for-gravity-forms' ), '<strong>'. self::$name .'</strong>' ),
 						sprintf( __( 'You are running an PHP version %s. Contact your web hosting provider to update.', 'ajax-upload-for-gravity-forms' ), phpversion() )
 				);
 			}
@@ -1062,14 +1151,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
          * Check if GF is installed
          */
         private static function is_gravityforms_installed() {
-			if ( !function_exists( 'is_plugin_active' ) || !function_exists( 'is_plugin_active_for_network' ) ) {
-				require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-			}
-			if ( is_multisite() ) {
-				return ( is_plugin_active_for_network( 'gravityforms/gravityforms.php' ) || is_plugin_active( 'gravityforms/gravityforms.php' ) );
-			} else {
-				return is_plugin_active( 'gravityforms/gravityforms.php' );
-			}
+			return class_exists( 'GFCommon' );
         } // END is_gravityforms_installed
 
 		/*
@@ -1087,18 +1169,18 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
          * Checks if field is Ajax Upload enabled - single or list field
          */
 		public function is_ajaxupload_field( $field ) {
-			$field_type = $this->get_type( $field );
+			$field_type = $field->get_input_type();
 			if ( 'itsg_single_ajax' == $field_type ) {
 				return true;
-			} elseif ( 'list' == $field['type'] ) {
+			} elseif ( 'list' == $field_type ) {
 				$has_columns = is_array( $field->choices );
 				if ( $has_columns ) {
-					foreach( $field['choices'] as $choice ){
-						if ( true  ==  rgar( $choice, 'isAjaxUpload' ) ) {
+					foreach( $field->choices as $choice ){
+						if ( rgar( $choice, 'isAjaxUpload' ) ) {
 							return true;
 						}
 					}
-				} elseif ( 'on' == rgar( $field, 'itsg_list_field_ajaxupload' ) ) {
+				} elseif ( 'on' == $field->itsg_list_field_ajaxupload ) {
 					return true;
 				}
 			}
@@ -1111,7 +1193,7 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 		private function get_type( $field ) {
 			$type = '';
 			if ( array_key_exists( 'type', $field ) ) {
-				$type = $field['type'];
+				$type = $field->type;
 				if ( 'post_custom_field' == $type ) {
 					if ( array_key_exists( 'inputType', $field ) ) {
 						$type = $field['inputType'];
@@ -1180,11 +1262,15 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload' ) ) {
 		} // END get_download_url
 
 		public function get_zip_url( $entry ) {
+			if ( ! class_exists( 'ZipArchive' ) ) {
+				return;
+			}
+
 			$form_id = rgar( $entry, 'form_id' );
 			$entry_id = rgar( $entry, 'id' );
 			$form = GFAPI::get_form( $form_id, true );
 
-			$zip_file_name = $this->get_zip_file_name( $form_id, $entry_id );
+			$zip_file_name = $this->get_zip_file_name( $form_id, $entry_id, $form, $entry, $notification = null );
 			$target = GFFormsModel::get_file_upload_path( $form_id, $zip_file_name );
 
 			$file = $zip_file_name;

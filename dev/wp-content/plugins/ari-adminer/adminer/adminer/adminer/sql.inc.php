@@ -21,9 +21,10 @@ if (!$error && $_POST) {
 	if (!isset($_GET["import"])) {
 		$query = $_POST["query"];
 	} elseif ($_POST["webfile"]) {
-		$fp = @fopen((file_exists("adminer.sql")
-			? "adminer.sql"
-			: "compress.zlib://adminer.sql.gz"
+		$sql_file_path = $adminer->importServerPath();
+		$fp = @fopen((file_exists($sql_file_path)
+			? $sql_file_path
+			: "compress.zlib://$sql_file_path.gz"
 		), "rb");
 		$query = ($fp ? fread($fp, 1e6) : false);
 	} else {
@@ -116,9 +117,6 @@ if (!$error && $_POST) {
 
 							do {
 								$result = $connection->store_result();
-								$time = " <span class='time'>(" . format_time($start) . ")</span>"
-									. (strlen($q) < 1000 ? " <a href='" . h(ME) . "sql=" . urlencode(trim($q)) . "'>" . lang('Edit') . "</a>" : "") // 1000 - maximum length of encoded URL in IE is 2083 characters
-								;
 
 								if ($connection->error) {
 									echo ($_POST["only_errors"] ? $print : "");
@@ -128,41 +126,54 @@ if (!$error && $_POST) {
 										break 2;
 									}
 
-								} elseif (is_object($result)) {
-									$limit = $_POST["limit"];
-									$orgtables = select($result, $connection2, array(), $limit);
-									if (!$_POST["only_errors"]) {
-										echo "<form action='' method='post'>\n";
-										$num_rows = $result->num_rows;
-										echo "<p>" . ($num_rows ? ($limit && $num_rows > $limit ? lang('%d / ', $limit) : "") . lang('%d row(s)', $num_rows) : "");
-										echo $time;
-										$id = "export-$commands";
-										$export = ", <a href='#$id' onclick=\"return !toggle('$id');\">" . lang('Export') . "</a><span id='$id' class='hidden'>: "
-											. html_select("output", $adminer->dumpOutput(), $adminer_export["output"]) . " "
-											. html_select("format", $dump_format, $adminer_export["format"])
-											. "<input type='hidden' name='query' value='" . h($q) . "'>"
-											. " <input type='submit' name='export' value='" . lang('Export') . "'><input type='hidden' name='token' value='$token'></span>\n"
-										;
-										if ($connection2 && preg_match("~^($space|\\()*+SELECT\\b~i", $q) && ($explain = explain($connection2, $q))) {
-											$id = "explain-$commands";
-											echo ", <a href='#$id' onclick=\"return !toggle('$id');\">EXPLAIN</a>$export";
-											echo "<div id='$id' class='hidden'>\n";
-											select($explain, $connection2, $orgtables);
-											echo "</div>\n";
-										} else {
-											echo $export;
-										}
-										echo "</form>\n";
-									}
-
 								} else {
-									if (preg_match("~^$space*+(CREATE|DROP|ALTER)$space++(DATABASE|SCHEMA)\\b~i", $q)) {
-										restart_session();
-										set_session("dbs", null); // clear cache
-										stop_session();
+									$time = " <span class='time'>(" . format_time($start) . ")</span>"
+										. (strlen($q) < 1000 ? " <a href='" . h(ME) . "sql=" . urlencode(trim($q)) . "'>" . lang('Edit') . "</a>" : "") // 1000 - maximum length of encoded URL in IE is 2083 characters
+									;
+									$affected = $connection->affected_rows; // getting warnigns overwrites this
+									$warnings = ($_POST["only_errors"] ? "" : $driver->warnings());
+									$warnings_id = "warnings-$commands";
+									if ($warnings) {
+										$time .= ", <a href='#$warnings_id'>" . lang('Warnings') . "</a>" . script("qsl('a').onclick = partial(toggle, '$warnings_id');", "");
 									}
-									if (!$_POST["only_errors"]) {
-										echo "<p class='message' title='" . h($connection->info) . "'>" . lang('Query executed OK, %d row(s) affected.', $connection->affected_rows) . "$time\n";
+									$explain = null;
+									$explain_id = "explain-$commands";
+									if (is_object($result)) {
+										$limit = $_POST["limit"];
+										$orgtables = select($result, $connection2, array(), $limit);
+										if (!$_POST["only_errors"]) {
+											echo "<form action='' method='post'>\n";
+											$num_rows = $result->num_rows;
+											echo "<p>" . ($num_rows ? ($limit && $num_rows > $limit ? lang('%d / ', $limit) : "") . lang('%d row(s)', $num_rows) : "");
+											echo $time;
+											if ($connection2 && preg_match("~^($space|\\()*+SELECT\\b~i", $q) && ($explain = explain($connection2, $q))) {
+												echo ", <a href='#$explain_id'>Explain</a>" . script("qsl('a').onclick = partial(toggle, '$explain_id');", "");
+											}
+											$id = "export-$commands";
+											echo ", <a href='#$id'>" . lang('Export') . "</a>" . script("qsl('a').onclick = partial(toggle, '$id');", "") . "<span id='$id' class='hidden'>: "
+												. html_select("output", $adminer->dumpOutput(), $adminer_export["output"]) . " "
+												. html_select("format", $dump_format, $adminer_export["format"])
+												. "<input type='hidden' name='query' value='" . h($q) . "'>"
+												. " <input type='submit' name='export' value='" . lang('Export') . "'><input type='hidden' name='token' value='$token'></span>\n"
+												. "</form>\n"
+											;
+										}
+
+									} else {
+										if (preg_match("~^$space*+(CREATE|DROP|ALTER)$space++(DATABASE|SCHEMA)\\b~i", $q)) {
+											restart_session();
+											set_session("dbs", null); // clear cache
+											stop_session();
+										}
+										if (!$_POST["only_errors"]) {
+											echo "<p class='message' title='" . h($connection->info) . "'>" . lang('Query executed OK, %d row(s) affected.', $affected) . "$time\n";
+										}
+									}
+									echo ($warnings ? "<div id='$warnings_id' class='hidden'>\n$warnings</div>\n" : "");
+									if ($explain) {
+										echo "<div id='$explain_id' class='hidden'>\n";
+										select($explain, $connection2, $orgtables);
+										echo "</div>\n";
 									}
 								}
 
@@ -208,7 +219,7 @@ if (!isset($_GET["import"])) {
 	}
 	echo "<p>";
 	textarea("query", $q, 20);
-	echo ($_POST ? "" : "<script type='text/javascript'>document.getElementsByTagName('textarea')[0].focus();</script>\n");
+	echo ($_POST ? "" : script("qs('textarea').focus();"));
 	echo "<p>$execute\n";
 	echo lang('Limit rows') . ": <input type='number' name='limit' class='size' value='" . h($_POST ? $_POST["limit"] : $_GET["limit"]) . "'>\n";
 	
@@ -220,7 +231,7 @@ if (!isset($_GET["import"])) {
 	);
 	echo "</div></fieldset>\n";
 	echo "<fieldset><legend>" . lang('From server') . "</legend><div>";
-	echo lang('Webserver file %s', "<code>adminer.sql" . (extension_loaded("zlib") ? "[.gz]" : "") . "</code>");
+	echo lang('Webserver file %s', "<code>" . h($adminer->importServerPath()) . (extension_loaded("zlib") ? "[.gz]" : "") . "</code>");
 	echo ' <input type="submit" name="webfile" value="' . lang('Run file') . '">';
 	echo "</div></fieldset>\n";
 	echo "<p>";

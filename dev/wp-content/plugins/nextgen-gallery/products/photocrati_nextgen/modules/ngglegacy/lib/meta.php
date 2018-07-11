@@ -80,11 +80,9 @@ class nggMeta{
 
         $meta = $this->image->meta_data;
 
-        if (!isset($meta['saved'])) $meta['saved'] = FALSE;
-
-		//check if we already import the meta data to the database
-		if (!is_array($meta) || ($meta['saved'] != true))
-			return false;
+        // Check if we already import the meta data to the database
+        if (!is_array($meta) || !isset($meta['saved']) || ($meta['saved'] !== TRUE))
+            return false;
 
         // return one element if requested
         if ($object)
@@ -101,7 +99,7 @@ class nggMeta{
 
         // on request sanitize the output
         if ( $this->sanitize == true )
-            array_walk( $meta , create_function('&$value', '$value = esc_html($value);'));
+            array_walk( $meta , 'esc_html');
 
         return $meta;
     }
@@ -121,7 +119,7 @@ class nggMeta{
 
             $meta= array();
 
-	        $exif = isset($this->exif_array['EXIF']) ? $this->exif_array['EXIF'] : array();
+	        $exif = isset($this->exif_data['EXIF']) ? $this->exif_data['EXIF'] : array();
 	        if (count($exif)) {
 
                 if (!empty($exif['FNumber']))
@@ -157,7 +155,7 @@ class nggMeta{
                 if (!empty($exif['Make']))
                     $meta['make'] = $exif['Make'];
                 if (!empty($exif['ImageDescription']))
-                    $meta['title'] = utf8_encode($exif['ImageDescription']);
+                    $meta['title'] = $exif['ImageDescription'];
                 if (!empty($exif['Orientation']))
                     $meta['Orientation'] = $exif['Orientation'];
             }
@@ -167,15 +165,15 @@ class nggMeta{
                 $exif = $this->exif_data['WINXP'];
 
                 if (!empty($exif['Title']) && empty($meta['title']))
-                    $meta['title'] = utf8_encode($exif['Title']);
+                    $meta['title'] = $this->utf8_encode($exif['Title']);
                 if (!empty($exif['Author']))
-                    $meta['author'] = utf8_encode($exif['Author']);
+                    $meta['author'] = $this->utf8_encode($exif['Author']);
                 if (!empty($exif['Keywords']))
-                    $meta['tags'] = utf8_encode($exif['Keywords']);
+                    $meta['tags'] = $this->utf8_encode($exif['Keywords']);
                 if (!empty($exif['Subject']))
-                    $meta['subject'] = utf8_encode($exif['Subject']);
+                    $meta['subject'] = $this->utf8_encode($exif['Subject']);
                 if (!empty($exif['Comments']))
-                    $meta['caption'] = utf8_encode($exif['Comments']);
+                    $meta['caption'] = $this->utf8_encode($exif['Comments']);
             }
 
             $this->exif_array = $meta;
@@ -189,7 +187,7 @@ class nggMeta{
 
         // on request sanitize the output
         if ( $this->sanitize == true )
-            array_walk( $this->exif_array , create_function('&$value', '$value = esc_html($value);'));
+            array_walk( $this->exif_array , 'esc_html');
 
         return $this->exif_array;
 
@@ -256,7 +254,7 @@ class nggMeta{
             $meta = array();
             foreach ($iptcTags as $key => $value) {
                 if (isset ( $this->iptc_data[$key] ) )
-                    $meta[$value] = trim(utf8_encode(implode(", ", $this->iptc_data[$key])));
+                    $meta[$value] = trim($this->utf8_encode(implode(", ", $this->iptc_data[$key])));
 
             }
             $this->iptc_array = $meta;
@@ -268,7 +266,7 @@ class nggMeta{
 
         // on request sanitize the output
         if ( $this->sanitize == true )
-            array_walk( $this->iptc_array , create_function('&$value', '$value = esc_html($value);'));
+            array_walk( $this->iptc_array , 'esc_html');
 
         return $this->iptc_array;
     }
@@ -410,7 +408,7 @@ class nggMeta{
 
         // on request sanitize the output
         if ( $this->sanitize == true )
-            array_walk( $this->xmp_array , create_function('&$value', '$value = esc_html($value);'));
+            array_walk( $this->xmp_array , 'esc_html');
 
         return $this->xmp_array;
     }
@@ -423,6 +421,7 @@ class nggMeta{
         } else {
             $array = $value;
         }
+        return $array;
     }
 
     /**
@@ -532,7 +531,7 @@ class nggMeta{
      * Reason : GD manipulation removes that options
      *
      * @since V1.4.0
-     * @return void
+     * @return array
      */
     function get_common_meta() {
         global $wpdb;
@@ -576,5 +575,33 @@ class nggMeta{
      */
     function sanitize () {
         $this->sanitize = true;
+    }
+
+    /**
+     * Wrapper to utf8_encode() that avoids double encoding
+     *
+     * Regex adapted from http://www.w3.org/International/questions/qa-forms-utf-8.en.php
+     * to determine if the given string is already UTF-8. mb_detect_encoding() is not
+     * always available and is limited in accuracy
+     *
+     * @param string $str
+     * @return string
+     */
+    function utf8_encode($str)
+    {
+        $is_utf8 = preg_match(
+            '%^(?:
+              [\x09\x0A\x0D\x20-\x7E]            # ASCII
+            | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+            |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
+            | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+            |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
+            |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
+            | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+            |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
+            )*$%xs', $str);
+        if (!$is_utf8)
+            utf8_encode($str);
+        return $str;
     }
 }

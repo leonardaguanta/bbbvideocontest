@@ -51,13 +51,14 @@ var additional_data = {
         else {
 
             var str = jQuery(elem).attr("id");
-            var separator = 'input_' + mygf_form_ID + "_";
+           var getConfig = str.split("_");
+            var separator = 'input_' + getConfig[1] + "_";
 
             var get_match = str.split(separator).pop();
 
-            if (typeof all_validations[get_match] !== "undefined") {
+            if (typeof all_validations[getConfig[1]][get_match] !== "undefined") {
 
-                if (hasSubFields.indexOf(all_validations[get_match].fieldType) > -1 && jQuery(elemLi[0]).find(".message_id_" + jQuery(elem).attr("id")).length == 0) {
+                if (hasSubFields.indexOf(all_validations[getConfig[1]][get_match].fieldType) > -1 && jQuery(elemLi[0]).find(".message_id_" + jQuery(elem).attr("id")).length == 0) {
                     var htML = "";
 
                     var $thiss = jQuery(elem).next(".LV_validation_message");

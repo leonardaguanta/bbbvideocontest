@@ -209,7 +209,7 @@ class nggdb
      * @param bool $exclude
      * @return An array containing the nggImage objects representing the images in the gallery.
      */
-    function get_ids_from_gallery($id, $order_by = 'sortorder', $order_dir = 'ASC', $exclude = true) {
+    static function get_ids_from_gallery($id, $order_by = 'sortorder', $order_dir = 'ASC', $exclude = true) {
 
         global $wpdb;
 
@@ -235,14 +235,11 @@ class nggdb
      * @id The gallery ID
      */
     function delete_gallery( $id ) {
-        global $wpdb;
-
-        $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->nggpictures WHERE galleryid = %d", $id) );
-        $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->nggallery WHERE gid = %d", $id) );
-
+        $mapper = C_Gallery_Mapper::get_instance();
+        $gallery = $mapper->find($id);
+        $mapper->destroy($gallery);
         wp_cache_delete($id, 'ngg_gallery');
 
-        //TODO:Remove all tag relationship
         return true;
     }
 
@@ -275,8 +272,8 @@ class nggdb
 
         // Unserialize the galleries inside the album
         if ( $album ) {
-			// XXX nggdb is used statically, cannot inherit from Ngg_Serializable
-			$serializer = new Ngg_Serializable();
+
+	        $serializer = new Ngg_Serializable();
 
             if ( !empty( $album->sortorder ) )
                 $album->gallery_ids = $serializer->unserialize( $album->sortorder );
@@ -498,7 +495,7 @@ class nggdb
      * @param $pids array of picture_ids
      * @return An array of nggImage objects representing the images
      */
-    function find_images_in_list( $pids, $exclude = false, $order = 'ASC' ) {
+    static function find_images_in_list( $pids, $exclude = false, $order = 'ASC' ) {
         global $wpdb;
 
         $result = array();
@@ -605,7 +602,7 @@ class nggdb
     * @param (optional) int $author
     * @return bool result of the ID of the inserted gallery
     */
-    function add_gallery( $title = '', $path = '', $description = '', $pageid = 0, $previewpic = 0, $author = 0  ) {
+    static function add_gallery( $title = '', $path = '', $description = '', $pageid = 0, $previewpic = 0, $author = 0  ) {
         global $wpdb;
 
         // slug must be unique, we use the title for that
@@ -618,6 +615,9 @@ class nggdb
 		}
 
 		$galleryID = (int) $wpdb->insert_id;
+
+        do_action('ngg_created_new_gallery', $galleryID);
+        C_Photocrati_Transient_Manager::flush('displayed_gallery_rendering');
 
 		//and give me the new id
 		return $galleryID;
@@ -638,7 +638,7 @@ class nggdb
      *
      * @param integer $page start offset as page number (0,1,2,3,4...)
      * @param integer $limit the number of result
-     * @param bool $exclude do not show exluded images
+     * @param bool $exclude do not show excluded images
      * @param int $galleryId Only look for images with this gallery id, or in all galleries if id is 0
      * @param string $orderby is one of "id" (default, order by pid), "date" (order by exif date), sort (order by user sort order)
      * @deprecated
@@ -738,7 +738,7 @@ class nggdb
 
             // split the words it a array if seperated by a space or comma
             preg_match_all('/".*?("|$)|((?<=[\\s",+])|^)[^\\s",+]+/', $request, $matches);
-            $search_terms = array_map(create_function('$a', 'return trim($a, "\\"\'\\n\\r ");'), $matches[0]);
+            $search_terms = array_map(array($this, 'trim_quotes_and_whitespace'), $matches[0]);
 
             $n = '%';
             $searchand = '';
@@ -750,7 +750,7 @@ class nggdb
                 $searchand = ' AND ';
             }
 
-            $term = $wpdb->escape($request);
+            $term = esc_sql($request);
             if (count($search_terms) > 1 && $search_terms[0] != $request )
                 $search .= " OR (tt.description LIKE '{$n}{$term}{$n}') OR (tt.alttext LIKE '{$n}{$term}{$n}') OR (tt.filename LIKE '{$n}{$term}{$n}')";
 
@@ -762,8 +762,9 @@ class nggdb
             return false;
 
         // build the final query
-        $query = "SELECT t.*, tt.* FROM $wpdb->nggallery AS t INNER JOIN $wpdb->nggpictures AS tt ON t.gid = tt.galleryid WHERE 1=1 $search ORDER BY tt.pid ASC $limit_by";
-        $result = $wpdb->get_results($query);
+        $query = "SELECT `tt`.`pid` FROM `{$wpdb->nggallery}` AS `t` INNER JOIN `{$wpdb->nggpictures}` AS `tt` ON `t`.`gid` = `tt`.`galleryid` WHERE 1=1 {$search} ORDER BY `tt`.`pid` ASC {$limit_by}";
+
+        $result = $wpdb->get_col($query);
 
         // TODO: Currently we didn't support a proper pagination
         $this->paged['total_objects'] = $this->paged['objects_per_page'] = intval ( $wpdb->get_var( "SELECT FOUND_ROWS()" ) );
@@ -771,13 +772,20 @@ class nggdb
 
         // Return the object from the query result
         if ($result) {
-            foreach ($result as $image) {
-                $images[] = new nggImage( $image );
+            $images = array();
+            $mapper = C_Image_Mapper::get_instance();
+            foreach ($result as $image_id) {
+                $images[] = $mapper->find($image_id);
             }
             return $images;
         }
 
         return null;
+    }
+
+    function trim_quotes_and_whitespace($str)
+    {
+    	return trim($str, "\"'\n\r");
     }
 
     /**
@@ -798,7 +806,7 @@ class nggdb
 
             // split the words it a array if seperated by a space or comma
             preg_match_all('/".*?("|$)|((?<=[\\s",+])|^)[^\\s",+]+/', $request, $matches);
-            $search_terms = array_map(create_function('$a', 'return trim($a, "\\"\'\\n\\r ");'), $matches[0]);
+            $search_terms = array_map(array($this, 'trim_quotes_and_whitespace'), $matches[0]);
 
             $n = '%';
             $searchand = '';
@@ -810,7 +818,7 @@ class nggdb
                 $searchand = ' AND ';
             }
 
-            $term = $wpdb->escape($request);
+            $term = esc_sql($request);
             if (count($search_terms) > 1 && $search_terms[0] != $request )
                 $search .= " OR (title LIKE '{$n}{$term}{$n}') OR (name LIKE '{$n}{$term}{$n}')";
 
@@ -846,7 +854,7 @@ class nggdb
 
             // split the words it a array if seperated by a space or comma
             preg_match_all('/".*?("|$)|((?<=[\\s",+])|^)[^\\s",+]+/', $request, $matches);
-            $search_terms = array_map(create_function('$a', 'return trim($a, "\\"\'\\n\\r ");'), $matches[0]);
+            $search_terms = array_map(array($this, 'trim_quotes_and_whitespace'), $matches[0]);
 
             $n = '%';
             $searchand = '';
@@ -858,7 +866,7 @@ class nggdb
                 $searchand = ' AND ';
             }
 
-            $term = $wpdb->escape($request);
+            $term = esc_sql($request);
             if (count($search_terms) > 1 && $search_terms[0] != $request )
                 $search .= " OR (name LIKE '{$n}{$term}{$n}')";
 
@@ -889,17 +897,17 @@ class nggdb
         global $wpdb;
 
         // XXX nggdb is used statically, cannot inherit from Ngg_Serializable
-        $serializer = new Ngg_Serializable();
+	    $serializer = new Ngg_Serializable();
 
         // Query database for existing values
         // Use cache object
         $old_values = $wpdb->get_var( $wpdb->prepare( "SELECT meta_data FROM $wpdb->nggpictures WHERE pid = %d ", $id ) );
-        $old_values = $serializer->unserialize( $old_values );
-
+        $old_values = $serializer->unserialize( $old_values);
         $meta = array_merge( (array)$old_values, (array)$new_values );
-        $meta = $serializer->serialize($meta);
+        $serialized_meta = $serializer->serialize($meta);
+        $result = $wpdb->query( $wpdb->prepare("UPDATE $wpdb->nggpictures SET meta_data = %s WHERE pid = %d", $serialized_meta, $id) );
 
-        $result = $wpdb->query( $wpdb->prepare("UPDATE $wpdb->nggpictures SET meta_data = %s WHERE pid = %d", $meta, $id) );
+        do_action('ngg_updated_image_meta', $id, $meta);
 
         wp_cache_delete($id, 'ngg_image');
 
@@ -945,9 +953,9 @@ class nggdb
         // Generate SQL query
         $query = array();
         $query[] = "SELECT {$field}, SUBSTR({$field}, %d) AS 'i' FROM {$table}";
-        $query[] = "WHERE ({$field} LIKE '{$slug}-%%' AND CONVERT(SUBSTR({$field}, %d), SIGNED) BETWEEN 1 AND %d) OR {$field} = %s";
-        $query[] = "ORDER BY i DESC LIMIT 1";
-        $query = $wpdb->prepare(implode(" ", $query), strlen("{$slug}-")+1, strlen("{$slug}-")+1, PHP_INT_MAX, $slug);
+        $query[] = "WHERE ({$field} LIKE %s AND CONVERT(SUBSTR({$field}, %d), SIGNED) BETWEEN 1 AND %d) OR {$field} = %s";
+        $query[] = "ORDER BY CAST(i AS SIGNED INTEGER) DESC LIMIT 1";
+        $query = $wpdb->prepare(implode(" ", $query), strlen("{$slug}-")+1, $wpdb->esc_like("{$slug}-") . '%', strlen("{$slug}-")+1, PHP_INT_MAX, $slug);
 
         // If the above query returns a result, it means that the slug is already taken
         if (($last_slug = $wpdb->get_var($query))) {

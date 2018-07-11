@@ -48,7 +48,7 @@ class GF_Field_FileUploadAjax extends GF_Field {
 			$attachment_label = esc_attr__( 'Attachment', 'ajax-upload-for-gravity-forms' );
 			$remove_label = esc_attr__( 'Remove', 'ajax-upload-for-gravity-forms' );
 			$cancel_label = esc_attr__( 'Cancel', 'ajax-upload-for-gravity-forms' );
-			$content = '<div class="itsg_single_ajax">';
+			$content = '<div class="itsg_single_ajax itsg_ajax_upload_dropzone">';
 			$content .= "<input class='itsg_single_ajax_input'  type='hidden' name='input_{$id}' value='{$value}'>";
 			$content .= "<input id='input_{$form_id}_{$id}' aria-label='{$attachment_label}: {$field_label}' title='{$attachment_label}: {$field_label}' class='itsg_ajax_upload_browse' type='file'>";
 			$content .=  '</div>';
@@ -67,15 +67,18 @@ class GF_Field_FileUploadAjax extends GF_Field {
 				$file_url = str_replace( 'http:', 'https:', $file_url );
 			}
 			$file_name = pathinfo( $value, PATHINFO_BASENAME );  // get the file name out of the URL
+			$file_name = parse_url( $file_name );
+			$file_name = $file_name['path'];
 			$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
 			$file_type = strtolower( pathinfo( $value, PATHINFO_EXTENSION ) );  // get the file type out of the URL
 			$click_to_view_text = __( 'Click to view', 'ajax-upload-for-gravity-forms' );
 
-			if( true == rgar( $ajax_upload_options, 'thumbnail_enable' ) && ( 'jpg' == $file_type || 'png' == $file_type || 'gif' == $file_type || 'jpeg' == $file_type ) ) {
+			if( rgar( $ajax_upload_options, 'thumbnail_enable' ) && ( 'jpg' == $file_type || 'png' == $file_type || 'gif' == $file_type || 'jpeg' == $file_type ) ) {
 				$file_url_thumb = ITSG_GF_AjaxUpload::get_thumbnail_url( $file_url, $this );
 				$thumbnail_width = rgar( $ajax_upload_options, 'thumbnail_width' );
 				$thumbnail_height = rgar( $ajax_upload_options, 'thumbnail_height' );
-				$output = $format == 'text' ? $file_url . PHP_EOL : "<a href='{$file_url}' target='_blank' title='{$click_to_view_text}'><img width='{$thumbnail_width}'  class='thumbnail' src='{$file_url_thumb}' onerror='if (this.src != \"{$file_url}\") this.src = \"{$file_url}\";' /></a>";
+				$display_file_name = rgar( $ajax_upload_options, 'thumbnail_file_name_enable' ) ? "<div class='itsg_ajax_upload_file_name'><a href='{$file_url}' target='_blank' >{$file_name_decode}</a></div>" : '';
+				$output = $format == 'text' ? $file_url . PHP_EOL : "<a href='{$file_url}' target='_blank' ><img width='{$thumbnail_width}'  class='thumbnail' src='{$file_url_thumb}' onerror='if (this.src != \"{$file_url}\") this.src = \"{$file_url}\";' /></a>{$display_file_name}";
 			} else {
 				$output = $format == 'text' ? $file_url . PHP_EOL : "<a href='{$file_url}' target='_blank' title='{$click_to_view_text}'>{$file_name_decode}</a>";
 			}
@@ -85,6 +88,7 @@ class GF_Field_FileUploadAjax extends GF_Field {
 		return $output;
 	} // END get_value_entry_detail
 
+	// how the field is displayed in the entry list
 	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
 		$file_url = $value;
 		if ( ! empty( $file_url ) && GFCommon::is_valid_url( $file_url ) ) {
@@ -107,9 +111,9 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload_SingleField' ) ) {
 
 		function __construct() {
 			// wrap single ajax upload field in field set
-			add_action( 'gform_field_content' , array( &$this, 'wrap_single_fieldset' ), 10, 5 );
+			add_action( 'gform_field_content' , array( $this, 'wrap_single_fieldset' ), 10, 5 );
 
-			add_filter( 'gform_entry_field_value', array( &$this, 'display_field_value' ), 10, 4 );
+			add_filter( 'gform_entry_field_value', array( $this, 'display_field_value' ), 10, 4 );
 
 		} // END __construct
 
@@ -120,20 +124,20 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload_SingleField' ) ) {
 			// get Ajax Upload options
 			$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
 
-			if ( true == rgar( $ajax_upload_options, 'wrapsinglefieldset' ) ) {
+			if ( rgar( $ajax_upload_options, 'wrapsinglefieldset' ) ) {
 				$field_required = rgar( $field, 'isRequired' );
 				$field_label = rgar( $field, 'label' );
 				$field_id = rgar( $field, 'id' );
 				$field_failed_valid = rgar( $field, 'failed_validation' );
 				$field_description = rgar( $field, 'description' );
 				if ( 'itsg_single_ajax' == rgar( $field, 'type' ) ) {
-					if ( true == $field_required ) {
+					if ( $field_required ) {
 						$content = str_replace("<label class='gfield_label' for='input_{$form_id}_{$field_id}' >{$field_label}<span class='gfield_required'>*</span></label>","<fieldset class='gfieldset'><legend class='gfield_label'><label class='gfield_label' for='input_{$form_id}_{$field_id}' >{$field_label}<span class='gfield_required'>*</span><span class='sr-only'> ".__( 'File upload' ,'ajax-upload-for-gravity-forms')."</span></label></legend>", $content);
 					} else {
 						$content = str_replace("<label class='gfield_label' for='input_{$form_id}_{$field_id}' >{$field_label}</label>", "<fieldset class='gfieldset'><legend class='gfield_label'><label class='gfield_label' for='input_{$form_id}_{$field_id}' >{$field_label}<span class='sr-only'> ".__('File upload' ,'ajax-upload-for-gravity-forms')."</span></label></legend>", $content);
 					}
 					//if field has failed validation
-					if( true == $field_failed_valid ){
+					if( $field_failed_valid ){
 						//add add aria-invalid='true' attribute to input
 						$content = str_replace( " name='input_", " aria-invalid='true' name='input_", $content );
 						//if aria-describedby attribute not already present
@@ -164,20 +168,22 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload_SingleField' ) ) {
 			return $content;
         } // END wrap_single_fieldset
 
-		/* how the field is displayed in in PDF's using Gravity PDF v3 plugin  */
+		/* how the field is displayed in in PDF's using the Gravity PDF plugin  */
 		function display_field_value( $value, $field, $lead, $form ) {
 			$is_entry_detail = GFCommon::is_entry_detail();
 			if ( 'itsg_single_ajax' == rgar( $field, 'type' ) && isset( $_GET['gf_pdf'] ) ) {
 				$ajax_upload_options = ITSG_GF_AjaxUpload::get_options();
 				$form_id = $form['id'];
 				$file_name = pathinfo( $value, PATHINFO_BASENAME );  // get the file name out of the URL
+				$file_name = parse_url( $file_name );
+				$file_name = $file_name['path'];
 				$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
 				$file_type = strtolower( pathinfo( $value, PATHINFO_EXTENSION ) );  // get the file type out of the URL
 				$file_url = wp_kses_post( $value );
 				if( ( 'jpg' == $file_type || 'png' == $file_type || 'gif' == $file_type || 'jpeg' == $file_type ) &&
-				( ( !isset( $_GET['gf_pdf'] ) && true == rgar( $ajax_upload_options, 'thumbnail_enable' ) ) || ( isset( $_GET['gf_pdf'] ) && true == rgar( $ajax_upload_options, 'gpdf_use_thumbnails' ) ) ) ) {
+				( ( !isset( $_GET['gf_pdf'] ) && rgar( $ajax_upload_options, 'thumbnail_enable' ) ) || ( isset( $_GET['gf_pdf'] ) && rgar( $ajax_upload_options, 'gpdf_use_thumbnails' ) ) ) ) {
 					$file_url_thumb = ITSG_GF_AjaxUpload::get_thumbnail_url( $file_url, $field );
-					if ( isset( $_GET['gf_pdf'] ) && true == rgar( $ajax_upload_options, 'gpdf_use_serverpath' ) ) {
+					if ( isset( $_GET['gf_pdf'] ) && rgar( $ajax_upload_options, 'gpdf_use_serverpath' ) ) {
 						$file_path_thumb = rawurldecode( str_replace( site_url() . '/', ABSPATH, $file_url_thumb ) );
 						// Read image path, convert to base64 encoding
 						$imageData = base64_encode( file_get_contents( $file_path_thumb ) );
@@ -185,18 +191,21 @@ if ( !class_exists( 'ITSG_GF_AjaxUpload_SingleField' ) ) {
 						$file_url_thumb = 'data: ' . mime_content_type( $file_path_thumb ) . ';base64,' . $imageData;
 					}
 					$thumbnail_width = rgar( $ajax_upload_options, 'thumbnail_width' );
+					$display_file_name = rgar( $ajax_upload_options, 'thumbnail_file_name_enable' ) ? "<div class='itsg_ajax_upload_file_name'><a href='{$file_url}' target='_blank' >{$file_name_decode}</a></div>" : '';
 					$value = "<a href='{$file_url}' target='_blank' >
 						<img
 						src='{$file_url_thumb}'
 						width='{$thumbnail_width}'
 						class='thumbnail'
 						onerror='if (this.src != \"{$file_url}\") this.src = \"{$file_url}\";' />
-					</a>";
+					</a>{$display_file_name}";
 				} else {
 					$file_name = pathinfo( $file_url, PATHINFO_BASENAME );  // get the file name out of the URL
+					$file_name = parse_url( $file_name );
+					$file_name = $file_name['path'];
 					$file_name_decode = rawurldecode( $file_name );  // decode the URL - remove %20 etc
-					if ( strlen( $file_name_decode ) > 60 && !preg_match( '/\s/', $file_name_decode ) ) {
-						$file_name_decode = substr( $file_name_decode, 0, 60 ). ' ...';
+					if ( strlen( $file_name_decode ) > 30 && !preg_match( '/\s/', $file_name_decode ) ) {
+						$file_name_decode = substr( $file_name_decode, 0, 30 ). ' ...';
 					}
 					$value = "<a href='{$file_url}' target='_blank'>{$file_name_decode}</a>";
 				}

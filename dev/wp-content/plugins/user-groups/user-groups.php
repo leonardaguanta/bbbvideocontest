@@ -2,9 +2,11 @@
 /*
 Plugin Name: User Groups
 Description: Add user groups to WordPress
-Version: 1.1.3
+Version: 1.3.1
 Author: Katz Web Services, Inc.
 Author URI: https://katz.co
+Text Domain: user-groups
+Domain Path: languages
 */
 
 add_action('plugins_loaded', array('KWS_User_Groups', 'get_instance'), 200);
@@ -16,7 +18,7 @@ class KWS_User_Groups {
 	 */
 	static $instance = NULL;
 
-	static function get_instance() {
+	public static function get_instance() {
 
 		if( !self::$instance ) {
 			self::$instance = new self;
@@ -139,8 +141,8 @@ class KWS_User_Groups {
 		unset( $columns['posts'], $columns['slug'] );
 
 
-		$columns['users'] = __( 'Users', 'user-group');
-		$columns['color'] = __( 'Color', 'user-group');
+		$columns['users'] = __( 'Users', 'user-groups');
+		$columns['color'] = __( 'Color', 'user-groups');
 
 		return $columns;
 	}
@@ -150,7 +152,7 @@ class KWS_User_Groups {
 		switch($column) {
 			case 'users':
 				$term = get_term( $term_id, 'user-group' );
-				echo '<a href="'.admin_url('users.php?user-group='.$term->slug).'">'.sprintf(_n(__('%s User'), __('%s Users'), $term->count), $term->count).'</a>';
+				echo '<a href="'.admin_url('users.php?user-group='.$term->slug).'">'.sprintf(_n(__('%s User', 'user-groups'), __('%s Users', 'user-groups'), $term->count), $term->count).'</a>';
 				break;
 			case 'color':
 				$color = self::get_meta('group-color', $term_id);
@@ -199,7 +201,7 @@ class KWS_User_Groups {
 
 					/* If there are no user-group terms, display a message. */
 					else {
-						_e('There are no user groups defined. <a href="'.admin_url('edit-tags.php?taxonomy=user-group').'">'.__('Add a User Group', 'user-groups').'</a>');
+						printf( esc_html__('There are no user groups defined. %sAdd a User Group%s', 'user-groups' ), '<a href="'.esc_url( admin_url('edit-tags.php?taxonomy=user-group') ).'">', '</a>' );
 					}
 
 					?></td>
@@ -270,7 +272,7 @@ class KWS_User_Groups {
 		$tax = get_taxonomy( 'user-group' );
 
 		/* Make sure the current user can edit the user and assign terms before proceeding. */
-		if ( !current_user_can( 'edit_user', $user_id ) && current_user_can( $tax->cap->assign_terms ) ) {
+		if ( ! ( current_user_can( 'edit_user', $user_id ) && current_user_can( $tax->cap->assign_terms ) ) ) {
 			return false;
 		}
 
@@ -312,20 +314,21 @@ class KWS_User_Groups {
 			'user',
 			array(
 				'public' => false,
+				'show_ui' => true,
 				'labels' => array(
-					'name' => __( 'User Groups' ),
-					'singular_name' => __( 'Group' ),
-					'menu_name' => __( 'User Groups' ),
-					'search_items' => __( 'Search Groups' ),
-					'popular_items' => __( 'Popular Groups' ),
-					'all_items' => __( 'All User Groups' ),
-					'edit_item' => __( 'Edit User Group' ),
-					'update_item' => __( 'Update User Group' ),
-					'add_new_item' => __( 'Add New User Group' ),
-					'new_item_name' => __( 'New User Group Name' ),
-					'separate_items_with_commas' => __( 'Separate user groups with commas' ),
-					'add_or_remove_items' => __( 'Add or remove user groups' ),
-					'choose_from_most_used' => __( 'Choose from the most popular user groups' ),
+					'name' => __( 'User Groups', 'user-groups' ),
+					'singular_name' => __( 'Group', 'user-groups' ),
+					'menu_name' => __( 'User Groups', 'user-groups' ),
+					'search_items' => __( 'Search Groups', 'user-groups' ),
+					'popular_items' => __( 'Popular Groups', 'user-groups' ),
+					'all_items' => __( 'All User Groups', 'user-groups' ),
+					'edit_item' => __( 'Edit User Group', 'user-groups' ),
+					'update_item' => __( 'Update User Group', 'user-groups' ),
+					'add_new_item' => __( 'Add New User Group', 'user-groups' ),
+					'new_item_name' => __( 'New User Group Name', 'user-groups' ),
+					'separate_items_with_commas' => __( 'Separate user groups with commas', 'user-groups' ),
+					'add_or_remove_items' => __( 'Add or remove user groups', 'user-groups' ),
+					'choose_from_most_used' => __( 'Choose from the most popular user groups', 'user-groups' ),
 				),
 				'rewrite' => false,
 				'capabilities' => array(
@@ -363,8 +366,8 @@ class KWS_User_Groups {
 			<td id="group-color-row">
 				<p>
 					<input type="text" name="user-group[group-color]" id="group-color" value="<?php echo self::get_meta('group-color'); ?>" />
-					<span class="description hide-if-js">If you want to hide header text, add <strong>#blank</strong> as text color.</span>
-					<input type="button" class="button hide-if-no-js" value="Select a Color" id="pickcolor" />
+					<span class="description hide-if-js"><?php _e('If you want to hide header text, add <strong>#blank</strong> as text color.', 'user-groups' ); ?></span>
+					<input type="button" class="button hide-if-no-js" value="<?php esc_html_e('Select a Color', 'user-groups'); ?>" id="pickcolor" />
 				</p>
 				<div id="color-picker" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div>
 			</td>
@@ -431,51 +434,21 @@ class KWS_User_Groups {
 
 		if(self::is_edit_user_group('edit')) { ?>
 
-			<h3><?php _e('User Group Settings', 'user-group'); ?></h3>
+			<h3><?php _e('User Group Settings', 'user-groups'); ?></h3>
 
 			<table class="form-table">
 				<tbody>
-					<tr>
-						<th scope="row" valign="top"><label><?php _e('Color for the User Group', 'genesis'); ?></label></th>
-						<td id="group-color-row">
-							<p>
-								<input type="text" name="user-group[group-color]" id="group-color" value="<?php echo self::get_meta('group-color'); ?>" />
-								<input type="button" class="button hide-if-no-js" value="Select a Color" id="pickcolor" />
-							</p>
-							<div id="color-picker" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div>
-							<div class="clear"></div>
-						</td>
-					</tr>
-					<tr class="form-field">
-						<th scope="row" valign="top"><label for="group-location"><?php _e('Group Location', 'genesis'); ?></label></th>
-						<td id="group-location-row">
-							<p>
-								<input type="text" name="user-group[group_location]" id="group-location" value="<?php echo self::get_meta('group_location'); ?>" />
-							</p>
-						</td>
-					</tr>
-					<tr class="form-field">
-						<th scope="row" valign="top"><label for="group-phone"><?php _e('School Phone', 'genesis'); ?></label></th>
-						<td id="group-phone-row">
-							<p>
-								<input type="text" name="user-group[group_phone]" id="group-phone" value="<?php echo self::get_meta('group_phone'); ?>" />
-							</p>
-						</td>
-					</tr>
-					<tr class="form-field">
-						<th scope="row" valign="top"><label for="group-leader"><?php _e('Group Leader', 'genesis'); ?></label></th>
-						<td id="group-leader-row">
-							<p>
-								<select name="user-group[group_leader]" id="group-leader">
-									<?php
-									foreach ( get_users() as $user_leader ) {
-										echo '<option ' . selected( self::get_meta('group_leader'), $user_leader->data->ID, false ) .  ' value="'. $user_leader->data->ID .'">' . $user_leader->data->display_name . '</option>';
-									}
-									?>
-								</select>
-							</p>
-						</td>
-					</tr>
+				<tr>
+					<th scope="row" valign="top"><label><?php _e('Color for the User Group', 'genesis'); ?></label></th>
+					<td id="group-color-row">
+						<p>
+							<input type="text" name="user-group[group-color]" id="group-color" value="<?php echo self::get_meta('group-color'); ?>" />
+							<input type="button" class="button hide-if-no-js" value="Select a Color" id="pickcolor" />
+						</p>
+						<div id="color-picker" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div>
+						<div class="clear"></div>
+					</td>
+				</tr>
 				</tbody>
 			</table>
 		<?php  } else { ?>
@@ -486,27 +459,6 @@ class KWS_User_Groups {
 				</p>
 			</div>
 			<div id="color-picker" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div>
-			<div class="form-field">
-				<p>
-					<label for="group-location"><?php _e('Group Location', 'genesis'); ?></label>
-					<input type="text" name="user-group[group-location]" id="group-location" value="<?php echo self::get_meta('group_location'); ?>" />
-				</p>
-			</div>
-			<div class="form-field">
-				<p>
-					<label for="group-phone"><?php _e('School Phone', 'genesis'); ?></label>
-					<input type="text" name="user-group[group-phone]" id="group-phone" value="<?php echo self::get_meta('group_phone'); ?>" />
-				</p>
-			</div>
-			<div class="form-field">
-				<select name="user-group[group-leader]" id="group-leader">
-					<?php
-					foreach ( get_users() as $user_leader ) {
-						echo '<option ' . selected( self::get_meta('group_leader'), $user_leader->data->ID, false ) .  ' value="'. $user_leader->data->ID .'">' . $user_leader->data->display_name . '</option>';
-					}
-					?>
-				</select>
-			</div>
 		<?php
 		}
 	}
@@ -551,18 +503,18 @@ class KWS_User_Groups {
 		?>
 		<form method="post" id="bulkeditusergroupform" class="alignright" style="clear:right; margin:0 10px;">
 			<fieldset>
-				<legend class="screen-reader-text"><?php _e('Update User Groups', 'user-group'); ?></legend>
+				<legend class="screen-reader-text"><?php _e('Update User Groups', 'user-groups'); ?></legend>
 				<div>
-					<label for="groupactionadd" style="margin-right:5px;"><input name="groupaction" value="add" type="radio" id="groupactionadd" checked="checked" /> <?php _e('Add users to', 'user-group'); ?></label>
-					<label for="groupactionremove"><input name="groupaction" value="remove" type="radio" id="groupactionremove" /> <?php _e('Remove users from', 'user-group'); ?></label>
+					<label for="groupactionadd" style="margin-right:5px;"><input name="groupaction" value="add" type="radio" id="groupactionadd" checked="checked" /> <?php _e('Add users to', 'user-groups'); ?></label>
+					<label for="groupactionremove"><input name="groupaction" value="remove" type="radio" id="groupactionremove" /> <?php _e('Remove users from', 'user-groups'); ?></label>
 				</div>
 				<div>
 					<input name="users" value="" type="hidden" id="bulkeditusergroupusers" />
 
-					<label for="user-groups-select" class="screen-reader-text"><?php _('User Group', 'user-group'); ?></label>
+					<label for="user-groups-select" class="screen-reader-text"><?php _('User Group', 'user-groups'); ?></label>
 					<select name="user-group" id="user-groups-select" style="max-width: 300px;">
 						<?php
-						$select = '<option value="">'.__( 'Select User Group&hellip;', 'user-group').'</option>';
+						$select = '<option value="">'.__( 'Select User Group&hellip;', 'user-groups').'</option>';
 						foreach($terms as $term) {
 							$select .= '<option value="'.$term->slug.'">'.$term->name.'</option>'."\n";
 						}
@@ -582,7 +534,6 @@ class KWS_User_Groups {
 				$('#bulkeditusergroupform').live('submit', function() {
 					var users = $('.wp-list-table.users .check-column input:checked').serialize();
 					$('#bulkeditusergroupusers').val(users);
-					console.log( 'submit' );
 				});
 			});
 		</script>
@@ -595,14 +546,14 @@ class KWS_User_Groups {
 		$terms = get_terms('user-group', array('hide_empty' => true));
 
 		$select = '<select name="user-group" id="user-groups-select">
-		<option value="0">All Users</option>'."\n";
+		<option value="0"> '. esc_html__('All Users', 'user-groups' ) . '</option>'."\n";
 		$current = false;
 		foreach($terms as $term) {
 			$user_ids = get_objects_in_term($term->term_id, 'user-group');
 			if(isset($_GET['user-group']) && $_GET['user-group'] === $term->slug) {
 				$current = $term;
 			}
-			$select .= '<option value="'.$term->slug.'"'.selected(true, isset($_GET['user-group']) && $_GET['user-group'] === $term->slug,false).'>'.$term->name.'</option>'."\n";
+			$select .= '<option value="'.$term->slug.'"'.selected(true, isset($_GET['user-group']) && $_GET['user-group'] === $term->slug,false).'>'.esc_html( $term->name ).'</option>'."\n";
 		}
 
 		$select .= '
@@ -629,16 +580,16 @@ class KWS_User_Groups {
 
 			?>
 			<div id="user-group-header">
-				<h2><?php echo $colorblock; echo sprintf(__('User Group: %s', 'user-group'), $current->name); ?> <a href="<?php echo admin_url('edit-tags.php?action=edit&taxonomy=user-group&amp;tag_ID='.$current->term_id.'&post_type=post'); ?>" class="add-new-h2" style="background:#fefefe;"><?php _e('Edit User Group', 'user-group'); ?></a></h2>
+				<h2><?php echo $colorblock; echo sprintf(__('User Group: %s', 'user-groups'), $current->name); ?> <a href="<?php echo admin_url('edit-tags.php?action=edit&taxonomy=user-group&amp;tag_ID='.$current->term_id.'&post_type=post'); ?>" class="add-new-h2" style="background:#fefefe;"><?php _e('Edit User Group', 'user-groups'); ?></a></h2>
 				<?php echo wpautop($current->description); ?>
 			</div>
 			<p class="howto" style="font-style:normal;">
-				<span><?php echo sprintf(__('Showing %s in %s','user-group'), $role_name, '&ldquo;'.$current->name.'&rdquo;'); ?>.</span>
+				<span><?php echo sprintf(__('Showing %s in %s','user-groups'), $role_name, '&ldquo;'.$current->name.'&rdquo;'); ?>.</span>
 
-				<a href="<?php echo esc_url( remove_query_arg('user-group') );?>" class="user-group-user-group-filter"><span></span> <?php echo sprintf(__('Show all %s','user-group'), $role_name);?></a>
+				<a href="<?php echo esc_url( remove_query_arg('user-group') );?>" class="user-group-user-group-filter"><span></span> <?php echo sprintf(__('Show all %s','user-groups'), $role_name);?></a>
 
 				<?php if(!empty($role)) { ?>
-					<a href="<?php echo esc_url( remove_query_arg('role') ); ?>" class="user-group-user-group-filter"><span></span> <?php echo sprintf(__('Show all users in "%s"','user-group'), $current->name); ?></a>
+					<a href="<?php echo esc_url( remove_query_arg('role') ); ?>" class="user-group-user-group-filter"><span></span> <?php echo sprintf(__('Show all users in "%s"','user-groups'), $current->name); ?></a>
 				<?php } ?>
 			</p>
 			<div class="clear"></div>
@@ -652,7 +603,7 @@ class KWS_User_Groups {
 		if(isset($_GET['role'])) { $args['role'] = $_GET['role']; }
 
 		?>
-		<label for="user-groups-select"><?php _e('User Groups:', 'user-group'); ?></label>
+		<label for="user-groups-select"><?php esc_html_e('User Groups:', 'user-groups'); ?></label>
 
 		<form method="get" action="<?php echo esc_url( preg_replace('/(.*?)\/users/ism', 'users', add_query_arg($args, remove_query_arg('user-group'))) ); ?>" style="display:inline;">
 			<?php  echo $select; ?>
@@ -713,8 +664,15 @@ class KWS_User_Groups {
 
 	}
 
-	function css_includes(){ if(!self::is_edit_user_group() ) { return; } wp_enqueue_style('farbtastic', array('jquery')); }
-	function js_includes() { if(!self::is_edit_user_group() ) { return; } wp_enqueue_script('farbtastic', array('jquery')); }
+	function css_includes(){
+		if(!self::is_edit_user_group() ) { return; }
+		wp_enqueue_style('farbtastic', array('jquery'));
+	}
+
+	function js_includes() {
+		if(!self::is_edit_user_group() ) { return; }
+		wp_enqueue_script('farbtastic', array('jquery'));
+	}
 
 	function user_column_data($value, $column_name, $user_id) {
 
@@ -734,7 +692,7 @@ class KWS_User_Groups {
 	 */
 	function add_manage_users_columns($defaults) {
 
-		$defaults['user-group'] = __('User Group', 'user-group');
+		$defaults['user-group'] = __('User Group', 'user-groups');
 
 		return $defaults;
 	}
@@ -756,19 +714,19 @@ class KWS_User_Groups {
 				jQuery('#group-color').processColor((farbtastic.hsl[2] * 100), (farbtastic.hsl[1] * 100));
 			}
 
-			jQuery(document).ready(function() {
+			jQuery(document).ready(function( $ ) {
 
-				jQuery('#pickcolor,#group-color').click(function() {
-					jQuery('#color-picker').show();
+				$('#pickcolor,#group-color').click(function() {
+					$('#color-picker').show();
 				});
 
-				jQuery('#defaultcolor').click(function() {
+				$('#defaultcolor').click(function() {
 					pickColor(default_color);
-					jQuery('#group-color').val(default_color).css('background', default_color)
+					$('#group-color').val(default_color).css('background', default_color)
 				});
 
-				jQuery('#group-color').keyup(function() {
-					var _hex = jQuery('#group-color').val();
+				$('#group-color').keyup(function() {
+					var _hex = $('#group-color').val();
 					var hex = _hex;
 					if ( hex[0] != '#' )
 						hex = '#' + hex;
@@ -779,16 +737,16 @@ class KWS_User_Groups {
 						pickColor( hex );
 				});
 
-				jQuery(document).mousedown(function(){
-					jQuery('#color-picker').each( function() {
+				$(document).mousedown(function(){
+					$('#color-picker').each( function() {
 						var display = jQuery(this).css('display');
 						if (display == 'block')
 							jQuery(this).fadeOut(2);
 					});
 				});
 
-				farbtastic = jQuery.farbtastic('#color-picker', function(color) { pickColor(color); });
-				pickColor(jQuery('#group-color').val());
+				farbtastic = $.farbtastic('#color-picker', function(color) { pickColor(color); });
+				pickColor($('#group-color').val());
 			});
 
 			jQuery.fn.processColor = function(black, sat) {
@@ -830,11 +788,13 @@ class KWS_User_Groups {
 			$pagenow === 'edit-tags.php' &&
 			isset($_GET['action']) && $_GET['action'] == 'edit' &&
 			isset($_GET['taxonomy']) && $_GET['taxonomy'] === 'user-group'
-		){ return true; }
+		){
+			return true;
+		}
 
 		if(
 			(!$page || $page === 'all') &&
-			$pagenow === 'edit-tags.php' &&
+			( $pagenow === 'edit-tags.php' || $pagenow === 'term.php' ) &&
 			isset($_GET['taxonomy']) && $_GET['taxonomy'] === 'user-group' &&
 			(!isset($_GET['action']) || $_GET['action'] !== 'edit')
 		) {

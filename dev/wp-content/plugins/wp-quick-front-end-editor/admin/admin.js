@@ -13,6 +13,8 @@ jQuery(document).ready(function($) {
 	var data = {
 			action: 'la_save_front_editor',
 			position:jQuery('#fronteditor').find('.btnposition').val(),
+			btnText:jQuery('#fronteditor').find('.btntext').val(),
+			disBtntext:jQuery('#fronteditor').find('.disbtntext').val(),
 			role: roles
 			
 		}
@@ -21,6 +23,7 @@ jQuery(document).ready(function($) {
 			jQuery('#la-saved').show();
             jQuery('#la-loader').hide();
             jQuery('#la-saved').delay(2000).fadeOut();
+            window.location.reload(true);
 		});
 	});
 

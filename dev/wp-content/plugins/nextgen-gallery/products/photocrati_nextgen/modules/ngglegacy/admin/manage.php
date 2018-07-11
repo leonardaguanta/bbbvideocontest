@@ -17,7 +17,7 @@ class nggManageGallery {
 		// GET variables
 		if( isset($_GET['gid']) ) {
 			$this->gid  = (int) $_GET['gid'];
-			$this->gallery = C_Gallery_Mapper::get_instance()->find($this->gid);
+			$this->gallery = C_Gallery_Mapper::get_instance()->find($this->gid, TRUE);
 		}
 		if( isset($_GET['pid']) )
 			$this->pid  = (int) $_GET['pid'];
@@ -39,10 +39,12 @@ class nggManageGallery {
 		// Should be called via a publish dialog
 		if ( isset($_POST['page']) && $_POST['page'] == 'publish-post' )
 			$this->publish_post();
+
 		//Look for other POST process
 		if ( !empty($_POST) || !empty($_GET) )
 			$this->processor();
 
+        M_NextGen_Admin::emit_do_notices_action();
 	}
 
 	function controller() {
@@ -77,13 +79,13 @@ class nggManageGallery {
 			check_admin_referer('ngg_delpicture');
 			$image = $nggdb->find_image( $this->pid );
 			if ($image) {
+				do_action('ngg_delete_picture', $this->pid, $image);
 				if ($ngg->options['deleteImg']) {
                     $storage = $storage  = C_Gallery_Storage::get_instance();
                     $storage->delete_image($this->pid);
 				}
 				$mapper = C_Image_Mapper::get_instance();
 				$result = $mapper->destroy($this->pid);
-				do_action('ngg_delete_picture', $this->pid);
 
                 if ($result)
                     nggGallery::show_message( __('Picture','nggallery').' \''.$this->pid.'\' '.__('deleted successfully','nggallery') );
@@ -192,7 +194,7 @@ class nggManageGallery {
 
 		$output = array();
 
-		$output[] = "<a href='{$image_url}' class='shutter' title='{$filename}'>";
+		$output[] = "<a href='{$image_url}' class='thickbox' title='{$filename}'>";
 		$output[] = "<img class='thumb' src='{$thumb_url}' id='thumb{$picture->pid}'/>";
 		$output[] = "</a>";
 
@@ -238,7 +240,9 @@ class nggManageGallery {
 
 	function render_image_column_6($output='', $picture=array())
 	{
-		$tags = wp_get_object_terms($picture->pid, 'ngg_tag', 'fields=names');
+        global $wp_version;
+        $fields = version_compare($wp_version, '4.6', '<=') ? 'fields=names' : array('fields' => 'names');
+        $tags = wp_get_object_terms($picture->pid, 'ngg_tag', $fields);
 		if (is_array($tags)) $tags = implode(', ', $tags);
 		$tags = esc_html($tags);
 
@@ -298,7 +302,7 @@ class nggManageGallery {
 		$alt_text	= empty($picture->alttext) ? $picture->filename: $picture->alttext;
 		$title		= esc_attr(__('View', 'nggallery'). " \"{$alt_text}\"");
 
-		return "<a href='{$image_url}' class='shutter' title='{$title}'>{$label}</a>";
+		return "<a href='{$image_url}' class='thickbox' title='{$title}'>{$label}</a>";
 	}
 
 	function render_meta_action_link($id, $picture)
@@ -347,6 +351,7 @@ class nggManageGallery {
 		$title		= esc_attr__('Recover image from backup', 'nggallery');
 		$label		= esc_html__('Recover', 'nggallery');
 		$alttext	= empty($picture->alttext) ? $picture->filename : $picture->alttext;
+		$alttext    = M_NextGen_Data::strip_html(html_entity_decode($alttext), TRUE);
 		$confirm	= addslashes(__("Recover", 'nggallery'). " \"{$alttext}\"?");
 		$onclick	= "javascript:if(!confirm(\"{$confirm}\")) return false";
 
@@ -359,6 +364,7 @@ class nggManageGallery {
 		$title		= esc_attr__('Delete image', 'nggallery');
 		$label		= esc_html__('Delete', 'nggallery');
 		$alttext	= empty($picture->alttext) ? $picture->filename : $picture->alttext;
+		$alttext    = M_NextGen_Data::strip_html(html_entity_decode($alttext), TRUE);
 		$confirm	= addslashes(__("Delete", 'nggallery'). " \"{$alttext}\"?");
 		$onclick	= "javascript:if(!confirm(\"{$confirm}\")) return false;";
 
@@ -581,8 +587,19 @@ class nggManageGallery {
                         $deleted = FALSE;
 						$mapper = C_Gallery_Mapper::get_instance();
 						foreach ($_POST['doaction'] as $id) {
-							if ($mapper->destroy($id, TRUE))
-								$deleted = TRUE;
+
+							$gallery = $mapper->find($id);
+							if ($gallery->path == '../' || FALSE !== strpos($gallery->path, '/../'))
+							{
+								nggGallery::show_message(sprintf(__('One or more "../" in Gallery paths could be unsafe and NextGen Gallery will not delete gallery %s automatically', 'nggallery'), $gallery->{$gallery->id_field}));
+							}
+							else {
+								/**
+								 * @var $mapper Mixin_Gallery_Mapper
+								 */
+								if ($mapper->destroy($id, TRUE))
+									$deleted = TRUE;
+							}
 						}
 
 						if ($deleted)
@@ -672,11 +689,11 @@ class nggManageGallery {
 						foreach ( $_POST['doaction'] as $imageID ) {
 							$image = $nggdb->find_image( $imageID );
 							if ($image) {
+								do_action('ngg_delete_picture', $image->pid, $image);
 								if ($ngg->options['deleteImg']) {
                                     $storage = C_Gallery_Storage::get_instance();
                                     $storage->delete_image($image->pid);
 								}
-                                do_action('ngg_delete_picture', $image->pid);
 								$delete_pic = C_Image_Mapper::get_instance()->destroy($image->pid);
 							}
 						}
@@ -783,41 +800,59 @@ class nggManageGallery {
 
 		if (isset ($_POST['updatepictures']) )  {
 		// Update pictures
+			$success = FALSE;
+
 
 			check_admin_referer('ngg_updategallery');
 
 			if ( nggGallery::current_user_can( 'NextGEN Edit gallery options' )  && !isset ($_GET['s']) ) {
-      	$tags = array('<a>', '<abbr>', '<acronym>', '<address>', '<b>', '<base>', '<basefont>', '<big>', '<blockquote>', '<br>', '<br/>', '<caption>', '<center>', '<cite>', '<code>', '<col>', '<colgroup>', '<dd>', '<del>', '<dfn>', '<dir>', '<div>', '<dl>', '<dt>', '<em>', '<fieldset>', '<font>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>', '<hr>', '<i>', '<img>', '<ins>', '<label>', '<legend>', '<li>', '<menu>', '<noframes>', '<noscript>', '<ol>', '<optgroup>', '<option>', '<p>', '<pre>', '<q>', '<s>', '<samp>', '<select>', '<small>', '<span>', '<strike>', '<strong>', '<sub>', '<sup>', '<table>', '<tbody>', '<td>', '<tfoot>', '<th>', '<thead>', '<tr>', '<tt>', '<u>', '<ul>');
+                $tags = array('<a>', '<abbr>', '<acronym>', '<address>', '<b>', '<base>', '<basefont>', '<big>', '<blockquote>', '<br>', '<br/>', '<caption>', '<center>', '<cite>', '<code>', '<col>', '<colgroup>', '<dd>', '<del>', '<dfn>', '<dir>', '<div>', '<dl>', '<dt>', '<em>', '<fieldset>', '<font>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>', '<hr>', '<i>', '<img>', '<ins>', '<label>', '<legend>', '<li>', '<menu>', '<noframes>', '<noscript>', '<ol>', '<optgroup>', '<option>', '<p>', '<pre>', '<q>', '<s>', '<samp>', '<select>', '<small>', '<span>', '<strike>', '<strong>', '<sub>', '<sup>', '<table>', '<tbody>', '<td>', '<tfoot>', '<th>', '<thead>', '<tr>', '<tt>', '<u>', '<ul>');
 				$fields = array('title', 'galdesc');
-
+				
 				// Sanitize fields
 				foreach ($fields as $field) {
-					$html = $_POST[$field];
+					$html = stripslashes($_POST[$field]);
 					$html = preg_replace('/\\s+on\\w+=(["\']).*?\\1/i', '', $html);
 					$html = preg_replace('/(<\/[^>]+?>)(<[^>\/][^>]*?>)/', '$1 $2', $html);
 					$html = strip_tags($html, implode('', $tags));
 					$_POST[$field] = $html;
 				}
 
-				// Update the gallery
 				$mapper = C_Gallery_Mapper::get_instance();
-				if ($entity = $mapper->find($this->gid)) {
-					foreach ($_POST as $key => $value) {
-						$entity->$key = $value;
-					}
-					$mapper->save($entity);
+				
+				// Update the gallery
+				if (!$this->gallery) {
+					$this->gallery = $mapper->find($this->gid, TRUE);
 				}
 
-                wp_cache_delete($this->gid, 'ngg_gallery');
+				if ($this->gallery) {
+					foreach ($_POST as $key => $value) {
+						$this->gallery->$key = $value;
+					}
+					$mapper->save($this->gallery);
 
+					if ($this->gallery->is_invalid()) {
+						foreach ($this->gallery->get_errors() as $property => $errors) {
+							foreach ($errors as $error) {
+								nggGallery::show_error($error);
+							}
+						}
+					}
+
+					wp_cache_delete($this->gid, 'ngg_gallery');
+					$success = $this->gallery->is_valid();
+				}
 			}
 
-			$this->update_pictures();
 
-			//hook for other plugin to update the fields
-			do_action('ngg_update_gallery', $this->gid, $_POST);
+			if ($success) {
+				$this->update_pictures();
 
-			nggGallery::show_message(__('Update successful', 'nggallery'));
+				//hook for other plugin to update the fields
+				do_action('ngg_update_gallery', $this->gid, $_POST);
+
+				nggGallery::show_message(__('Updated successfully', 'nggallery'));
+			}
 		}
 
 		if (isset ($_POST['scanfolder']))  {
@@ -917,7 +952,7 @@ class nggManageGallery {
 	{
 		$updated = 0;
 
-		if (!$this->can_user_manage_gallery()) $updated;
+		if (!$this->can_user_manage_gallery()) return $updated;
 
 		if (isset($_POST['images']) && is_array($_POST['images'])) {
 			$image_mapper = C_Image_Mapper::get_instance();
@@ -964,7 +999,20 @@ class nggManageGallery {
 					}
 				}
 			}
+
+            // Determine if any WP terms have been orphaned and clean them up
+            global $wpdb;
+            $results = $wpdb->get_col("SELECT t.`term_id` FROM `{$wpdb->term_taxonomy}` tt
+                                       LEFT JOIN `{$wpdb->terms}` t ON tt.`term_id` = t.`term_id`
+                                       WHERE tt.`taxonomy` = 'ngg_tag' AND tt.`count` <= 0");
+            if (!empty($results))
+            {
+                foreach ($results as $term_id) {
+                    wp_delete_term($term_id, 'ngg_tag');
+                }
+            }
 		}
+
 		return $updated;
 	}
 
@@ -1089,6 +1137,7 @@ class nggManageGallery {
 		$pagination = "<div class='tablenav-pages{$page_class}'>$output</div>";
 
 		echo $pagination;
+		return $pagination;
 	}
 
 }

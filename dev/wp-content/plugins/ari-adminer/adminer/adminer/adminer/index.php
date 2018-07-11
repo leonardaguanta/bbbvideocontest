@@ -3,8 +3,8 @@
 * @link https://www.adminer.org/
 * @author Jakub Vrana, https://www.vrana.cz/
 * @copyright 2007 Jakub Vrana
-* @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
-* @license http://www.gnu.org/licenses/gpl-2.0.html GNU General Public License, version 2 (one or other)
+* @license https://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+* @license https://www.gnu.org/licenses/gpl-2.0.html GNU General Public License, version 2 (one or other)
 */
 
 include "./include/bootstrap.inc.php";
@@ -65,8 +65,6 @@ if (isset($_GET["download"])) {
 	include "./user.inc.php";
 } elseif (isset($_GET["processlist"])) {
 	include "./processlist.inc.php";
-} elseif (isset($_GET["replication"])) {
-	include "./replication.inc.php";
 } elseif (isset($_GET["select"])) {
 	include "./select.inc.php";
 } elseif (isset($_GET["variables"])) {

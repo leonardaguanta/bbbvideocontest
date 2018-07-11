@@ -6,24 +6,32 @@ function nggallery_picturelist($controller) {
 // *** show picture list
 	global $wpdb, $nggdb, $user_ID, $ngg;
 
+	$action_status = array('message' => '', 'status' => 'ok');
+
 	// Look if its a search result
 	$is_search = isset ($_GET['s']) ? true : false;
 	$counter	= 0;
 
     $wp_list_table = new _NGG_Images_List_Table('nggallery-manage-images');
 
-    if ($is_search) {
+	// look for pagination
+	$_GET['paged'] = isset($_GET['paged']) && ($_GET['paged'] > 0) ? absint($_GET['paged']) : 1;
+	$items_per_page = (!empty($_GET['items']) ? $_GET['items'] : apply_filters('ngg_manage_images_items_per_page', 50));
+	if ($items_per_page == 'all')
+		$items_per_page = PHP_INT_MAX;
+	else
+		$items_per_page = (int)$items_per_page;
 
+    if ($is_search)
+    {
 		// fetch the imagelist
 		$picturelist = $ngg->manage_page->search_result;
+	    $total_number_of_images = count($picturelist);
 
 		// we didn't set a gallery or a pagination
-		$act_gid     = 0;
-		$_GET['paged'] = 1;
-		$page_links = false;
-
-	} else {
-
+		$act_gid = 0;
+	}
+    else {
 		// GET variables
 		$act_gid    = $ngg->manage_page->gid;
 
@@ -42,13 +50,6 @@ function nggallery_picturelist($controller) {
 			return;
 		}
 
-		// look for pagination
-        $_GET['paged'] = isset($_GET['paged']) && ($_GET['paged'] > 0) ? absint($_GET['paged']) : 1;
-        $items_per_page = (!empty($_GET['items']) ? $_GET['items'] : apply_filters('ngg_manage_images_items_per_page', 50));
-        if ($items_per_page == 'all')
-            $items_per_page = PHP_INT_MAX;
-        else
-            $items_per_page = (int)$items_per_page;
         $start = ( $_GET['paged'] - 1 ) * $items_per_page;
 
 		// get picture values
@@ -151,20 +152,20 @@ jQuery(function (){
       }
 
     	var $this = jQuery(this);
-      var results = new RegExp('[\\?&]w=([^&#]*)').exec(this.href);
-    	var width  = ( results ) ? results[1] : 600;
-      var results = new RegExp('[\\?&]h=([^&#]*)').exec(this.href);
-	    var height = ( results ) ? results[1] : 440;
-      var container = window;
+		var results = new RegExp('[\\?&]w=([^&#]*)').exec(this.href);
+    	var width  = ( results ) ? results[1] : 800;
+		var results = new RegExp('[\\?&]h=([^&#]*)').exec(this.href);
+	    var height = ( results ) ? results[1] : 500;
+		var container = window;
 
       if (window.parent) {
       	container = window.parent;
       }
 
       jQuery('#spinner').fadeIn();
-      jQuery('#spinner').position({ my: "center", at: "center", of: container });
+      jQuery('#spinner').position({my: "center", at: "center", of: container });
 
-      var dialog = jQuery('<div class="ngg-overlay-dialog" style="display:hidden"></div>').appendTo('body');
+      var dialog = jQuery('<div class="ngg-overlay-dialog"></div>').appendTo('body');
       // load the remote content
       dialog.load(
           this.href,
@@ -174,7 +175,7 @@ jQuery(function (){
 
               dialog.dialog({
                   title: ($this.attr('title')) ? $this.attr('title') : '',
-                  position: { my: "center", at: "center", of: container },
+                  position: { my: "center center-30", at: "center", of: window.parent },
                   width: width,
                   height: height,
                   modal: true,
@@ -187,6 +188,14 @@ jQuery(function (){
       //prevent the browser to follow the link
       return false;
     });
+
+	// If too many of these are generated the cookie becomes so large servers will reject HTTP requests
+	// Wait some time for other listeners to catch this event and then purge it from the browser
+	Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data) {
+		setTimeout(function() {
+			Frame_Event_Publisher.delete_cookie("X-Frame-Events_" + data.id);
+		}, 400);
+	});
 });
 
 function checkAll(form)
@@ -278,178 +287,229 @@ jQuery(document).ready( function($) {
 	jQuery('.if-js-closed').removeClass('if-js-closed').addClass('closed');
 	postboxes.add_postbox_toggles('ngg-manage-gallery');
 
-	jQuery('.iedit').mouseover(
+	/*jQuery('.iedit').mouseover(
 		function(e){
 			jQuery(this).parent().find('.row-actions').css('visibility', 'hidden');
-			jQuery(this).next('.row_actions:first').find('.row-actions:first').css('visibility', 'visible');
+			jQuery(this).next('.row_actions:first').find('.row-actions:first').css({
+				'visibility': 'visible',
+				'left': 0 // WP 4.4 compatibility; it assigns left:-9999em by default to row-actions
+			});
 		}
-	);
+	);*/
 
 	$(this).data('ready', true);
 });
 
 //-->
 </script>
-<div class="wrap">
-<?php screen_icon( 'nextgen-gallery' ); ?>
+
+<?php if ($action_status['message']!='') : ?>
+		<div id="message" class="<?php echo ($action_status['status']=='ok' ? 'updated' : $action_status['status']); ?> fade">
+			<p><strong><?php echo $action_status['message']; ?></strong></p>
+		</div>
+<?php endif; ?>
+
+<div class="wrap ngg_manage_images">
+
 <?php if ($is_search) :?>
-<h2><?php printf( __('Search results for &#8220;%s&#8221;', 'nggallery'), esc_html( get_search_query() ) ); ?></h2>
-<form class="search-form" action="" method="get">
-<p class="search-box">
-	<label class="hidden" for="media-search-input"><?php _e( 'Search Images', 'nggallery' ); ?>:</label>
-	<input type="hidden" id="page-name" name="page" value="nggallery-manage-gallery" />
-	<input type="text" id="media-search-input" name="s" value="<?php the_search_query(); ?>" />
-	<input type="submit" value="<?php _e( 'Search Images', 'nggallery' ); ?>" class="button" />
-</p>
-</form>
 
-<br style="clear: both;" />
+	<div class="ngg_page_content_header"><img src="<?php  echo(C_Router::get_instance()->get_static_url('photocrati-nextgen_admin#imagely_icon.png')); ?>"><h3><?php printf( __('Search results for &#8220;%s&#8221;', 'nggallery'), esc_html( get_search_query() ) ); ?></h3>
+	</div>
 
-<form id="updategallery" class="nggform" method="POST" action="<?php echo $ngg->manage_page->base_page . '&amp;mode=edit&amp;s=' . get_search_query(); ?>" accept-charset="utf-8">
-<?php wp_nonce_field('ngg_updategallery') ?>
-<input type="hidden" name="page" value="manage-images" />
+	<div class='ngg_page_content_main'>
 
-<?php else :?>
-<h2><?php echo _n( 'Gallery', 'Galleries', 1, 'nggallery' ); ?> : <?php echo esc_html ( M_I18N::translate($gallery->title) ); ?></h2>
+		<form class="search-form" action="" method="get">
+		<p class="search-box">
+			<label class="hidden" for="media-search-input"><?php _e( 'Search Images', 'nggallery' ); ?>:</label>
+			<input type="hidden" id="page-name" name="page" value="nggallery-manage-gallery" />
+			<input type="text" id="media-search-input" name="s" value="<?php the_search_query(); ?>" />
+			<input type="submit" value="<?php _e( 'Search Images', 'nggallery' ); ?>" class="button" />
+		</p>
+		</form>
 
-<br style="clear: both;" />
+		<br style="clear: both;" />
 
-<form id="updategallery" class="nggform" method="POST" action="<?php echo $ngg->manage_page->base_page . '&amp;mode=edit&amp;gid=' . $act_gid . '&amp;paged=' . esc_attr($_GET['paged']); ?>" accept-charset="utf-8">
-<?php wp_nonce_field('ngg_updategallery') ?>
-<input type="hidden" name="page" value="manage-images" />
+		<form id="updategallery" class="nggform" method="POST" action="<?php echo $ngg->manage_page->base_page . '&amp;mode=edit&amp;s=' . get_search_query(); ?>" accept-charset="utf-8">
+		
+			<?php wp_nonce_field('ngg_updategallery') ?>
+			<input type="hidden" name="page" value="manage-images" />
 
-<?php if ( nggGallery::current_user_can( 'NextGEN Edit gallery options' )) : ?>
-<div id="poststuff" class="meta-box-sortables">
-	<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
-	<div id="gallerydiv" class="postbox <?php echo postbox_classes('gallerydiv', 'ngg-manage-gallery'); ?>" >
-        <div class="handlediv" title="<?php esc_attr_e('Click to toggle'); ?>"><br/></div>
-		<h3 class="hndl"><span><?php _e('Gallery settings', 'nggallery') ?><small> (<?php _e('Click here for more settings', 'nggallery') ?>)</small></span></h3>
-		<div class="inside">
-			<?php $controller->render_gallery_fields(); ?>
+		<!-- form#updategallery continues below end of if statement -->
 
-			<div class="submit">
-				<?php if ( wpmu_enable_function('wpmuImportFolder') && nggGallery::current_user_can( 'NextGEN Import image folder' ) ) : ?>
-				<input type="submit" class="button-secondary" name="scanfolder" value="<?php _e("Scan Folder for new images",'nggallery'); ?> " />
-				<?php endif; ?>
-				<input type="submit" class="button-primary action" name="updatepictures" value="<?php _e("Save Changes",'nggallery'); ?>" />
+	<!-- div.ngg_page_content_main continues below end of if statement -->
+
+	<?php else :?>
+
+	<div class="ngg_page_content_header"><img src="<?php  echo(C_Router::get_instance()->get_static_url('photocrati-nextgen_admin#imagely_icon.png')); ?>"><h3><?php echo _n( 'Gallery: ', 'Galleries: ', 1, 'nggallery' ); ?> <?php echo esc_html ( M_I18N::translate($gallery->title) ); ?></h3>
+	</div>
+
+	<br style="clear: both;" />
+
+	<div class='ngg_page_content_main'>
+
+		<form id="updategallery" class="nggform" method="POST" action="<?php echo $ngg->manage_page->base_page . '&amp;mode=edit&amp;gid=' . $act_gid . '&amp;paged=' . esc_attr($_GET['paged']); ?>" accept-charset="utf-8">
+		
+			<?php wp_nonce_field('ngg_updategallery') ?>
+			<input type="hidden" name="page" value="manage-images" />
+
+			<?php if ( nggGallery::current_user_can( 'NextGEN Edit gallery options' )) : ?>
+
+				<div id="poststuff" class="meta-box-sortables">
+					<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
+					<div id="gallerydiv" class="postbox closed <?php echo postbox_classes('gallerydiv', 'ngg-manage-gallery'); ?>" >
+						<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>">
+							<span class="toggle-indicator"></span>
+							<h3>
+								<span>&nbsp;<?php _e('Gallery Settings', 'nggallery'); ?></span>
+							</h3>
+							
+						</div>
+						
+						<div class="inside">
+							<?php $controller->render_gallery_fields(); ?>
+
+							<div class="submit">
+								<?php if ( wpmu_enable_function('wpmuImportFolder') && nggGallery::current_user_can( 'NextGEN Import image folder' ) ) : ?>
+								<input type="submit" class="button-primary" name="scanfolder" value="<?php _e("Scan Folder for new images",'nggallery'); ?> " />
+								<?php endif; ?>
+								<input type="submit" class="button-primary action" name="updatepictures" value="<?php _e("Save Changes",'nggallery'); ?>" />
+							</div>
+
+						</div>
+					</div>
+				</div> <!-- poststuff -->
+
+			<?php endif; ?>
+
+		<!-- form#updategallery continues below end of if statement -->
+
+	<!-- div.ngg_page_content_main continues below end of if statement -->
+
+	<?php endif; ?>
+
+	<!-- div.ngg_page_content_main continues here -->
+
+		<!-- form#updategallery continues here -->
+
+			<div class="tablenav top ngg-tablenav">
+
+			    <?php
+			    $ngg->manage_page->pagination( 'top', $_GET['paged'], $total_number_of_images, $items_per_page );
+
+			    $items_per_page_array = apply_filters('ngg_manage_images_items_per_page_array', array(
+			        '25'  => __(' 25', 'nggallery'),
+			        '50'  => __(' 50', 'nggallery'),
+			        '75'  => __(' 75', 'nggallery'),
+			        '100' => __('100', 'nggallery'),
+			        '200' => __('200', 'nggallery'),
+			        'all' => __('All', 'nggallery')
+			    ));
+			    ?>
+
+			    <select id="ngg-manage-images-items-per-page">
+			        <?php foreach ($items_per_page_array as $val => $label) { ?>
+			            <?php
+			            $selected = '';
+			            if(!empty($_GET['items']) && $val == $_GET['items'])
+			                $selected = 'selected';
+			            elseif (empty($_GET['items']) && $val == $items_per_page)
+			                $selected = 'selected';
+			            ?>
+			            <option value="<?php echo esc_attr($val); ?>" <?php echo $selected; ?>>
+			                <?php echo esc_html($label); ?>
+			            </option>
+			        <?php } ?>
+			    </select>
+			    <label id="ngg-manage-images-items-per-page-label"
+			           for="ngg-manage-images-items-per-page"><?php echo __('Images per page:', 'nggallery'); ?></label>
+
+				<div class="alignleft actions">
+				<select id="bulkaction" name="bulkaction">
+					<option value="no_action" ><?php _e("Bulk actions",'nggallery'); ?></option>
+					<option value="set_watermark" ><?php _e("Set watermark",'nggallery'); ?></option>
+					<option value="new_thumbnail" ><?php _e("Create new thumbnails",'nggallery'); ?></option>
+					<option value="resize_images" ><?php _e("Resize images",'nggallery'); ?></option>
+					<option value="recover_images" ><?php _e("Recover from backup",'nggallery'); ?></option>
+					<option value="delete_images" ><?php _e("Delete images",'nggallery'); ?></option>
+					<option value="import_meta" ><?php _e("Import metadata",'nggallery'); ?></option>
+					<option value="rotate_cw" ><?php _e("Rotate images clockwise",'nggallery'); ?></option>
+					<option value="rotate_ccw" ><?php _e("Rotate images counter-clockwise",'nggallery'); ?></option>
+					<option value="copy_to" ><?php _e("Copy to...",'nggallery'); ?></option>
+					<option value="move_to"><?php _e("Move to...",'nggallery'); ?></option>
+					<option value="add_tags" ><?php _e("Add tags",'nggallery'); ?></option>
+					<option value="delete_tags" ><?php _e("Delete tags",'nggallery'); ?></option>
+					<option value="overwrite_tags" ><?php _e("Overwrite tags",'nggallery'); ?></option>
+				</select>
+				<input class="button-primary" type="submit" name="showThickbox" value="<?php _e('Apply', 'nggallery'); ?>" onclick="if ( !checkSelected() ) return false;" />
+
+				<?php if (($ngg->options['galSort'] == "sortorder") && (!$is_search) ) { ?>
+					<input class="button-primary" type="submit" name="sortGallery" value="<?php _e('Sort gallery', 'nggallery');?>" />
+				<?php } ?>
+
+				<input type="submit" name="updatepictures" class="button-primary action"  value="<?php _e('Save Changes', 'nggallery');?>" />
+				</div>
 			</div>
 
-		</div>
-	</div>
-</div> <!-- poststuff -->
-<?php endif; ?>
+			<table id="ngg-listimages" class="widefat fixed" cellspacing="0" >
 
-<?php endif; ?>
+				<thead>
+					<?php $controller->render_image_row_header() ?>
+				</thead>
 
-<div class="tablenav top ngg-tablenav">
+				<tfoot>
+					<?php $controller->render_image_row_header() ?>
+				</tfoot>
 
-    <?php
-    $ngg->manage_page->pagination( 'top', $_GET['paged'], $total_number_of_images, $items_per_page );
+				<tbody id="the-list">
 
-    $items_per_page_array = apply_filters('ngg_manage_images_items_per_page_array', array(
-        '25'  => __(' 25', 'nggallery'),
-        '50'  => __(' 50', 'nggallery'),
-        '75'  => __(' 75', 'nggallery'),
-        '100' => __('100', 'nggallery'),
-        '200' => __('200', 'nggallery'),
-        'all' => __('All', 'nggallery')
-    ));
-    ?>
+					<?php
+					if($picturelist) {
 
-    <select id="ngg-manage-images-items-per-page">
-        <?php foreach ($items_per_page_array as $val => $label) { ?>
-            <?php
-            $selected = '';
-            if(!empty($_GET['items']) && $val == $_GET['items'])
-                $selected = 'selected';
-            elseif (empty($_GET['items']) && $val == $items_per_page)
-                $selected = 'selected';
-            ?>
-            <option value="<?php echo esc_attr($val); ?>" <?php echo $selected; ?>>
-                <?php echo esc_html($label); ?>
-            </option>
-        <?php } ?>
-    </select>
-    <label id="ngg-manage-images-items-per-page-label"
-           for="ngg-manage-images-items-per-page"><?php echo __('Images per page:', 'nggallery'); ?></label>
+						$thumbsize 	= '';
+						$storage = C_Gallery_Storage::get_instance();
+					    $gallery_mapper = C_Gallery_Mapper::get_instance();
 
-	<div class="alignleft actions">
-	<select id="bulkaction" name="bulkaction">
-		<option value="no_action" ><?php _e("Bulk actions",'nggallery'); ?></option>
-		<option value="set_watermark" ><?php _e("Set watermark",'nggallery'); ?></option>
-		<option value="new_thumbnail" ><?php _e("Create new thumbnails",'nggallery'); ?></option>
-		<option value="resize_images" ><?php _e("Resize images",'nggallery'); ?></option>
-		<option value="recover_images" ><?php _e("Recover from backup",'nggallery'); ?></option>
-		<option value="delete_images" ><?php _e("Delete images",'nggallery'); ?></option>
-		<option value="import_meta" ><?php _e("Import metadata",'nggallery'); ?></option>
-		<option value="rotate_cw" ><?php _e("Rotate images clockwise",'nggallery'); ?></option>
-		<option value="rotate_ccw" ><?php _e("Rotate images counter-clockwise",'nggallery'); ?></option>
-		<option value="copy_to" ><?php _e("Copy to...",'nggallery'); ?></option>
-		<option value="move_to"><?php _e("Move to...",'nggallery'); ?></option>
-		<option value="add_tags" ><?php _e("Add tags",'nggallery'); ?></option>
-		<option value="delete_tags" ><?php _e("Delete tags",'nggallery'); ?></option>
-		<option value="overwrite_tags" ><?php _e("Overwrite tags",'nggallery'); ?></option>
-	</select>
-	<input class="button-secondary" type="submit" name="showThickbox" value="<?php _e('Apply', 'nggallery'); ?>" onclick="if ( !checkSelected() ) return false;" />
+						if ($ngg->options['thumbfix'])
+							$thumbsize = 'width="' . $ngg->options['thumbwidth'] . '" height="' . $ngg->options['thumbheight'] . '"';
 
-	<?php if (($ngg->options['galSort'] == "sortorder") && (!$is_search) ) { ?>
-		<input class="button-secondary" type="submit" name="sortGallery" value="<?php _e('Sort gallery', 'nggallery');?>" />
-	<?php } ?>
+						foreach($picturelist as $picture) {
 
-	<input type="submit" name="updatepictures" class="button-primary action"  value="<?php _e('Save Changes', 'nggallery');?>" />
-	</div>
-</div>
-<table id="ngg-listimages" class="widefat fixed" cellspacing="0" >
+					        if (empty($gallery) && $is_search)
+					            $gallery = $gallery_mapper->find($picture->galleryid, FALSE);
 
-	<thead>
-		<?php $controller->render_image_row_header() ?>
-	</thead>
-	<tfoot>
-		<?php $controller->render_image_row_header() ?>
-	</tfoot>
-	<tbody id="the-list">
-<?php
-if($picturelist) {
+							//for search result we need to check the capatibiliy
+							if ( !nggAdmin::can_manage_this_gallery($gallery->author) && $is_search )
+								continue;
 
-	$thumbsize 	= '';
-	$storage = C_Gallery_Storage::get_instance();
-    $gallery_mapper = C_Gallery_Mapper::get_instance();
+							$counter++;
+							$picture->imageURL 	= $storage->get_image_url($picture);
+							$picture->thumbURL 	= $storage->get_thumb_url($picture);
+							$picture->imagePath = $storage->get_image_abspath($picture);
+							$picture->thumbPath = $storage->get_thumb_abspath($picture);
+							echo apply_filters('ngg_manage_images_row', $picture, $counter);
+						}
+					}	
 
-	if ($ngg->options['thumbfix'])
-		$thumbsize = 'width="' . $ngg->options['thumbwidth'] . '" height="' . $ngg->options['thumbheight'] . '"';
+					// In the case you have no capaptibility to see the search result
+					if ( $counter == 0 )
+						echo '<tr><td colspan="' . $num_columns . '" align="center"><strong>'.__('No entries found','nggallery').'</strong></td></tr>';
 
-	foreach($picturelist as $picture) {
+					?>
 
-        if (empty($gallery) && $is_search)
-            $gallery = $gallery_mapper->find($picture->galleryid, FALSE);
+				</tbody>
+			</table>
 
-		//for search result we need to check the capatibiliy
-		if ( !nggAdmin::can_manage_this_gallery($gallery->author) && $is_search )
-			continue;
+		    <div class="tablenav bottom">
+			    <input type="submit" class="button-primary action" name="updatepictures" value="<?php _e('Save Changes', 'nggallery'); ?>" />
+			    <?php $ngg->manage_page->pagination( 'bottom', $_GET['paged'], $total_number_of_images, $items_per_page  ); ?>
+		    </div>
 
-		$counter++;
-		$picture->imageURL 	= $storage->get_image_url($picture);
-		$picture->thumbURL 	= $storage->get_thumb_url($picture);
-		$picture->imagePath = $storage->get_image_abspath($picture);
-		$picture->thumbPath = $storage->get_thumb_abspath($picture);
-		echo apply_filters('ngg_manage_images_row', $picture, $counter);
-	}
-}
+		</form> <!-- /form#updategallery  -->
+	
+		<br class="clear"/>
 
-// In the case you have no capaptibility to see the search result
-if ( $counter == 0 )
-	echo '<tr><td colspan="' . $num_columns . '" align="center"><strong>'.__('No entries found','nggallery').'</strong></td></tr>';
+	</div><!-- /div.ngg_page_content_main -->
 
-?>
-
-		</tbody>
-	</table>
-    <div class="tablenav bottom">
-    <input type="submit" class="button-primary action" name="updatepictures" value="<?php _e('Save Changes', 'nggallery'); ?>" />
-    <?php $ngg->manage_page->pagination( 'bottom', $_GET['paged'], $total_number_of_images, $items_per_page  ); ?>
-    </div>
-	</form>
-	<br class="clear"/>
 	</div><!-- /#wrap -->
 
 	<!-- #entertags -->
@@ -463,11 +523,11 @@ if ( $counter == 0 )
 		  	<tr>
 		    	<th><?php _e("Enter the tags",'nggallery'); ?> : <input name="taglist" type="text" style="width:90%" value="" /></th>
 		  	</tr>
-		  	<tr align="right">
+		  	<tr>
 		    	<td class="submit">
 		    		<input class="button-primary" type="submit" name="TB_EditTags" value="<?php _e("OK",'nggallery'); ?>" />
 		    		&nbsp;
-		    		<input class="button-secondary dialog-cancel" type="reset" value="&nbsp;<?php _e("Cancel",'nggallery'); ?>&nbsp;" />
+		    		<input class="button-primary dialog-cancel" type="reset" value="&nbsp;<?php _e("Cancel",'nggallery'); ?>&nbsp;" />
 		    	</td>
 			</tr>
 		</table>
@@ -499,11 +559,11 @@ if ( $counter == 0 )
 		    		</select>
 		    	</th>
 		  	</tr>
-		  	<tr align="right">
+		  	<tr>
 		    	<td class="submit">
 		    		<input type="submit" class="button-primary" name="TB_SelectGallery" value="<?php _e("OK",'nggallery'); ?>" />
 		    		&nbsp;
-		    		<input class="button-secondary dialog-cancel" type="reset" value="<?php _e("Cancel",'nggallery'); ?>" />
+		    		<input class="button-primary dialog-cancel" type="reset" value="<?php _e("Cancel",'nggallery'); ?>" />
 		    	</td>
 			</tr>
 		</table>
@@ -528,11 +588,11 @@ if ( $counter == 0 )
 					<br /><small><?php _e('Width x height (in pixel). NextGEN Gallery will keep ratio size','nggallery') ?></small>
 				</td>
 			</tr>
-		  	<tr align="right">
+		  	<tr>
 		    	<td colspan="2" class="submit">
 		    		<input class="button-primary" type="submit" name="TB_ResizeImages" value="<?php _e('OK', 'nggallery'); ?>" />
 		    		&nbsp;
-		    		<input class="button-secondary dialog-cancel" type="reset" value="&nbsp;<?php _e('Cancel', 'nggallery'); ?>&nbsp;" />
+		    		<input class="button-primary dialog-cancel" type="reset" value="&nbsp;<?php _e('Cancel', 'nggallery'); ?>&nbsp;" />
 		    	</td>
 			</tr>
 		</table>
@@ -559,11 +619,11 @@ if ( $counter == 0 )
 				<td><input type="checkbox" name="thumbfix" value="1" <?php checked('1', $ngg->options['thumbfix']); ?> />
 				<br /><small><?php _e('Ignore the aspect ratio, no portrait thumbnails','nggallery') ?></small></td>
 			</tr>
-		  	<tr align="right">
+		  	<tr>
 		    	<td colspan="2" class="submit">
 		    		<input class="button-primary" type="submit" name="TB_NewThumbnail" value="<?php _e('OK', 'nggallery');?>" />
 		    		&nbsp;
-		    		<input class="button-secondary dialog-cancel" type="reset" value="&nbsp;<?php _e('Cancel', 'nggallery'); ?>&nbsp;" />
+		    		<input class="button-primary dialog-cancel" type="reset" value="&nbsp;<?php _e('Cancel', 'nggallery'); ?>&nbsp;" />
 		    	</td>
 			</tr>
 		</table>

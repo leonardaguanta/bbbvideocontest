@@ -67,7 +67,7 @@ jQuery( document ).on( 'click', 'ul.gform_fields', function() {
 });
 
 // trigger for when column titles are updated
-jQuery( document ).on( 'change', '#gfield_settings_columns_container #field_columns li', function() {
+jQuery( document ).on( 'change', '#gfield_settings_columns_container #field_columns li.field-choice-row', function() {
 	InsertFieldChoice(0);
 	DeleteFieldChoice(0);
 });

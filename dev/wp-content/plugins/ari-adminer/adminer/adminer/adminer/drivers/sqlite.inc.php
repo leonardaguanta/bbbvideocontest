@@ -184,11 +184,13 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 
 			function __construct() {
 				parent::__construct(":memory:");
+				$this->query("PRAGMA foreign_keys = 1");
 			}
 
 			function select_db($filename) {
 				if (is_readable($filename) && $this->query("ATTACH " . $this->quote(preg_match("~(^[/\\\\]|:)~", $filename) ? $filename : dirname($_SERVER["SCRIPT_FILENAME"]) . "/$filename") . " AS a")) { // is_readable - SQLite 3
 					parent::__construct($filename);
+					$this->query("PRAGMA foreign_keys = 1");
 					return true;
 				}
 				return false;
@@ -216,6 +218,15 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 			return queries("REPLACE INTO " . table($table) . " (" . implode(", ", array_keys(reset($rows))) . ") VALUES\n" . implode(",\n", $values));
 		}
 
+		function tableHelp($name) {
+			if ($name == "sqlite_sequence") {
+				return "fileformat2.html#seqtab";
+			}
+			if ($name == "sqlite_master") {
+				return "fileformat2.html#$name";
+			}
+		}
+
 	}
 
 
@@ -240,9 +251,12 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 		return " $query$where" . ($limit !== null ? $separator . "LIMIT $limit" . ($offset ? " OFFSET $offset" : "") : "");
 	}
 
-	function limit1($query, $where) {
+	function limit1($table, $query, $where, $separator = "\n") {
 		global $connection;
-		return ($connection->result("SELECT sqlite_compileoption_used('ENABLE_UPDATE_DELETE_LIMIT')") ? limit($query, $where, 1) : " $query$where");
+		return (preg_match('~^INTO~', $query) || $connection->result("SELECT sqlite_compileoption_used('ENABLE_UPDATE_DELETE_LIMIT')")
+			? limit($query, $where, 1, 0, $separator)
+			: " $query WHERE rowid = (SELECT rowid FROM " . table($table) . $where . $separator . "LIMIT 1)" //! use primary key in tables with WITHOUT rowid
+		);
 	}
 
 	function db_collation($db, $collations) {
@@ -269,9 +283,7 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 	function table_status($name = "") {
 		global $connection;
 		$return = array();
-		foreach (get_rows("SELECT name AS Name, type AS Engine FROM sqlite_master WHERE type IN ('table', 'view') " . ($name != "" ? "AND name = " . q($name) : "ORDER BY name")) as $row) {
-			$row["Oid"] = 1;
-			$row["Auto_increment"] = "";
+		foreach (get_rows("SELECT name AS Name, type AS Engine, 'rowid' AS Oid, '' AS Auto_increment FROM sqlite_master WHERE type IN ('table', 'view') " . ($name != "" ? "AND name = " . q($name) : "ORDER BY name")) as $row) {
 			$row["Rows"] = $connection->result("SELECT COUNT(*) FROM " . idf_escape($row["Name"]));
 			$return[$row["Name"]] = $row;
 		}
@@ -334,9 +346,9 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 		}
 		$return = array();
 		$sql = $connection2->result("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = " . q($table));
-		if (preg_match('~\bPRIMARY\s+KEY\s*\((([^)"]+|"[^"]*")++)~i', $sql, $match)) {
+		if (preg_match('~\bPRIMARY\s+KEY\s*\((([^)"]+|"[^"]*"|`[^`]*`)++)~i', $sql, $match)) {
 			$return[""] = array("type" => "PRIMARY", "columns" => array(), "lengths" => array(), "descs" => array());
-			preg_match_all('~((("[^"]*+")+)|(\S+))(\s+(ASC|DESC))?(,\s*|$)~i', $match[1], $matches, PREG_SET_ORDER);
+			preg_match_all('~((("[^"]*+")+|(?:`[^`]*+`)+)|(\S+))(\s+(ASC|DESC))?(,\s*|$)~i', $match[1], $matches, PREG_SET_ORDER);
 			foreach ($matches as $match) {
 				$return[""]["columns"][] = idf_unescape($match[2]) . $match[4];
 				$return[""]["descs"][] = (preg_match('~DESC~i', $match[5]) ? '1' : null);
@@ -504,6 +516,9 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 		if ($table != "") {
 			if (!$fields) {
 				foreach (fields($table) as $key => $field) {
+					if ($indexes) {
+						$field["auto_increment"] = 0;
+					}
 					$fields[] = process_field($field, $field);
 					$originals[$key] = idf_escape($key);
 				}
@@ -669,18 +684,6 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 		);
 	}
 
-	function routine($name, $type) {
-		// not supported by SQLite
-	}
-
-	function routines() {
-		// not supported by SQLite
-	}
-
-	function routine_languages() {
-		// not supported by SQLite
-	}
-
 	function begin() {
 		return queries("BEGIN");
 	}
@@ -713,7 +716,7 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 		return true;
 	}
 
-	function create_sql($table, $auto_increment) {
+	function create_sql($table, $auto_increment, $style) {
 		global $connection;
 		$return = $connection->result("SELECT sql FROM sqlite_master WHERE type IN ('table', 'view') AND name = " . q($table));
 		foreach (indexes($table) as $name => $index) {
@@ -732,7 +735,7 @@ if (isset($_GET["sqlite"]) || isset($_GET["sqlite2"])) {
 	function use_sql($database) {
 	}
 
-	function trigger_sql($table, $style) {
+	function trigger_sql($table) {
 		return implode(get_vals("SELECT sql || ';;\n' FROM sqlite_master WHERE type = 'trigger' AND tbl_name = " . q($table)));
 	}
 

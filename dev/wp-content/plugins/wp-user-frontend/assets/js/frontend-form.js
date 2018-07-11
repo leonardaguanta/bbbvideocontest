@@ -1,4 +1,4 @@
-;(function($) {
+;(function($, window) {
 
     $.fn.listautowidth = function() {
         return this.each(function() {
@@ -11,7 +11,8 @@
         });
     };
 
-    var WP_User_Frontend = {
+    window.WP_User_Frontend = {
+
         init: function() {
 
             //enable multistep
@@ -22,44 +23,74 @@
             $('.wpuf-form').on('click', 'img.wpuf-remove-field', this.removeField);
             $('.wpuf-form').on('click', 'a.wpuf-delete-avatar', this.deleteAvatar);
             $('.wpuf-form').on('click', 'a#wpuf-post-draft', this.draftPost);
+            $('.wpuf-form').on('click', 'button#wpuf-account-update-profile', this.account_update_profile);
 
             $('.wpuf-form-add').on('submit', this.formSubmit);
             $('form#post').on('submit', this.adminPostSubmit);
-            $( '.wpuf-form').on('keyup', '#pass1', this.check_pass_strength );
+            // $( '.wpuf-form').on('keyup', '#pass1', this.check_pass_strength );
+
+            // refresh pluploads on each step change (multistep form)
+            $('.wpuf-form').on('step-change-fieldset', function(event, number, step) {
+                if ( wpuf_plupload_items.length ) {
+                    for (var i = wpuf_plupload_items.length - 1; i >= 0; i--) {
+                        wpuf_plupload_items[i].refresh();
+                    }
+                }
+                if ( wpuf_map_items.length ) {
+                    for (var i = wpuf_map_items.length - 1; i >= 0; i--) {
+                        google.maps.event.trigger(wpuf_map_items[i].map, 'resize');
+                        wpuf_map_items[i].map.setCenter(wpuf_map_items[i].center);
+                    }
+                }
+            });
 
             this.ajaxCategory();
             // image insert
             // this.insertImage();
+
+            //comfirmation alert for canceling subscription
+            $( ':submit[name="wpuf_cancel_subscription"]').click(function(){
+                if ( !confirm( 'Are you sure you want to cancel your current subscription ?' ) ) {
+                    return false;
+                }
+
+            });
         },
 
         check_pass_strength : function() {
             var pass1 = $('#pass1').val(), strength;
 
+            $('#pass-strength-result').show();
+
             $('#pass-strength-result').removeClass('short bad good strong');
             if ( ! pass1 ) {
                 $('#pass-strength-result').html( '&nbsp;' );
+                $('#pass-strength-result').hide();
                 return;
             }
 
-            strength = wp.passwordStrength.meter( pass1, wp.passwordStrength.userInputBlacklist(), pass1 );
+            if ( typeof wp.passwordStrength != 'undefined' ) {
 
-            switch ( strength ) {
-                case 2:
-                    $('#pass-strength-result').addClass('bad').html( pwsL10n.bad );
-                    break;
-                case 3:
-                    $('#pass-strength-result').addClass('good').html( pwsL10n.good );
-                    break;
-                case 4:
-                    $('#pass-strength-result').addClass('strong').html( pwsL10n.strong );
-                    break;
-                case 5:
-                    $('#pass-strength-result').addClass('short').html( pwsL10n.mismatch );
-                    break;
-                default:
-                    $('#pass-strength-result').addClass('short').html( pwsL10n['short'] );
+                strength = wp.passwordStrength.meter( pass1, wp.passwordStrength.userInputBlacklist(), pass1 );
+
+                switch ( strength ) {
+                    case 2:
+                        $('#pass-strength-result').addClass('bad').html( pwsL10n.bad );
+                        break;
+                    case 3:
+                        $('#pass-strength-result').addClass('good').html( pwsL10n.good );
+                        break;
+                    case 4:
+                        $('#pass-strength-result').addClass('strong').html( pwsL10n.strong );
+                        break;
+                    case 5:
+                        $('#pass-strength-result').addClass('short').html( pwsL10n.mismatch );
+                        break;
+                    default:
+                        $('#pass-strength-result').addClass('short').html( pwsL10n['short'] );
+                }
+
             }
-
         },
 
         enableMultistep: function(o) {
@@ -74,11 +105,11 @@
 
             // first fieldset doesn't have prev button,
             // last fieldset doesn't have next button
-            $('fieldset:first .wpuf-multistep-prev-btn').remove();
-            $('fieldset:last .wpuf-multistep-next-btn').remove();
+            $('fieldset.wpuf-multistep-fieldset').find('.wpuf-multistep-prev-btn').first().remove();
+            $('fieldset.wpuf-multistep-fieldset').find('.wpuf-multistep-next-btn').last().remove();
 
             // at first first fieldset will be shown, and others will be hidden
-            $('.wpuf-form fieldset').hide().first().show();
+            $('.wpuf-form fieldset').removeClass('field-active').first().addClass('field-active');
 
             if ( progressbar_type == 'progressive' && $('.wpuf-form .wpuf-multistep-fieldset').length != 0 ) {
 
@@ -124,7 +155,7 @@
 
                 // js_obj.formSubmit();
                 if ( $(this).hasClass('wpuf-multistep-next-btn') ) {
-                    var result = js_obj.formStepCheck( '', $(this).parent() );
+                    var result = js_obj.formStepCheck( '', $(this).closest('fieldset') );
 
                     if ( result != false ) {
                         o.change_fieldset(++step_number,progressbar_type);
@@ -139,7 +170,9 @@
         },
 
         change_fieldset: function(step_number, progressbar_type) {
-            $('fieldset').hide().eq(step_number).show();
+            var current_step = $('fieldset.wpuf-multistep-fieldset').eq(step_number);
+
+            $('fieldset.wpuf-multistep-fieldset').removeClass('field-active').eq(step_number).addClass('field-active');
 
             $('.wpuf-step-wizard li').each(function(){
                 if ( $(this).index() <= step_number ){
@@ -162,6 +195,9 @@
                 $( ".wpuf-multistep-progressbar" ).progressbar({value: progress_percent });
                 $( '.wpuf-progress-percentage' ).text( legend + ' (' + progress_percent + '%)');
             }
+
+            // trigger a change event
+            $('.wpuf-form').trigger('step-change-fieldset', [ step_number, current_step ]);
         },
 
         ajaxCategory: function () {
@@ -254,14 +290,16 @@
                 post_id = form.find('input[type="hidden"][name="post_id"]').val();
 
             var rich_texts = [],
-                temp, val;
+                    val;
 
             // grab rich texts from tinyMCE
             $('.wpuf-rich-validation').each(function (index, item) {
-                temp = $(item).data('id');
-                val = $.trim( tinyMCE.get(temp).getContent() );
+                var item      = $(item);
+                var editor_id = item.data('id');
+                var item_name = item.data('name');
+                var val       = $.trim( tinyMCE.get(editor_id).getContent() );
 
-                rich_texts.push(temp + '=' + encodeURIComponent( val ) );
+                rich_texts.push(item_name + '=' + encodeURIComponent( val ) );
             });
 
             // append them to the form var
@@ -289,11 +327,29 @@
             })
         },
 
+        // Frontend account dashboard update profile
+        account_update_profile: function (e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+
+            $.post(wpuf_frontend.ajaxurl, form.serialize(), function (res) {
+                if (res.success) {
+                    form.find('.wpuf-error').hide();
+                    form.find('.wpuf-success').show();
+                } else {
+                    form.find('.wpuf-success').hide();
+                    form.find('.wpuf-error').show();
+                    form.find('.wpuf-error').text(res.data);
+                }
+            });
+        },
+
         formStepCheck : function(e,fieldset) {
             var form = fieldset,
                 submitButton = form.find('input[type=submit]');
                 form_data = WP_User_Frontend.validateForm(form);
-                if( form_data == false ) {
+
+                if ( form_data == false ) {
                     WP_User_Frontend.addErrorNotice( self, 'bottom' );
                 }
                 return form_data;
@@ -320,7 +376,7 @@
                         // enable external plugins to use events
                         $('body').trigger('wpuf:postform:success', res);
 
-                        if( res.show_message == true) {
+                        if ( res.show_message == true) {
                             form.before( '<div class="wpuf-success">' + res.message + '</div>');
                             form.slideUp( 'fast', function() {
                                 form.remove();
@@ -349,6 +405,10 @@
 
                             return;
                         } else {
+                            if ( form.find('.g-recaptcha').length > 0 ) {
+                                grecaptcha.reset();
+                            }
+
                             alert( res.error );
                         }
 
@@ -364,9 +424,10 @@
         validateForm: function( self ) {
 
             var temp,
-                temp_val = '',
-                error = false,
+                temp_val    = '',
+                error       = false,
                 error_items = [];
+                error_type  = '';
 
             // remove all initial errors if any
             WP_User_Frontend.removeErrors(self);
@@ -397,14 +458,43 @@
 
                     case 'textarea':
                     case 'text':
+
                         val = $.trim( $(item).val() );
 
                         if ( val === '') {
                             error = true;
+                            error_type = 'required';
 
                             // make it warn collor
-                            WP_User_Frontend.markError(item);
+                            WP_User_Frontend.markError( item, error_type );
                         }
+                        break;
+
+                    case 'password':
+                    case 'confirm_password':
+                        var hasRepeat = $(item).data('repeat');
+
+                        val = $.trim( $(item).val() );
+
+                        if ( val === '') {
+                            error = true;
+                            error_type = 'required';
+
+                            // make it warn collor
+                            WP_User_Frontend.markError( item, error_type );
+                        }
+
+                        if ( hasRepeat ) {
+                            var repeatItem = $('[data-type="confirm_password"]').eq(0);;
+
+                            if ( repeatItem.val() != val ) {
+                                error = true;
+                                error_type = 'mismatch';
+
+                                WP_User_Frontend.markError( repeatItem, error_type );
+                            }
+                        }
+
                         break;
 
                     case 'select':
@@ -413,9 +503,10 @@
                         // console.log(val);
                         if ( !val || val === '-1' ) {
                             error = true;
+                            error_type = 'required';
 
                             // make it warn collor
-                            WP_User_Frontend.markError(item);
+                            WP_User_Frontend.markError( item, error_type );
                         }
                         break;
 
@@ -424,9 +515,10 @@
 
                         if ( val === null || val.length === 0 ) {
                             error = true;
+                            error_type = 'required';
 
                             // make it warn collor
-                            WP_User_Frontend.markError(item);
+                            WP_User_Frontend.markError( item,  error_type );
                         }
                         break;
 
@@ -435,9 +527,10 @@
 
                         if ( !length ) {
                             error = true;
+                            error_type = 'required';
 
                             // make it warn collor
-                            WP_User_Frontend.markError(item);
+                            WP_User_Frontend.markError( item,  error_type );
                         }
                         break;
 
@@ -446,9 +539,10 @@
 
                         if ( !length ) {
                             error = true;
+                            error_type = 'required';
 
                             // make it warn collor
-                            WP_User_Frontend.markError(item);
+                            WP_User_Frontend.markError( item,  error_type );
                         }
                         break;
 
@@ -457,9 +551,10 @@
 
                         if ( !length ) {
                             error = true;
+                            error_type = 'required';
 
                             // make it warn collor
-                            WP_User_Frontend.markError(item);
+                            WP_User_Frontend.markError( item,  error_type );
                         }
                         break;
 
@@ -470,11 +565,15 @@
                             //run the validation
                             if( !WP_User_Frontend.isValidEmail( val ) ) {
                                 error = true;
+                                error_type = 'validation';
 
-                                WP_User_Frontend.markError(item);
+                                WP_User_Frontend.markError( item,  error_type );
                             }
                         } else if( val === '' ) {
-                            WP_User_Frontend.markError(item);
+                            error = true;
+                            error_type = 'required';
+
+                            WP_User_Frontend.markError( item,  error_type );
                         }
                         break;
 
@@ -486,8 +585,9 @@
                             //run the validation
                             if( !WP_User_Frontend.isValidURL( val ) ) {
                                 error = true;
+                                error_type = 'validation';
 
-                                WP_User_Frontend.markError(item);
+                                WP_User_Frontend.markError( item,  error_type );
                             }
                         }
                         break;
@@ -495,6 +595,18 @@
                 };
 
             });
+
+            //check Google Map is required
+            var map_required = self.find('[data-required="yes"][name="google_map"]');
+            if ( map_required ) {
+                var val = $(map_required).val();
+                if ( val == ',' ) {
+                    error = true;
+                    error_type = 'required';
+
+                    WP_User_Frontend.markError( map_required,  error_type );
+                }
+            }
 
             // if already some error found, bail out
             if (error) {
@@ -508,11 +620,13 @@
                 rich_texts = [];
 
             // grab rich texts from tinyMCE
-            $('.wpuf-rich-validation').each(function (index, item) {
-                temp = $(item).data('id');
-                val = $.trim( tinyMCE.get(temp).getContent() );
+            $('.wpuf-rich-validation', self).each(function (index, item) {
+                var item      = $(item);
+                var editor_id = item.data('id');
+                var item_name = item.data('name');
+                var val       = $.trim( tinyMCE.get(editor_id).getContent() );
 
-                rich_texts.push(temp + '=' + encodeURIComponent( val ) );
+                rich_texts.push(item_name + '=' + encodeURIComponent( val ) );
             });
 
             // append them to the form var
@@ -538,13 +652,34 @@
             $(form).find('.wpuf-errors').remove();
         },
 
-        markError: function(item) {
+        markError: function(item, error_type) {
+
+            var error_string = '';
             $(item).closest('li').addClass('has-error');
+
+            if ( error_type ) {
+                error_string = $(item).closest('li').data('label');
+                switch ( error_type ) {
+                    case 'required' :
+                        error_string = error_string + ' ' + error_str_obj[error_type];
+                        break;
+                    case 'mismatch' :
+                        error_string = error_string + ' ' +error_str_obj[error_type];
+                        break;
+                    case 'validation' :
+                        error_string = error_string + ' ' + error_str_obj[error_type];
+                        break
+                }
+                $(item).siblings('.wpuf-error-msg').remove();
+                $(item).after('<div class="wpuf-error-msg">'+ error_string +'</div>')
+            }
+
             $(item).focus();
         },
 
         removeErrors: function(item) {
             $(item).find('.has-error').removeClass('has-error');
+            $('.wpuf-error-msg').remove();
         },
 
         isValidEmail: function( email ) {
@@ -557,11 +692,11 @@
             return urlregex.test(url);
         },
 
-        insertImage: function() {
+        insertImage: function(button, form_id) {
 
-            var button = 'wpuf-insert-image',
-                container = 'wpuf-insert-image-container';
-            if ( !$('#' + button).length) {
+            var container = 'wpuf-insert-image-container';
+
+            if ( ! $( '#' + button ).length ) {
                 return;
             };
 
@@ -571,7 +706,8 @@
                 container: container,
                 multipart: true,
                 multipart_params: {
-                    action: 'wpuf_insert_image'
+                    action: 'wpuf_insert_image',
+                    form_id: $( '#' + button ).data('form_id')
                 },
                 multiple_queues: false,
                 multi_selection: false,
@@ -621,22 +757,26 @@
 
                 $('#' + file.id).remove();
 
-                if(response.response !== 'error' ) {
+                if ( response.response !== 'error' ) {
                     var success = false;
 
                     if ( typeof tinyMCE !== 'undefined' ) {
 
                         if ( typeof tinyMCE.execInstanceCommand !== 'function' ) {
                             // tinyMCE 4.x
-                            tinyMCE.get('post_content').insertContent(response.response);
+                            var mce = tinyMCE.get( 'post_content_' + form_id );
+
+                            if ( mce !== null ) {
+                                mce.insertContent(response.response);
+                            }
                         } else {
                             // tinyMCE 3.x
-                            tinyMCE.execInstanceCommand('post_content', 'mceInsertContent', false, response.response);
+                            tinyMCE.execInstanceCommand( 'post_content_' + form_id, 'mceInsertContent', false, response.response);
                         }
                     }
 
                     // insert failed to the edit, perhaps insert into textarea
-                    var post_content = $('#post_content');
+                    var post_content = $('#post_content_' + form_id);
                     post_content.val( post_content.val() + response.response );
 
                 } else {
@@ -652,15 +792,139 @@
 
             if ( confirm( $(this).data('confirm') ) ) {
                 $.post(wpuf_frontend.ajaxurl, {action: 'wpuf_delete_avatar', _wpnonce: wpuf_frontend.nonce}, function() {
-                    window.location.reload();
+                    $(e.target).parent().remove();
+                    $('[id^=wpuf-avatar]').css("display", "");
                 });
+            }
+        },
+
+        editorLimit: {
+
+            bind: function(limit, field, type) {
+                if ( type === 'no' ) {
+                    // it's a textarea
+                    $('textarea#' +  field).keydown( function(event) {
+                        WP_User_Frontend.editorLimit.textLimit.call(this, event, limit);
+                    });
+
+                    $('input#' +  field).keydown( function(event) {
+                        WP_User_Frontend.editorLimit.textLimit.call(this, event, limit);
+                    });
+
+                    $('textarea#' +  field).on('paste', function(event) {
+                        var self = $(this);
+
+                        setTimeout(function() {
+                            WP_User_Frontend.editorLimit.textLimit.call(self, event, limit);
+                        }, 100);
+                    });
+
+                    $('input#' +  field).on('paste', function(event) {
+                        var self = $(this);
+
+                        setTimeout(function() {
+                            WP_User_Frontend.editorLimit.textLimit.call(self, event, limit);
+                        }, 100);
+                    });
+
+                } else {
+                    // it's a rich textarea
+                    setTimeout(function () {
+                        tinyMCE.get(field).onKeyDown.add( function(ed, event) {
+                            WP_User_Frontend.editorLimit.tinymce.onKeyDown(ed, event, limit);
+                        } );
+
+                        tinyMCE.get(field).onPaste.add(function(ed, event) {
+                            setTimeout(function() {
+                                WP_User_Frontend.editorLimit.tinymce.onPaste(ed, event, limit);
+                            }, 100);
+                        });
+
+                    }, 1000);
+                }
+            },
+
+            tinymce: {
+
+                getStats: function(ed) {
+                    var body = ed.getBody(), text = tinymce.trim(body.innerText || body.textContent);
+
+                    return {
+                        chars: text.length,
+                        words: text.split(/[\w\u2019\'-]+/).length
+                    };
+                },
+
+                onKeyDown: function(ed, event, limit) {
+                    var numWords = WP_User_Frontend.editorLimit.tinymce.getStats(ed).words - 1;
+
+                    limit ? $('.mce-path-item.mce-last', ed.container).html('Word Limit : '+ numWords +'/'+limit):'';
+
+                    if ( limit && numWords > limit ) {
+                        WP_User_Frontend.editorLimit.blockTyping(event);
+                        jQuery('.mce-path-item.mce-last', ed.container).html( wpuf_frontend.word_limit );
+                    }
+                },
+
+                onPaste: function(ed, event, limit) {
+                    var editorContent = ed.getContent().split(' ').slice(0, limit).join(' ');
+
+                    // Let TinyMCE do the heavy lifting for inserting that content into the editor.
+                    // ed.insertContent(content); //ed.execCommand('mceInsertContent', false, content);
+                    ed.setContent(editorContent);
+
+                    WP_User_Frontend.editorLimit.make_media_embed_code(editorContent, ed);
+                }
+            },
+
+            textLimit: function(event, limit) {
+                var self = $(this),
+                    content = self.val().split(' ');
+
+                if ( limit && content.length > limit ) {
+                    self.closest('.wpuf-fields').find('span.wpuf-wordlimit-message').html( wpuf_frontend.word_limit );
+                    WP_User_Frontend.editorLimit.blockTyping(event);
+                } else {
+                    self.closest('.wpuf-fields').find('span.wpuf-wordlimit-message').html('');
+                }
+
+                // handle the paste event
+                if ( event.type === 'paste' ) {
+                    self.val( content.slice(0, limit).join( ' ' ) );
+                }
+            },
+
+            blockTyping: function(event) {
+                // Allow: backspace, delete, tab, escape, minus enter and . backspace = 8,delete=46,tab=9,enter=13,.=190,escape=27, minus = 189
+                if ($.inArray(event.keyCode, [46, 8, 9, 27, 13, 110, 190, 189]) !== -1 ||
+                    // Allow: Ctrl+A
+                    (event.keyCode == 65 && event.ctrlKey === true) ||
+                    // Allow: home, end, left, right, down, up
+                    (event.keyCode >= 35 && event.keyCode <= 40)) {
+                    // let it happen, don't do anything
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+            },
+
+            make_media_embed_code: function(content, editor){
+                $.post( ajaxurl, {
+                        action:'make_media_embed_code',
+                        content: content
+                    },
+                    function(data){
+                        // console.log(data);
+                        editor.setContent(editor.getContent() + editor.setContent(data));
+                    }
+                )
             }
         }
     };
 
     $(function() {
         WP_User_Frontend.init();
-        WP_User_Frontend.insertImage();
 
         // payment gateway selection
         $('ul.wpuf-payment-gateways').on('click', 'input[type=radio]', function(e) {
@@ -677,4 +941,77 @@
         }
     });
 
-})(jQuery);
+    $(function() {
+        $('input[name="first_name"], input[name="last_name"]').on('change keyup', function() {
+            var myVal, newVal = $.makeArray($('input[name="first_name"], input[name="last_name"]').map(function(){
+                if (myVal = $(this).val()) {
+                    return(myVal);
+                }
+            })).join(' ');
+            $('input[name="display_name"]').val(newVal);
+        });
+    });
+
+    // script for Dokan vendor registration template
+    $(function($) {
+
+        $('.wpuf-form-add input[name="dokan_store_name"]').on('focusout', function() {
+            var value = $(this).val().toLowerCase().replace(/-+/g, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            $('input[name="shopurl"]').val(value);
+            $('#url-alart').text( value );
+            $('input[name="shopurl"]').focus();
+        });
+
+        $('.wpuf-form-add input[name="shopurl"]').keydown(function(e) {
+            var text = $(this).val();
+
+            // Allow: backspace, delete, tab, escape, enter and .
+            if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 91, 109, 110, 173, 189, 190]) !== -1 ||
+                 // Allow: Ctrl+A
+                (e.keyCode == 65 && e.ctrlKey === true) ||
+                 // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                     // let it happen, don't do anything
+                    return;
+            }
+
+            if ((e.shiftKey || (e.keyCode < 65 || e.keyCode > 90) && (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105) ) {
+                e.preventDefault();
+            }
+        });
+
+        $('.wpuf-form-add input[name="shopurl"]').keyup(function(e) {
+            $('#url-alart').text( $(this).val() );
+        });
+
+        $('.wpuf-form-add input[name="shopurl"]').on('focusout', function() {
+            var self = $(this),
+            data = {
+                action : 'shop_url',
+                url_slug : self.val(),
+                _nonce : dokan.nonce,
+            };
+
+            if ( self.val() === '' ) {
+                return;
+            }
+
+            $.post( dokan.ajaxurl, data, function(resp) {
+
+                if ( resp == 0){
+                    $('#url-alart').removeClass('text-success').addClass('text-danger');
+                    $('#url-alart-mgs').removeClass('text-success').addClass('text-danger').text(dokan.seller.notAvailable);
+                } else {
+                    $('#url-alart').removeClass('text-danger').addClass('text-success');
+                    $('#url-alart-mgs').removeClass('text-danger').addClass('text-success').text(dokan.seller.available);
+                }
+
+            } );
+
+        });
+
+        // Set name attribute for google map search field
+        $(".wpuf-form-add #wpuf-map-add-location").attr("name", "find_address");
+    });
+
+})(jQuery, window);

@@ -65,7 +65,7 @@ class ITSG_GF_AjaxUpload_Field extends Helper_Abstract_Fields {
 					<tr>
 						<?php foreach ( $columns as $column ) : ?>
 							<th>
-								<?php echo strip_tags( $column, '<a><img>'); ?>
+								<?php echo strip_tags( $column, '<div><strong><a><img>'); ?>
 							</th>
 						<?php endforeach; ?>
 					</tr>
@@ -78,11 +78,11 @@ class ITSG_GF_AjaxUpload_Field extends Helper_Abstract_Fields {
 				<tr>
 					<!-- handle the basic list -->
 					<?php if ( ! $columns ) : ?>
-						<td><?php echo strip_tags( $item, '<a><img>') ?></td>
+						<td><?php echo strip_tags( $item, '<div><strong><a><img>') ?></td>
 					<?php else : ?><!-- handle the advanced list -->
 						<?php foreach ( $columns as $column ) : ?>
 							<td>
-								<?php echo strip_tags( rgar( $item, $column ), '<a><img>' ); ?>
+								<?php echo strip_tags( rgar( $item, $column ), '<div><strong><a><img>' ); ?>
 							</td>
 						<?php endforeach; ?>
 					<?php endif; ?>
@@ -157,7 +157,7 @@ class ITSG_GF_AjaxUpload_Field extends Helper_Abstract_Fields {
 
 					/* Check if there is data and if so break the loop */
 					if ( strlen( trim( $col ) ) > 0 ) {
-						$col = strip_tags( $col, '<a><img>');
+						$col = strip_tags( $col, '<div><strong><a><img>');
 						$empty = false;
 					}
 				}

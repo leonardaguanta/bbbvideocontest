@@ -37,9 +37,10 @@ if ( ! is_page_template( 'page-template-blank.php' ) ) : ?>
 					}
 				?>
 
-						<div><p id="copyright">
-<a href="/privacy-policy">Privacy Policy</a>&nbsp;|&nbsp;
-Website Created by  <a title="Platypus Media, Advertising &amp; Design" href="http://www.platypuslocal.com/">PLATYPUS  </a><img alt="Platypus Media, Advertising &amp; Design" src="http://media.platypuslocal.com/images/platypus/platypus_logo_footer.png"></p></div>
+						<div>
+							<p id="copyright"><a href="/privacy-policy">Privacy Policy</a>&nbsp;|&nbsp;<a href="#">BBB Admin</a></p>
+							<p id="createdby">Website Created by  <a title="Platypus Media, Advertising &amp; Design" href="http://www.platypuslocal.com/">PLATYPUS  </a><img alt="Platypus Media, Advertising &amp; Design" src="http://media.platypuslocal.com/images/platypus/platypus_logo_footer.png"><p>
+						</div>
 					
 					</div>	<!-- .container -->
 				</div>

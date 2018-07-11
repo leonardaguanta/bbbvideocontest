@@ -3,8 +3,8 @@ Contributors: Tips and Tricks HQ
 Donate link: http://www.tipsandtricks-hq.com/development-center
 Tags: redirection, https, automatic redirection, htaccess, ssl, https redirection, ssl certificate, secure page, secure, force ssl, force https
 Requires at least: 3.5
-Tested up to: 4.6
-Stable tag: 1.5
+Tested up to: 4.9
+Stable tag: 1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ This plugin will help you automatically setup a redirection to the https version
 
 Lets say for example, you want to use HTTPS URL for the following page on your site:
 
-example.com/checkout
+www.example.com/checkout
 
 This plugin will enforce that so if anyone uses an URL like the following in the browser's address bar:
 http://www.example.com/checkout 
@@ -49,6 +49,8 @@ This will help you make the webpage fully compatible with SSL.
 * Actions: Do an auto redirect for the whole domain. So every URL will be redirected to the HTTPS version automatically.
 * Actions: Do an auto redirect for a few pages. The user can enter the URLs that will be auto redirected to the HTTPS version.
 * Force load static files (images, js, css etc) using a HTTPS URL.
+
+View more details on the [HTTPS Redirection plugin](https://www.tipsandtricks-hq.com/wordpress-easy-https-redirection-plugin) page.
 
 == Installation ==
 
@@ -90,6 +92,22 @@ Here is an example for German language files.
 1. Plugin settings page.
 
 == Changelog ==
+
+= v1.9 =
+- WP Fastest Cache cache is automatically cleared when plugin settings are changed. This is to prevent "mixed content" warning from browsers.
+- Fixed rare conflict with WP Fastest Cache (thanks to emrevona).
+
+= v1.8 =
+- Apply HTTPS redirection on the whole domain will be the default selected option after plugin install. You an change this option when you actually go to enable the feature.
+
+= v1.7 =
+- Additional options are only accessible when "Enable automatic redirection to the "HTTPS" is enabled.
+- https://www.yoursite.com/some-page is replaced with site's actual https address in Settings information box.
+- Added reminder for user to clear cache of optimization plugins similar to W3 Total Cache or WP Super Cache.
+
+= v1.6 =
+- Improved the "Force Load Static Files Using HTTPS" feature.
+- The htaccess redirection is now detected based on SERVER_PORT (this is should work better on most servers).
 
 = v1.5 =
 - WordPress 4.6 compatibility.

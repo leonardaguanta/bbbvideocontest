@@ -3,8 +3,8 @@ Contributors: arisoft
 Donate link: http://wp-quiz.ari-soft.com/plugins/wordpress-adminer.html
 Tags: adminer, sql, database, mysql, report, sqlite, table, postgresql, dump, backup, import, export, phpmyadmin
 Requires at least: 3.4
-Tested up to: 4.8.1
-Stable tag: 1.1.4
+Tested up to: 4.9.5
+Stable tag: 1.1.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,28 @@ Sure, it is available [here](http://www.ari-soft.com/docs/wordpress/ari-adminer/
 
 == Changelog ==
 
+= 1.1.11 =
+* Fix bug: editing.js file is not loaded in Adminer
+
+= 1.1.10 =
+* Update Adminer to v. 4.6.2
+* Update .htaccess file. Thank you to KZeni (https://wordpress.org/support/topic/conflict-sucuri-security-wp-content-folder-hardening-breaks-ari-adminer/)
+
+= 1.1.9 =
+* Better PHP 7.2.x support
+
+= 1.1.8 =
+* Installer improved: if utf8mb4 charset is not supported by database, use utf8
+
+= 1.1.7 =
+* Show quick icon on frontend part and take into account role of current user
+
+= 1.1.6 =
+* Add 'Show quick icon' parameter to plugin settings
+
+= 1.1.5 =
+* Fix bug: show Move/Copy buttons when only one database is available
+
 = 1.1.4 =
 * Bug fix
 
@@ -119,6 +141,27 @@ Sure, it is available [here](http://www.ari-soft.com/docs/wordpress/ari-adminer/
 
 
 == Upgrade Notice ==
+
+= 1.1.11 =
+* Fix bug: editing.js file is not loaded in Adminer
+
+= 1.1.10 =
+* Update Adminer to v. 4.6.2
+
+= 1.1.9 =
+* Better PHP 7.2.x support
+
+= 1.1.8 =
+* Installer improved: if utf8mb4 charset is not supported by database, use utf8
+
+= 1.1.7 =
+* Show quick icon on frontend part and take into account role of current user
+
+= 1.1.6 =
+* Add 'Show quick icon' parameter to plugin settings
+
+= 1.1.5 =
+* Fix bug: show Move/Copy buttons when only one database is available
 
 = 1.1.4 =
 * Bug fix

@@ -7,6 +7,9 @@
 
 var jqobjPrime = null;
 var show_error_combined = true;
+var lv_offset = function(currentOffset) {
+    return currentOffset;
+};
 var LiveValidation = function(element, optionsObj) {
 
 
@@ -62,6 +65,8 @@ LiveValidation.RADIO = 7;
  *	@return {Bool} - true if all passed validation, false if any fail						
  */
 LiveValidation.massValidate = function(validations) {
+
+
     var returnValue = true;
 
 
@@ -94,6 +99,7 @@ LiveValidation.prototype = {
         if (!element)
             throw new Error("LiveValidation::initialize - No element reference or element id has been provided!");
         this.element = element.nodeName ? element : document.getElementById(element);
+
         if (!this.element)
             throw new Error("LiveValidation::initialize - No element with reference or id of '" + element + "' exists!");
         // default properties that could not be initialised above
@@ -179,8 +185,26 @@ LiveValidation.prototype = {
         };
         this.oldOnBlur = this.element.onblur || function() {
         };
-        this.oldOnClick = this.element.onclick || function() {
-        };
+
+        if (this.fieldType == "checkbox") {
+            this.oldOnClick_check = {};
+
+
+            var radioUL = this.element;
+
+            var len = radioUL.childNodes.length;
+            for (var i = 0; i < radioUL.childNodes.length; i++) {
+                this.oldOnClick_check[radioUL.childNodes[i].querySelector('input').id] = (radioUL.childNodes[i].querySelector('input').onclick || function() {
+                });
+            }
+
+
+        } else {
+            this.oldOnClick_check = [];
+            this.oldOnClick = this.element.onclick || function() {
+            };
+        }
+
         this.oldOnChange = this.element.onchange || function() {
         };
         this.oldOnKeyup = this.element.onkeyup || function() {
@@ -194,6 +218,7 @@ LiveValidation.prototype = {
             return self.oldOnFocus.call(this, e);
         }
         if (!this.onlyOnSubmit) {
+
             switch (this.elementType) {
 
 
@@ -209,10 +234,11 @@ LiveValidation.prototype = {
 
 
 
-                        radioUL.childNodes[i].querySelector('input').onclick = function(e) {
+                        radioUL.childNodes[i].querySelector('input').onclick = function(e, i) {
 
                             self.validate();
-                            return self.oldOnClick.call(this, e);
+
+                            return self.oldOnClick_check[this.id].call(this, e);
                         }
 
                         radioUL.childNodes[i].querySelector('input').onblur = function(e) {
@@ -258,14 +284,14 @@ LiveValidation.prototype = {
 
 
                                 var str = jQuery(this).attr("id");
-                                var separator = 'input_' + mygf_form_ID + "_";
-
+                                var getConfig = str.split("_");
+                                var separator = 'input_' + getConfig[1] + "_";
                                 var get_match = str.split(separator).pop();
 
-                                if (typeof all_validations[get_match] !== "undefined") {
+                                if (typeof all_validations[getConfig[1]][getConfig[2] + "_" + getConfig[3]] !== "undefined") {
 
 
-                                    all_validations[get_match].validate();
+                                    all_validations[getConfig[1]][getConfig[2] + "_" + getConfig[3]].validate();
                                 }
                             });
 
@@ -297,15 +323,15 @@ LiveValidation.prototype = {
 //               
                             elemLI.find("input , select").each(function(k, v) {
 
-
                                 var str = jQuery(this).attr("id");
-                                var separator = 'input_' + mygf_form_ID + "_";
-
+                                var getConfig = str.split("_");
+                                var separator = 'input_' + getConfig[1] + "_";
                                 var get_match = str.split(separator).pop();
+                                        
+                                if (typeof all_validations[getConfig[1]] !== "undefined" && typeof all_validations[getConfig[1]][getConfig[2] + "_" + getConfig[3]] !== "undefined") {
 
-                                if (typeof all_validations[get_match] !== "undefined") {
 
-                                    all_validations[get_match].validate();
+                                    all_validations[getConfig[1]][getConfig[2] + "_" + getConfig[3]].validate();
                                 }
                             });
 
@@ -431,6 +457,8 @@ LiveValidation.prototype = {
                 return LiveValidation.TEXT;
             case (nn == 'INPUT' && nt == 'TEL'):
                 return LiveValidation.TEXT;
+            case (nn == 'INPUT' && nt == 'NUMBER'):
+                return LiveValidation.TEXT;
             case (nn == 'INPUT' && nt == 'PASSWORD'):
                 return LiveValidation.PASSWORD;
             case (nn == 'INPUT' && nt == 'CHECKBOX'):
@@ -460,6 +488,7 @@ LiveValidation.prototype = {
         this.validationFailed = false;
 
         for (var i = 0, len = this.validations.length; i < len; ++i) {
+
             this.validationFailed = !this.validateElement(this.validations[i].type, this.validations[i].params);
             if (this.validationFailed)
                 return false;
@@ -532,7 +561,7 @@ LiveValidation.prototype = {
      */
     validate: function() {
 
-        if (!this.element.disabled) {
+        if (!this.checkIfDisable(this.element)) {
             this.beforeValidation();
             var isValid = this.doValidations();
             if (isValid) {
@@ -559,7 +588,8 @@ LiveValidation.prototype = {
      *  @return {LiveValidation} - the LiveValidation object for chaining
      */
     enable: function() {
-        this.element.disabled = false;
+
+        this.element.removeAttribute("data-disabled");
         return this;
     },
     /**
@@ -568,13 +598,20 @@ LiveValidation.prototype = {
      *  @return {LiveValidation} - the LiveValidation object for chaining
      */
     disable: function() {
-        this.element.disabled = true;
+
+        this.element.setAttribute("data-disabled", "yes");
         this.removeMessageAndFieldClass();
         return this;
     },
+    checkIfDisable: function(element) {
+        if (element.hasAttribute("data-disabled")) {
+            return true;
+        }
+        return false;
+    },
     /** Message insertion methods ****************************
      * 
-     * These are only used in the onValid and onInvalid callback functions and so if you overide the default callbacks,
+     * These are only used in the onValid and onInvalid callback functions and so if you override the default callbacks,
      * you must either impliment your own functions to do whatever you want, or call some of these from them if you 
      * want to keep some of the functionality
      */
@@ -744,7 +781,18 @@ LiveValidationForm.prototype = {
 
             var moveTo = 0;
             var elem_form = e.currentTarget;
+
+            if ("undefined" === typeof elem_form) {
+                return true;
+            }
+
+
+
             if (hasClass(elem_form, "back_bt_press")) {
+                return true;
+            }
+
+            if (hasClass(elem_form, "save_bt_press")) {
                 return true;
             }
             var ret = false;
@@ -754,6 +802,7 @@ LiveValidationForm.prototype = {
                     self.valid = LiveValidation.massValidate(self.fields);
             self.valid ? self.onValid() : self.onInvalid();
             self.afterValidation();
+
             if (self.valid)
                 ret = self.oldOnSubmit.call(this, e || window.event) !== false;
 
@@ -765,15 +814,13 @@ LiveValidationForm.prototype = {
                 parent.removeChild(child);
             }
 
-
-
             if (show_error_combined == true) {
                 //showing error messages
                 var d = document.getElementsByClassName("LV_invalid_field");
                 if (d.length > 0) {
 
 
-
+                    var formIDConfig = self.name.split("_");
                     var ul = document.createElement('ul');
                     var section = document.querySelector(".gform_body");
                     ul.className = "errorMessages";
@@ -826,7 +873,7 @@ LiveValidationForm.prototype = {
 
 
                         if (d[i].type == "radio") {
-                            var get_mainLI = "field_" + mygf_form_ID + "_" + d[i].name.substr(6);
+                            var get_mainLI = "field_" + formIDConfig[1] + "_" + d[i].name.substr(6);
 
                             label_elem = document.querySelector("#" + get_mainLI + " .gfield_label");
 
@@ -835,7 +882,7 @@ LiveValidationForm.prototype = {
                             var a = d[i].name;
                             var name = a.split(".")[0];
 
-                            var get_mainLI = "field_" + mygf_form_ID + "_" + name.substr(6);
+                            var get_mainLI = "field_" + formIDConfig[1] + "_" + name.substr(6);
 
                             label_elem = document.querySelector("#" + get_mainLI + " .gfield_label");
 
@@ -880,7 +927,7 @@ LiveValidationForm.prototype = {
                     var ul_j = jqobjPrime('.errorMessages');
 
 
-
+                    moveTo = window.lv_offset(moveTo);
                     jqobjPrime('body,html').animate({
                         scrollTop: moveTo
                     }, 500);
@@ -899,9 +946,13 @@ LiveValidationForm.prototype = {
 
 
             }
-            window['gf_submitting_' + mygf_form_ID] = false;
+
+            var getFormIDconfig = self.name.split("_");
 
 
+            if (false === ret) {
+                window['gf_submitting_' + getFormIDconfig[1]] = false;
+            }
             if (!ret) {
                 if (lv_gf_is_ajax == "yes") {
                     jqobjPrime(".gform_ajax_spinner").remove();
@@ -989,8 +1040,8 @@ var Validate = {
             } else {
                 setTimeout(function() {
 
-                    if (!hasClass(all_validations[paramsObj.livevalidkey].element, "LV_invalid_field")) {
-                        all_validations[paramsObj.livevalidkey].validate();
+                    if (!hasClass(all_validations[paramsObj.form_id][paramsObj.livevalidkey].element, "LV_invalid_field")) {
+                        all_validations[paramsObj.form_id][paramsObj.livevalidkey].validate();
                     }
 
 
@@ -1101,6 +1152,9 @@ var Validate = {
         var message = paramsObj.failureMessage || "Looks like an invalid pattern.";
         var pattern = paramsObj.pattern || /./;
         var negate = paramsObj.negate || false;
+
+
+
 
         var patternRes = pattern.test(value);
 
@@ -1366,11 +1420,15 @@ var Validate = {
         return true;
     },
     ConfirmEmail: function(value, paramsObj) {
-      
+       
         var paramsObj = paramsObj || {};
         var message = paramsObj.failureMessage || "Must be accepted!";
-
+ console.log('runs');
         var ParentValue = document.getElementById(paramsObj.parentField).value;
+                console.log(value);
+                console.log(ParentValue);
+
+
         if (value !== ParentValue) {
             Validate.fail(message);
         }
@@ -1382,7 +1440,7 @@ var Validate = {
         var paramsObj = paramsObj || {};
         var message = paramsObj.failureMessage || "Must be accepted!";
 
-        var get_mainUL = "input_" + mygf_form_ID + "_" + paramsObj.field_id;
+        var get_mainUL = "input_" + paramsObj.form_id + "_" + paramsObj.field_id;
 
         var radioUL = document.getElementById(get_mainUL);
 
@@ -1440,7 +1498,7 @@ var Validate = {
         var paramsObj = paramsObj || {};
         var message = paramsObj.failureMessage || "Must be accepted!";
 
-        var get_mainUL = "input_" + mygf_form_ID + "_" + paramsObj.name_field.substr(6);
+        var get_mainUL = "input_" + paramsObj.form_id + "_" + paramsObj.name_field.substr(6);
 
         var radioUL = document.getElementById(get_mainUL);
         if (paramsObj.name_field) {
@@ -1714,3 +1772,4 @@ function removeClass(ele, cls) {
         ele.className = ele.className.replace(reg, ' ');
     }
 }
+

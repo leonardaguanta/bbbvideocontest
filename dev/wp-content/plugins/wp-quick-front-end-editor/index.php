@@ -3,17 +3,17 @@
 	/*
 	Plugin Name: WP Quick FrontEnd Editor
 	Description: This plugin will allow you to edit its post and pages content from front end.
-	Plugin URI: http://labibahmed.com
+	Plugin URI: http://webdevocean.com
 	Author: Labib Ahmed
-	Author URI: http://labibahmed.com
-	Version: 5.0
+	Author URI: http://webdevocean.com
+	Version: 5.3
 	License: GPL2
 	Text Domain: la-fronteditor
 	*/
 	
 	/*
 	
-	    Copyright (C) Year  Labib Ahmed  Email labib@najeebmediagroup.com
+	    Copyright (C) Year  Labib Ahmed  Email webdevocean@gmail.com
 	
 	    This program is free software; you can redistribute it and/or modify
 	    it under the terms of the GNU General Public License, version 2, as

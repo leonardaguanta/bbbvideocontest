@@ -229,7 +229,7 @@ class blcCurlHttp extends blcHttpCheckerBase {
         if( $parts['scheme'] == 'https' ){
         	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //Required to make HTTPS URLs work.
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); 
-            $nobody = false; //Can't use HEAD with HTTPS.
+            //$nobody = false; //Can't use HEAD with HTTPS.
         }
         
         if ( $nobody ){
@@ -253,6 +253,9 @@ class blcCurlHttp extends blcHttpCheckerBase {
 		if ( defined('CURLINFO_HEADER_OUT') ) {
 			curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		}
+
+        // Apply filter for additional options
+        curl_setopt_array($ch, apply_filters('broken-link-checker-curl-options', array()) );
 
 		//Execute the request
 		$start_time = microtime_float();
@@ -316,6 +319,11 @@ class blcCurlHttp extends blcHttpCheckerBase {
         } else {
         	$result['broken'] = $this->is_error_code($result['http_code']);
         }
+
+
+        // Apply filter before curl closes
+        apply_filters('broken-link-checker-curl-before-close', $ch, $content, $this->last_headers);
+
         curl_close($ch);
 
 		$blclog->info(sprintf(

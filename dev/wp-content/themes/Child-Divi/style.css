@@ -13,17 +13,25 @@
  ********************************/
 
 /*----------------- DEFAULTS ----------------*/
+#copyright { float: left; padding-bottom: 0; }
+#createdby { float: right; padding-bottom: 0; }
+div#footer-bottom { padding: 25px 0; }
+
+#copyright a, #createdby a { color: #fff; }
+#copyright, #createdby { color: #fff; font-weight: 600; }
+ #createdby img { vertical-align: middle; }
+
 html .page h3 { font-size: 17px; padding-bottom:  15px; line-height: 23px; }
+html .page .contact-info h3 { font-size: 14px; padding-bottom: 10px; line-height: 20px; }
+.contact-address { padding-bottom: 5px; }
 body p { font-size: 13.5px; }
 .site-header h1 { font-size: 45px; }
 section.site-header.et_pb_fullwidth_header { padding: 15px 0; }
 
 .our-vision, .our-mission { padding-bottom: 0; font-size: 13px; }
 
-/* .home-about-row { border-top: 1px solid rgba(63, 134, 157, 0.4); } */
-
 #main-header img#logo{
-    max-height: 180px;
+    max-height: 160px;
     background: #fff;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .3);
 }
@@ -37,7 +45,7 @@ section.site-header.et_pb_fullwidth_header { padding: 15px 0; }
 
 a.custom-link { font-weight: 600; text-decoration: underline; }
 
-.img-shadow img {
+.img-shadow img, .schools-image .et_pb_image_wrap {
     box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.2);
     padding: 5px;
 }
@@ -74,6 +82,70 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
     margin-top: 13px;
 }
 
+.participate-sidebar {
+	background: #2e2e2e;
+	padding: 50px 25px;
+}
+
+.participate-sidebar h2 {
+    padding: 20px 0;
+    border-top: 4px solid;
+    border-bottom: 4px solid;
+    line-height: 35px;
+}
+
+.participate-sidebar.participate-sidebar2 {
+	background: #2e2e2e;
+	padding: 30px 20px;
+}
+ div.participate-sidebar.participate-sidebar2 h3 {
+    padding: 10px 0;
+    border-top: 3px solid;
+    border-bottom: 3px solid;
+    line-height: 23px;
+	font-size: 16px;
+}
+
+/* .contact-social.et_pb_social_media_follow li a.icon {
+    width: 40px;
+    height: 40px;
+}
+
+.contact-social.et_pb_social_media_follow li a.icon::before {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+} */
+
+/*---------------- SCHOOLS CSS -----------------*/
+
+.school-logo { width: 90px; display: table-cell; height: 65px; }
+.school-logo img { height: 100%; }
+.school-name { display: table-cell; padding-left: 10px; vertical-align: middle; }
+
+.schools-image .et_pb_image_wrap { height: 250px; overflow: hidden; }
+.schools-image img { height: 100%; }
+
+.schools-container .et_pb_text_inner { height: 65px; }
+
+.schools-form { border: 1px solid #ddd; }
+
+.schools-form h3, #gform_wrapper_6 { padding: 10px 15px; }
+.each-year { box-shadow: 0 3px 10px 0 rgb(221, 221, 221); }
+
+.et_pb_column_1_2.schools-home {
+	width: 20%;
+	float: left;
+	padding: 0 25px;
+	margin-right: 0;
+}
+
+.schools-home p { font-size: 13px; line-height: 17px; }
+.s-logo { height: 65px; margin-bottom: 7px; }
+.s-logo img { height: 100%; }
+.schools-home a { color: #444; }
+
+
 /*------------------------------------------------*/
 /*-----------------[CTA Menu Item]----------------*/
 /*-----------------[by GenoQuiroz]----------------*/
@@ -91,6 +163,7 @@ li.get-started {
     -moz-transition: all 0.5s;
     -webkit-transition: all 0.5s;
     transition: all 0.5s;
+	box-shadow: 0 3px 8px 0 rgba(237, 139, 0, 0.6);
 }
 li.get-started:hover {background-color:#c96310;}
 
@@ -105,3 +178,47 @@ li.get-started:hover {background-color:#c96310;}
  
     @media only screen and (min-width : 981px) {
             li.get-started {height: 33px;}}
+
+
+/*------------------- FORM CSS -----------------*/
+#gform_wrapper_1 div.gform_footer { text-align: right; margin-top: -95px; }
+#gform_wrapper_1 input:not([type=radio]):not([type=checkbox]):not([type=submit]):not([type=button]):not([type=image]):not([type=file]), #input_1_4 {
+    padding: 8px;
+    border-color: #ddd;
+    box-shadow: 0 3px 8px 0 rgba(221, 221, 221, 0.5);
+} 
+
+
+#gform_wrapper_6 input:not([type=radio]):not([type=checkbox]):not([type=submit]):not([type=button]):not([type=image]):not([type=file]) { 
+	padding: 5px;
+	border-color: #ddd;
+    box-shadow: 0 3px 8px 0 rgba(221, 221, 221, 0.5);
+}
+
+#gform_wrapper_6 input:not([type=radio]):not([type=checkbox]):not([type=submit]):not([type=button]):not([type=image]):not([type=file])::-webkit-input-placeholder {
+	color: #bbb;
+	font-weight: 700;
+}
+
+#gform_wrapper_1, #field_1_5, #field_1_2, #input_1_5, #input_1_2, #input_1_6, #gform_wrapper_6, #gform_wrapper_6 ul.gform_fields li.gfield, #gform_wrapper_6 .gform_footer, #field_6_2 .ginput_container { margin-top: 0; }
+
+#gform_submit_button_1, #gform_submit_button_6 {
+    border: 0;
+    background: #ed7818;
+    padding: 5px 22px;
+    color: #fff;
+    font-size: 20px;
+    font-family: inherit;
+    border-radius: 3px;
+	cursor: pointer;
+	box-shadow: 0 3px 8px 0 rgba(237, 139, 0, 0.6);
+}
+
+#gform_wrapper_6 .gform_footer { padding-top: 6px; }
+#gform_wrapper_6 ul.gform_fields li.gfield { padding-right: 0; }
+#field_6_1 { text-align: center; }
+
+/*------------------- RESPONSIVE CSS ----------------*/
+@media only screen and (max-width : 479px) {
+	#gform_wrapper_1 div.gform_footer { margin-top: inherit; }
+}

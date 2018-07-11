@@ -1,40 +1,47 @@
 === Easy Media Download ===
 Contributors: naa986
-Donate link: http://noorsplugin.com/
+Donate link: https://noorsplugin.com/
 Tags: download, downloads, media, digital downloads, e-commerce, e-downloads, e-store, ecommerce, eshop, wp ecommerce, donation
 Requires at least: 3.0
-Tested up to: 4.3
-Stable tag: 1.0.8
+Tested up to: 4.9
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Easy Media Download allows you to embed download buttons on your WordPress site.
+Easy Media Download allows you to embed download buttons on your WordPress site. Add file download functionality with this WordPress download plugin.
 
 == Description ==
 
-[Easy Media Download](http://noorsplugin.com/easy-media-download-plugin-for-wordpress/) is a free download manager for WordPress. It gives your users the ability to download digital media files from your website. The plugin is lightweight and makes downloading easier. You can create beautiful download button which instantly starts the download once clicked.
+[Easy Media Download](https://noorsplugin.com/easy-media-download-plugin-for-wordpress/) is a free download manager for WordPress. It gives your users the ability to download digital media files from your website. The plugin is lightweight and makes downloading easier. You can create beautiful download button which instantly starts the download once clicked.
 
-= Features =
+https://www.youtube.com/watch?v=zjtobdjQn44&rel=0
+
+=== Requirements ===
+
+* A self-hosted website running on [WordPress hosting](https://noorsplugin.com/best-cheap-wordpress-hosting/)
+
+=== Features ===
 
 * Create quick downloads
-* Insert download buttons into your landing page
-* Allow users to directly download in all file formats
-* Allow large file download (No limit on the file size)
-* Accept donations for your free digital downloads using PayPal
 * Free downloads for music or audio files e.g. mp3, aac, m4a, wav
+* Insert download buttons into your landing page
 * Free downloads for video files e.g. mp4, mov, qt (QuickTime), mpg, mpeg, flv, m4v, swf, flash, avi, wma, ogg, webm
+* Allow users to directly download in all file formats
 * Free downloads for document file e.g. doc, docx (OpenOffice, Microsoft Word), odt (OpenDocument), htm, html, ps, tex, xml, txt, csv
-* Free downloads for Office file e.g. xlsx (Microsoft Excel), pptx (Microsoft PowerPoint) 
+* Allow large file download (No limit on the file size)
+* Free downloads for Office file e.g. xlsx (Microsoft Excel), pptx (Microsoft PowerPoint)
+* Accept donations for your free digital downloads using PayPal
 * Free downloads for script e.g. js, css, php
-* Free downloads for archive or compressed file e.g. tar, rar, zip, 7z, gz, z
-* Free downloads for image file e.g. png, gif, jpg, jpeg, bmp
-* Free downloads for e-book e.g. pdf, epub
 * Track/Monitor your downloads
-* Ability to force a digital file download
+* Free downloads for archive or compressed file e.g. tar, rar, zip, 7z, gz, z
+* Force the browser to open the download prompt
+* Free downloads for image file e.g. png, gif, jpg, jpeg, bmp
+* Open the download in a new tab
+* Free downloads for e-book e.g. pdf, epub
 
-For more information please check the [Easy Media Download](http://noorsplugin.com/easy-media-download-plugin-for-wordpress/) documentation page
+For more information please check the [Easy Media Download](https://noorsplugin.com/easy-media-download-plugin-for-wordpress/) documentation page
 
-= Embedding Shortcodes for the Downloads =
+=== Embedding Shortcodes for the Downloads ===
 
 Create a new post/page and use the following shortcode to create a download button for your digital media file:
 
@@ -68,13 +75,13 @@ By default the download starts in the same window. But you can choose to modify 
 
 `[easy_media_download url="http://example.com/wp-content/uploads/myfile.zip" target="_blank"]`  (opens the download in a new window)
 
-= Force File Download =
+=== Force File Download ===
 
 Usually when a digital file is recognised by the browser it does not prompt for download. The file just opens in the browser instead. You can choose to modify this behaviour using the `force_dl` parameter in the shortcode.
 
 `[easy_media_download url="http://example.com/wp-content/uploads/myfile.mp3" force_dl="1"]` 
 
-= Download Button Templates =
+=== Download Button Templates ===
 
 Easy Media Download comes with 21 different download button templates. All you need to do is specify the style and the button will look just like it. For example:
 
@@ -103,7 +110,23 @@ Easy Media Download comes with 21 different download button templates. All you n
 
 If you want to fully customize the download button you can use your own button image instead.
 
-= Embedding a Donation Button for Free Download =
+=== Link Rel ===
+
+You can use the HTML link `rel` attribute in the shortcode to define the relationship between your page and the linked download.
+
+`[easy_media_download url="http://example.com/wp-content/uploads/myfile.zip" rel="nofollow"]`
+
+=== Custom CSS Class ===
+
+In addition to various button templates, If you want to apply custom styling to a button you can do so by using the `class` parameter.
+
+`[easy_media_download url="http://example.com/wp-content/uploads/myfile.zip" class="myclass"]`
+
+You can specify multiple CSS classes in the shortcode.
+
+`[easy_media_download url="http://example.com/wp-content/uploads/myfile.zip" class="myclass1 myclass2 myclass3"]`
+
+=== Embedding a Donation Button for Free Download ===
 
 You can accept donations from users visiting your site for your free downloads. Simply use the following shortcode with your PayPal email address in it.
 
@@ -127,11 +150,11 @@ You can customize the donation button by specifying your preferred image in the 
 
 `[emd_donation email="abc123@hotmail.com" image="http://example.com/wp-content/uploads/images/donate.jpg"]`
 
-= Digital Download Tracking =
+=== Digital Download Tracking ===
 
-Easy Media Download is integrated with [Google Analytics](http://wordpress.org/plugins/google-analytics-for-wordpress/) plugin. It allows you to see how many times a particular file has been downloaded in real time from your Google Analytics account. 
+Easy Media Download is integrated with the [Google Analytics](https://wordpress.org/plugins/simple-universal-google-analytics/) plugin. It allows you to see how many times a particular file has been downloaded in real time from your Google Analytics account. 
 
-= Languages =
+=== Languages ===
 
 Easy Media Download can be translated into your languages. Currently it supports the following languages:
 
@@ -142,14 +165,16 @@ Easy Media Download can be translated into your languages. Currently it supports
 * Dutch
 * Turkish
 
+If you are a non-English speaker please help [translate Easy Media Download](https://translate.wordpress.org/projects/wp-plugins/easy-media-download) into your language.
+
 **Like Easy Media Download Already?**
 
-Feel free to drop your review [here](http://wordpress.org/support/view/plugin-reviews/easy-media-download/)
+Feel free to drop your review [here](https://wordpress.org/support/plugin/easy-media-download/reviews/?rate=5#new-post)
 
-= Recommended Reading =
+=== Recommended Reading ===
 
-* Easy Media Download [Documentation](http://noorsplugin.com/easy-media-download-plugin-for-wordpress/)
-* My Other [Free WordPress Plugins](http://noorsplugin.com/wordpress-plugins/)
+* Easy Media Download [Documentation](https://noorsplugin.com/easy-media-download-plugin-for-wordpress/)
+* My Other [Free WordPress Plugins](https://noorsplugin.com/wordpress-plugins/)
 
 == Installation ==
 
@@ -174,12 +199,27 @@ Yes.
 
 == Screenshots ==
 
-For screenshots please visit the [Easy Media Download](http://noorsplugin.com/easy-media-download-plugin-for-wordpress/) plugin page
+1. Download Now button demo
 
 == Upgrade Notice ==
 none
 
 == Changelog ==
+
+= 1.1.3 =
+* Added a new parameter to support the HTML link rel attribute in the download button.
+
+= 1.1.2 =
+* Added download tracking option with the [Google Analytics](https://wordpress.org/plugins/simple-universal-google-analytics/) plugin.
+
+= 1.1.1 =
+* Added a new class parameter to the download button shortcode
+
+= 1.1.0 =
+* Easy Media Download is now compatible with WordPress 4.4
+
+= 1.0.9 =
+* Updated the translation files so the plugin can take advantage of language packs
 
 = 1.0.8 =
 * Easy media download is now compatible with WordPress 4.3

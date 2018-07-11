@@ -3,7 +3,7 @@
 Contributors: flippercode
 Tags: author image, author photo, author avatar, avatar, bbPress, profile avatar, profile image, user avatar, user image, user photo, widget
 Requires at least: 3.6
-Tested up to: 4.2
+Tested up to: 4.9.6
 Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -53,7 +53,7 @@ Innovative Way to Setup User Avatar :
 
 == Installation ==
 
-Visit [WP User Avatar](http://wpuseravatar.com/) for more information and documentation.
+Visit [WP User Avatar](http://www.flippercode.com/product/wp-user-avatar/) for more information and documentation.
 
 1. Download, install, and activate the WP User Avatar plugin.
 2. On your profile edit page, click "Edit Image".
@@ -161,7 +161,7 @@ Returns true if the user has a WP User Avatar image. You must specify the user I
 
 == Frequently Asked Questions ==
 
-Visit [WP User Avatar](http://wpuseravatar.com/) for more information and documentation.
+Visit [WP User Avatar](http://www.flippercode.com/product/wp-user-avatar/) for more information and documentation.
 
 = How do I use WP User Avatar? =
 
@@ -404,6 +404,34 @@ This would output:
 4. After you've chosen a WP User Avatar image, you will see the option to remove it.
 
 == Changelog ==
+
+= 2.1.1 =
+* Fix: Insecure content over https issue is fixed.
+
+= 2.0.9 =
+* New Shortcode: Use [avatar user=current] shortcode to show current logged in user avatar.
+
+= 2.0.8 =
+* Fix: Compatible with php 7.
+
+= 2.0.7 =
+* Improvement Fix: Removed languages files to be used from core wordpress language packs.
+
+= 2.0.7 =
+* Improvement Fix: Removed languages files to be used from core wordpress language packs.
+
+= 2.0.6 =
+* Improvement Fix: Broken Jquery files from UI is resolved.
+
+= 2.0.5 =
+* Improvement Fix: Broken JS files from UI is resolved.
+
+= 2.0.4 =
+* Improvement Fix: Activation warning in some cases is resolved.
+
+= 2.0.3 =
+* Improvement Fix: Added missing translation strings in English version of po file.
+
 
 = 2.0.0 =
 * Improvement Fix: Added missing translation strings in English version of po file.

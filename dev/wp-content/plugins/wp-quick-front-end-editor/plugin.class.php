@@ -9,7 +9,8 @@
 		{
 			add_action( "admin_menu", array($this,'front_editor_admin_options'));
 			add_filter( 'the_title', array($this,'editable_title'));
-			add_filter( 'the_content', array($this,'editable_content'));
+			add_action( "wp_head", array($this,'add_enable_disable_button'));
+			add_filter( 'the_content', array($this,'editable_content')); 
 			add_action( 'wp_enqueue_scripts', array($this,'add_scripts'));
 			add_action( 'wp_ajax_save_content_front', array($this, 'save_content_front') );
 			add_action( 'admin_enqueue_scripts', array($this,'admin_enqueuing_scripts'));
@@ -36,6 +37,21 @@
 			}
 			die(0);
 		}
+
+		function add_enable_disable_button(){
+			$saved_options = get_option( 'la_front_editor' );
+			if (isset($saved_options['role'])) {
+				$allroles = array_values($saved_options['role']);
+			}
+			$user = wp_get_current_user();
+			$allowed_roles = array($allroles[0], $allroles[1],$allroles[2],$allroles[3]);
+			//print_r($allroles);
+			 if( array_intersect($allowed_roles, $user->roles ) && is_single() && $saved_options['btnText']!=''){
+			 	echo '<button style="position: fixed;top: 1px;left: 35%;z-index: 999000;" class="btn btn-sm btn-default activep"> <i class="fa fa-pencil"></i> '.$saved_options["btnText"].' </button>
+					<button style="position: fixed;top: 1px;left: 35%;z-index: 999000;" class="btn btn-sm btn-danger deactive"> <i class="fa fa-shield"></i> '.$saved_options["disBtntext"].'</button>';
+			 }
+		}
+
 		function front_editor_menu_page(){
 			$saved_options = get_option( 'la_front_editor' );
 			if (isset($saved_options['role'])) {
@@ -44,7 +60,7 @@
 			?>
 
 			<div class="wrap" id="fronteditor">
-				<h1>WP Quick Frontend Editor Settings</h1>
+				<h1>WP Quick Frontend Editor Settings <a href="http://codecanyon.net/item/wp-quick-frontend-editor/13077804?ref=labibahmed"> Get Pro</a></h1>
 				<hr>
 				<?php if ($saved_options!='') {?>
 					
@@ -64,6 +80,24 @@
 						</td>
 					</tr>
 					<tr>
+						<td><strong><?php _e( 'Enable Button Text', 'la-fronteditor' ); ?></strong> </td>
+						<td>
+							<input type="text" class="btntext widefat" value="<?php echo $saved_options['btnText']; ?>">
+						</td>
+						<td>
+							<p class="description"> <?php _e( 'Enter Button Text.This will be shown on button on frontend.', 'la-fronteditor' ); ?><b>(Required)</b></p>
+						</td>
+					</tr>
+					<tr>
+						<td><strong><?php _e( 'Disable Button Text', 'la-fronteditor' ); ?></strong> </td>
+						<td>
+							<input type="text" class="disbtntext widefat" value="<?php echo $saved_options['disBtntext']; ?>">
+						</td>
+						<td>
+							<p class="description"> <?php _e( 'Enter Disable Button Text.This will be shown on button on frontend.', 'la-fronteditor' ); ?><b>(Required)</b></p>
+						</td>
+					</tr>
+					<tr>
 						<td><strong><?php _e( 'Who Can Edit?', 'la-fronteditor' ); ?></strong> </td>
 						<td>
 							
@@ -78,7 +112,7 @@
 					</tr>
 				</table>
 				<?php } else{ ?>
-
+ 
 				<table class="form-table">
 					<tr>
 						<td><strong><?php _e( 'Enable Button Position', 'la-fronteditor' ); ?></strong> </td>
@@ -91,6 +125,24 @@
 						</td>
 						<td>
 							<p class="description"> <?php _e( 'Choose Position of "Enable Quick Frontend Editor Button"', 'la-fronteditor' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<td><strong><?php _e( 'Enable Button Text', 'la-fronteditor' ); ?></strong> </td>
+						<td>
+							<input type="text" class="btntext widefat" value="">
+						</td>
+						<td>
+							<p class="description"> <?php _e( 'Enter Button Text.This will be shown on button on frontend.', 'la-fronteditor' ); ?><b>(Required)</b></p>
+						</td>
+					</tr>
+					<tr>
+						<td><strong><?php _e( 'Disable Button Text', 'la-fronteditor' ); ?></strong> </td>
+						<td>
+							<input type="text" class="disbtntext widefat" value="<?php echo $saved_options['disBtntext']; ?>">
+						</td>
+						<td>
+							<p class="description"> <?php _e( 'Enter Disable Button Text.This will be shown on button on frontend.', 'la-fronteditor' ); ?><b>(Required)</b></p>
 						</td>
 					</tr>
 					<tr>
@@ -117,12 +169,14 @@
 		}
 		function editable_title($title){
 			$saved_options = get_option( 'la_front_editor' );
-			$allroles = array_values($saved_options['role']);
+			if (isset($saved_options['role'])) {
+				$allroles = array_values($saved_options['role']);
+			}
 			$user = wp_get_current_user();
 			$allowed_roles = array($allroles[0], $allroles[1],$allroles[2],$allroles[3]);
 			
 			 if( array_intersect($allowed_roles, $user->roles )&& in_the_loop() ){
-            	$title = '<span contenteditable="true" id="la-title">'.$title.'</span> <span class="text-muted hid bg-info" style="font-size: 12px;display: inline;">Click title to change</span>';
+            	$title = '<span contenteditable="true" class="la-title">'.$title.'</span> <span class="text-muted hid bg-info" style="font-size: 12px;display: inline;">Click title to change</span>';
        		 } 
         	return $title;
 		}
@@ -153,19 +207,15 @@
 			      'post_content' => $content,
 			  );
 
-			  	
-				
-
-			  wp_update_post( $my_post );
-
-			  
-
+			wp_update_post( $my_post );
 			die(0);
 		}
 
 		function editable_content($content){
 			$saved_options = get_option( 'la_front_editor' );
-			$allroles = array_values($saved_options['role']);
+			if (isset($saved_options['role'])) {
+				$allroles = array_values($saved_options['role']);
+			}
 			$user = wp_get_current_user();
 			$allowed_roles = array($allroles[0], $allroles[1],$allroles[2],$allroles[3]);
 			 if( array_intersect($allowed_roles, $user->roles )&& in_the_loop() ){
@@ -177,8 +227,7 @@
 	  <div class="post-fea">
 		      	
 		      </div>		 		  
-	<button style="position: fixed;top: 1px;left: 35%;z-index: 999000;" class="btn btn-sm btn-default activep"> <i class="fa fa-pencil"></i> Enable WP Quick Front Editor </button>
-	<button style="position: fixed;top: 1px;left: 35%;z-index: 999000;" class="btn btn-sm btn-danger deactive"> <i class="fa fa-shield"></i> Disable WP Quick Front Editor</button>
+	
 	<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
       <div class="btn-group">
         <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Font"><i class="fa fa-font"></i><b class="caret"></b></a>
@@ -389,7 +438,10 @@
 		}
 		function add_scripts(){
 			$saved_options = get_option( 'la_front_editor' );
-			$allroles = array_values($saved_options['role']);
+			if (isset($saved_options['role'])) {
+				$allroles = array_values($saved_options['role']);
+			}
+			
 			$user = wp_get_current_user();
 			$allowed_roles = array($allroles[0], $allroles[1],$allroles[2],$allroles[3]);
 

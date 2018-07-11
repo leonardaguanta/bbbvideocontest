@@ -1,6 +1,6 @@
 <?php
 /**
-Aihrus Framework
+Axelerant Framework
 Copyright (C) 2015 Axelerant
 
 This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ if ( ! defined( 'AIHR_DIR_LIB' ) ) {
 }
 
 if ( ! defined( 'AIHR_VERSION' ) ) {
-	define( 'AIHR_VERSION', '1.2.2' );
+	define( 'AIHR_VERSION', '1.3.1' );
 }
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -86,8 +86,8 @@ if ( ! function_exists( 'aihr_notice_aihrus_framework' ) ) {
 			$name = ucwords( $name );
 		}
 
-		$help_url  = esc_url( '//nodedesk.zendesk.com/hc/en-us/articles/202381391' );
-		$help_link = sprintf( __( '<a href="%1$s">Update plugins</a>. <a href="%2$s">More information</a>.' ), self_admin_url( 'update-core.php' ), $help_url );
+		$help_url  = esc_url( 'https://axelerant.atlassian.net/wiki/display/WPFAQ/Axelerant+Framework+Out+of+Date' );
+		$help_link = sprintf( __( '<a href="%1$s">Update plugins</a>. <a href="%2$s" target="_blank">More information</a>.' ), self_admin_url( 'update-core.php' ), $help_url );
 
 		$note = '';
 		if ( defined( 'AIHR_BASE' ) ) {
@@ -103,7 +103,7 @@ if ( ! function_exists( 'aihr_notice_aihrus_framework' ) ) {
 
 		$aihr_version = defined( 'AIHR_VERSION' ) ? AIHR_VERSION : '0.0.0';
 
-		$text = sprintf( esc_html__( 'Plugin "%1$s" has been deactivated as it requires Aihrus Framework %2$s or newer. You\'re running Aihrus Framework %4$s. Once corrected, "%1$s" can be activated. %5$s %3$s' ), $name, AIHR_VERSION_MIN, $help_link, $aihr_version, $note );
+		$text = sprintf( esc_html__( 'Plugin "%1$s" has been deactivated as it requires Axelerant Framework %2$s or newer. You\'re running Axelerant Framework %4$s. Once corrected, "%1$s" can be activated. %5$s %3$s' ), $name, AIHR_VERSION_MIN, $help_link, $aihr_version, $note );
 
 		aihr_notice_error( $text );
 	}
@@ -149,9 +149,9 @@ if ( ! function_exists( 'aihr_notice_php' ) ) {
 			$name = ucwords( $name );
 		}
 
-		$help_url = esc_url( 'https://nodedesk.zendesk.com/hc/en-us/articles/202331041' );
+		$help_url = esc_url( 'https://axelerant.atlassian.net/wiki/pages/viewpage.action?pageId=12845151' );
 
-		$text = sprintf( __( 'Plugin "%1$s" has been deactivated as it requires PHP %2$s or newer. You\'re running PHP %4$s. Once corrected, "%1$s" can be activated. <a href="%3$s">More information</a>.' ), $name, AIHR_PHP_VERSION_MIN, $help_url, PHP_VERSION );
+		$text = sprintf( __( 'Plugin "%1$s" has been deactivated as it requires PHP %2$s or newer. You\'re running PHP %4$s. Once corrected, "%1$s" can be activated. <a href="%3$s" target="_blank">More information</a>.' ), $name, AIHR_PHP_VERSION_MIN, $help_url, PHP_VERSION );
 
 		aihr_notice_error( $text );
 	}
@@ -211,7 +211,7 @@ if ( ! function_exists( 'aihr_notice_wp' ) ) {
 
 if ( ! function_exists( 'aihr_notice_error' ) ) {
 	function aihr_notice_error( $text ) {
-		aihr_notice_updated( $text, 'error' );
+		aihr_notice_updated( $text, 'error error-twp' );
 		error_log( $text );
 	}
 }
@@ -232,22 +232,8 @@ if ( ! function_exists( 'aihr_notice_updated' ) ) {
 }
 
 if ( ! function_exists( 'aihr_notice_version' ) ) {
-	function aihr_notice_version( $required_base, $required_name, $required_slug, $required_version, $item_name ) {
-		$is_active = is_plugin_active( $required_base );
-		if ( $is_active ) {
-			$link = sprintf( __( '<a href="%1$s">update to</a>' ), self_admin_url( 'update-core.php' ) );
-		} else {
-			$plugins = get_plugins();
-			if ( empty( $plugins[ $required_base ] ) ) {
-				$install = esc_url( wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $required_slug ), 'install-plugin_' . $required_slug ) );
-				$link    = sprintf( __( '<a href="%1$s">install</a>' ), $install );
-			} else {
-				$activate = esc_url( wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . $required_base ), 'activate-plugin_' . $required_base ) );
-				$link     = sprintf( __( '<a href="%1$s">activate</a>' ), $activate );
-			}
-		}
-
-		$text = sprintf( __( 'Plugin "%3$s" has been deactivated. Please %1$s "%4$s" version %2$s or newer before activating "%3$s".' ), $link, $required_version, $item_name, $required_name );
+	function aihr_notice_version( $required_name, $required_version, $item_name ) {
+		$text = sprintf( __( 'Plugin "%2$s" has been deactivated. Please install and activate "%3$s" version %1$s or newer before activating "%2$s".' ), $required_version, $item_name, $required_name );
 
 		aihr_notice_error( $text );
 	}
@@ -265,8 +251,8 @@ if ( ! function_exists( 'aihr_notice_license' ) ) {
 
 		$settings_link = sprintf( $text, $link, $free_name );
 
-		$link = esc_url( 'https://nodedesk.zendesk.com/hc/en-us/articles/202333071' );
-		$text = __( '<a href="%s">Where\'s my license key?</a>' );
+		$link = esc_url( 'https://axelerant.atlassian.net/wiki/display/WPFAQ/Where+does+my+license+key+go' );
+		$text = __( '<a href="%s" target="_blank">Where\'s my license key?</a>' );
 
 		$faq_link = sprintf( $text, $link );
 
@@ -344,7 +330,7 @@ if ( ! function_exists( 'aihr_notice_deactivate' ) ) {
 		$plugin_slug = dirname( plugin_basename( $file ) );
 		$url         = 'https://wordpress.org/plugins/' . $plugin_slug . '/developers/';
 
-		$text = sprintf( __( 'Plugin "%1$s" has been deactivated due to "%2$s". Once corrected, "%1$s" can be activated.</p><p>If you want to revert "%1$s", look for <a href="%3$s">older versions on WordPress</a> or <a href="mailto:support@nodedesk.com?subject=Old+Plugin+Version+Request">email Axelerant support</a> if this is a premium plugin.' ), $name, $reason, $url );
+		$text = sprintf( __( 'Plugin "%1$s" has been deactivated due to "%2$s". Once corrected, "%1$s" can be activated.</p><p>If you want to revert "%1$s", look for <a href="%3$s">older versions on WordPress</a> or <a href="mailto:support@axelerant.com?subject=Old+Plugin+Version+Request">email Axelerant support</a> if this is a premium plugin.' ), $name, $reason, $url );
 
 		aihr_notice_error( $text );
 

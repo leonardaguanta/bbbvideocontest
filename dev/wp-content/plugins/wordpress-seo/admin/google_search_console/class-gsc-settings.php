@@ -1,6 +1,8 @@
 <?php
 /**
- * @package WPSEO\Admin|Google_Search_Console
+ * WPSEO plugin file.
+ *
+ * @package WPSEO\Admin\Google_Search_Console
  */
 
 /**
@@ -11,7 +13,7 @@ class WPSEO_GSC_Settings {
 	/**
 	 * Clear all data from the database
 	 *
-	 * @param WPSEO_GSC_Service $service
+	 * @param WPSEO_GSC_Service $service Service class instance.
 	 */
 	public static function clear_data( WPSEO_GSC_Service $service ) {
 		// Remove issue and issue counts.
@@ -27,7 +29,7 @@ class WPSEO_GSC_Settings {
 	/**
 	 * Reloading all the issues
 	 */
-	public static function reload_issues( ) {
+	public static function reload_issues() {
 		// Remove issue and issue counts.
 		self::remove();
 	}
@@ -35,8 +37,8 @@ class WPSEO_GSC_Settings {
 	/**
 	 * When authorization is successful return true, otherwise false
 	 *
-	 * @param string                  $authorization_code
-	 * @param Yoast_Api_Google_Client $client
+	 * @param string                  $authorization_code Code to validate.
+	 * @param Yoast_Api_Google_Client $client             Client object instance.
 	 *
 	 * @return bool
 	 */
@@ -99,5 +101,4 @@ class WPSEO_GSC_Settings {
 	private static function remove_gsc_option() {
 		delete_option( WPSEO_GSC::OPTION_WPSEO_GSC );
 	}
-
 }

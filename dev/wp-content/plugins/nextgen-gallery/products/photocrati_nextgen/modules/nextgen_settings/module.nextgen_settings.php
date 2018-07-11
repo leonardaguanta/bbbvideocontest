@@ -1,26 +1,27 @@
 <?php
 
-/***
-{
-	Module:	photocrati-nextgen_settings
-}
-***/
-
 class M_NextGen_Settings extends C_Base_Module
 {
 	/**
 	 * Defines the module
 	 */
-	function define()
+	function define($id = 'pope-module',
+                    $name = 'Pope Module',
+                    $description = '',
+                    $version = '',
+                    $uri = '',
+                    $author = '',
+                    $author_uri = '',
+                    $context = FALSE)
 	{
 		parent::define(
 			'photocrati-nextgen_settings',
 			'NextGEN Gallery Settings',
 			'Provides central management for NextGEN Gallery settings',
-			'0.9',
-			'http://www.nextgen-gallery.com',
-			'Photocrati Media',
-			'http://www.photocrati.com'
+			'3.0.0',
+			'https://www.imagely.com/wordpress-gallery-plugin/nextgen-gallery/',
+			'Imagely',
+			'https://www.imagely.com'
 		);
 
 		C_Photocrati_Installer::add_handler($this->module_id, 'C_NextGen_Settings_Installer');
@@ -109,16 +110,16 @@ class C_NextGen_Settings_Installer
 			'thumbEffectContext'  => 'nextgen_images', // select effect
 
 			// Watermark settings
-			'wmPos'    => 'botRight',             // Postion
-			'wmXpos'   => 5,                      // X Pos
+			'wmPos'    => 'midCenter',            // Postion
+			'wmXpos'   => 15,                     // X Pos
 			'wmYpos'   => 5,                      // Y Pos
-			'wmType'   => 0,                      // Type : 'image' / 'text'
+			'wmType'   => 'text',                 // Type : 'image' / 'text'
 			'wmPath'   => '',                     // Path to image
 			'wmFont'   => 'arial.ttf',            // Font type
-			'wmSize'   => 10,                     // Font Size
+			'wmSize'   => 30,                     // Font Size
 			'wmText'   => get_option('blogname'), // Text
-			'wmColor'  => '000000',               // Font Color
-			'wmOpaque' => '100',                  // Font Opaque
+			'wmColor'  => 'ffffff',               // Font Color
+			'wmOpaque' => '33',                   // Font Opaque
 
 			// Image Rotator settings
 			'slideFX'      => 'fade',

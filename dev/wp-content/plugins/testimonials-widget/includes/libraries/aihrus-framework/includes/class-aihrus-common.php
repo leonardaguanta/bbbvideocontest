@@ -1,6 +1,6 @@
 <?php
 /**
- * Aihrus Framework
+ * Axelerant Framework
  * Copyright (C) 2015 Axelerant
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ abstract class Aihrus_Common {
 </form>
 EOD;
 
-		self::$donate_link = '<a href="https://axelerant.com/about-axelerant/donate/"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" alt="PayPal - The safer, easier way to pay online!" /></a>';
+		self::$donate_link = '<a href="https://store.axelerant.com/donate/"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" alt="PayPal - The safer, easier way to pay online!" /></a>';
 
 		add_action( 'admin_init', array( static::$class, 'check_notices' ), 9999 );
 	}
@@ -196,23 +196,23 @@ EOD;
 
 
 	public static function create_nonce( $action ) {
-		$nonce = uniqid();
 		$uid   = get_current_user_id();
 		$check = $uid . $action;
-		set_transient( $nonce, $check, HOUR_IN_SECONDS );
+
+		$nonce = wp_create_nonce( $check );
 
 		return $nonce;
 	}
 
 
 	public static function verify_nonce( $nonce, $action ) {
-		$active = get_transient( $nonce );
 		$uid    = get_current_user_id();
 		$check  = $uid . $action;
 		$valid  = false;
 
-		if ( $active == $check ) {
-			delete_transient( $nonce );
+		$active = wp_verify_nonce( $nonce, $check );
+
+		if ( false != $active ) {
 			$valid = true;
 		}
 
@@ -440,14 +440,14 @@ EOD;
 			$output        .= $text;
 			$output_length += $func_strlen( $text );
 
-			if ( $tag[0] == '&' ) {
+			if ( '&' == $tag[0] ) {
 				// Handle HTML entity by copying straight through
 				$output .= $tag;
 				$output_length++; // only counted as one character
 			} else {
 				// Handle HTML tag
 				$tag_inner = $match[1][0];
-				if ( $tag[1] == '/' ) {
+				if ( '/' == $tag[1] ) {
 					// This is a closing tag.
 					$output .= $tag;
 					// If input tags aren't balanced, we leave the popped tag
@@ -457,7 +457,7 @@ EOD;
 					if ( end( $tag_stack ) == $tag_inner ) {
 						array_pop( $tag_stack );
 					}
-				} elseif ( $tag[ $func_strlen( $tag ) - 2 ] == '/' || in_array( strtolower( $tag_inner ), $unpaired_tags ) ) {
+				} elseif ( '/' == $tag[ $func_strlen( $tag ) - 2 ] || in_array( strtolower( $tag_inner ), $unpaired_tags ) ) {
 					// Self-closing or unpaired tag
 					$output .= $tag;
 				} else {
@@ -593,13 +593,16 @@ EOD;
 		$dates = array(
 			array(
 				'rule' => '([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})',
-				'vars' => array( 'year', 'monthnum', 'day' ) ),
+				'vars' => array( 'year', 'monthnum', 'day' ),
+			),
 			array(
 				'rule' => '([0-9]{4})/([0-9]{1,2})',
-				'vars' => array( 'year', 'monthnum' ) ),
+				'vars' => array( 'year', 'monthnum' ),
+			),
 			array(
 				'rule' => '([0-9]{4})',
-				'vars' => array( 'year' ) ),
+				'vars' => array( 'year' ),
+			),
 		);
 
 		foreach ( $dates as $data ) {
@@ -773,8 +776,6 @@ EOD;
 
 		return $value;
 	}
-
-
 }
 
 

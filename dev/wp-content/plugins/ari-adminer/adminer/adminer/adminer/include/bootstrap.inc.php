@@ -18,12 +18,20 @@ if (function_exists("mb_internal_encoding")) {
 	mb_internal_encoding("8bit");
 }
 
+include "../adminer/include/functions.inc.php";
+
 // used only in compiled file
 if (isset($_GET["file"])) {
 	include "../adminer/file.inc.php";
 }
 
-include "../adminer/include/functions.inc.php";
+if ($_GET["script"] == "version") {
+	$fp = file_open_lock(get_temp_dir() . "/adminer.version");
+	if ($fp) {
+		file_write_unlock($fp, serialize(array("signature" => $_POST["signature"], "version" => $_POST["version"])));
+	}
+	exit;
+}
 
 global $adminer, $connection, $drivers, $edit_functions, $enum_length, $error, $functions, $grouping, $HTTPS, $inout, $jush, $LANG, $langs, $on_actions, $permanent, $structured_types, $has_token, $token, $translations, $types, $unsigned, $VERSION; // allows including Adminer inside a function
 
@@ -33,11 +41,14 @@ if (!$_SERVER["REQUEST_URI"]) { // IIS 5 compatibility
 if (!strpos($_SERVER["REQUEST_URI"], '?') && $_SERVER["QUERY_STRING"] != "") { // IIS 7 compatibility
 	$_SERVER["REQUEST_URI"] .= "?$_SERVER[QUERY_STRING]";
 }
+if ($_SERVER["HTTP_X_FORWARDED_PREFIX"]) {
+	$_SERVER["REQUEST_URI"] = $_SERVER["HTTP_X_FORWARDED_PREFIX"] . $_SERVER["REQUEST_URI"];
+}
 $HTTPS = $_SERVER["HTTPS"] && strcasecmp($_SERVER["HTTPS"], "off");
 
 @ini_set("session.use_trans_sid", false); // protect links in export, @ - may be disabled
-session_cache_limiter(""); // to allow restarting session and to not send Cache-Control: no-store
 if (!defined("SID")) {
+	session_cache_limiter(""); // to allow restarting session
 	session_name("adminer_sid"); // use specific session name to get own namespace
 	$params = array(0, preg_replace('~\\?.*~', '', $_SERVER["REQUEST_URI"]), "", $HTTPS);
 	if (version_compare(PHP_VERSION, '5.2.0') >= 0) {
@@ -54,7 +65,7 @@ if (get_magic_quotes_runtime()) {
 }
 @set_time_limit(0); // @ - can be disabled
 @ini_set("zend.ze1_compatibility_mode", false); // @ - deprecated
-@ini_set("precision", 20); // @ - can be disabled
+@ini_set("precision", 15); // @ - can be disabled, 15 - internal PHP precision
 
 include "../adminer/include/lang.inc.php";
 include "../adminer/lang/$LANG.inc.php";

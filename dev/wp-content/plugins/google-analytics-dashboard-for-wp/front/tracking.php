@@ -1,7 +1,8 @@
 <?php
 /**
- * Author: Alin Marcu
- * Author URI: https://deconf.com
+ * Author: ExactMetrics team
+ * Author URI: https://exactmetrics.com
+ * Copyright 2018 ExactMetrics team
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -16,49 +17,63 @@ if ( ! class_exists( 'GADWP_Tracking' ) ) {
 
 		private $gadwp;
 
+		public $analytics;
+
+		public $analytics_amp;
+
+		public $tagmanager;
+
 		public function __construct() {
 			$this->gadwp = GADWP();
-			
-			add_action( 'wp_head', array( 
-				$this, 
-				'tracking_code' ), 99 );
-			add_action( 'wp_enqueue_scripts', array( 
-				$this, 
-				'load_scripts' ) );
+
+			$this->init();
 		}
 
-		public function load_scripts() {
-			if ( $this->gadwp->config->options['ga_event_tracking'] && ! wp_script_is( 'jquery' ) ) {
-				wp_enqueue_script( 'jquery' );
+		public function tracking_code() { // Removed since 5.0
+			GADWP_Tools::doing_it_wrong( __METHOD__, __( "This method is deprecated, read the documentation!", 'google-analytics-dashboard-for-wp' ), '5.0' );
+		}
+
+		public static function gadwp_user_optout( $atts, $content = "" ) {
+			if ( ! isset( $atts['html_tag'] ) ) {
+				$atts['html_tag'] = 'a';
+			}
+			if ( 'a' == $atts['html_tag'] ) {
+				return '<a href="#" class="gadwp_useroptout" onclick="gaOptout()">' . esc_html( $content ) . '</a>';
+			} else if ( 'button' == $atts['html_tag'] ) {
+				return '<button class="gadwp_useroptout" onclick="gaOptout()">' . esc_html( $content ) . '</button>';
 			}
 		}
 
-		public function tracking_code() {
-			if ( GADWP_Tools::check_roles( $this->gadwp->config->options['ga_track_exclude'], true ) || ( $this->gadwp->config->options['ga_dash_excludesa'] && current_user_can( 'manage_network' ) ) ) {
+		public function init() {
+			// excluded roles
+			if ( GADWP_Tools::check_roles( $this->gadwp->config->options['track_exclude'], true ) || ( $this->gadwp->config->options['superadmin_tracking'] && current_user_can( 'manage_network' ) ) ) {
 				return;
 			}
-			$traking_mode = $this->gadwp->config->options['ga_dash_tracking'];
-			$traking_type = $this->gadwp->config->options['ga_dash_tracking_type'];
-			if ( $traking_mode > 0 ) {
-				if ( ! $this->gadwp->config->options['ga_dash_tableid_jail'] ) {
-					return;
-				}
-				if ( $traking_type == "classic" ) {
-					echo "\n<!-- BEGIN GADWP v" . GADWP_CURRENT_VERSION . " Classic Tracking - https://deconf.com/google-analytics-dashboard-wordpress/ -->\n";
-					if ( $this->gadwp->config->options['ga_event_tracking'] ) {
-						require_once 'tracking/events-classic.php';
-					}
-					require_once 'tracking/code-classic.php';
-					echo "\n<!-- END GADWP Classic Tracking -->\n\n";
+
+			if ( 'universal' == $this->gadwp->config->options['tracking_type'] && $this->gadwp->config->options['tableid_jail'] ) {
+
+				// Analytics
+				require_once 'tracking-analytics.php';
+
+				if ( 1 == $this->gadwp->config->options['ga_with_gtag'] ) {
+					$this->analytics = new GADWP_Tracking_GlobalSiteTag();
 				} else {
-					echo "\n<!-- BEGIN GADWP v" . GADWP_CURRENT_VERSION . " Universal Tracking - https://deconf.com/google-analytics-dashboard-wordpress/ -->\n";
-					if ( $this->gadwp->config->options['ga_event_tracking'] || $this->gadwp->config->options['ga_aff_tracking'] || $this->gadwp->config->options['ga_hash_tracking'] ) {
-						require_once 'tracking/events-universal.php';
-					}
-					require_once 'tracking/code-universal.php';
-					echo "\n<!-- END GADWP Universal Tracking -->\n\n";
+					$this->analytics = new GADWP_Tracking_Analytics();
+				}
+
+				if ( $this->gadwp->config->options['amp_tracking_analytics'] ) {
+					$this->analytics_amp = new GADWP_Tracking_Analytics_AMP();
 				}
 			}
+
+			if ( 'tagmanager' == $this->gadwp->config->options['tracking_type'] && $this->gadwp->config->options['web_containerid'] ) {
+
+				// Tag Manager
+				require_once 'tracking-tagmanager.php';
+				$this->tagmanager = new GADWP_Tracking_TagManager();
+			}
+
+			add_shortcode( 'gadwp_useroptout', array( $this, 'gadwp_user_optout' ) );
 		}
 	}
 }

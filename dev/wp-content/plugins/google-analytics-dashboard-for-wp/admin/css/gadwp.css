@@ -1,6 +1,13 @@
+/**
+ * Author: Alin Marcu 
+ * Author URI: https://deconf.com
+ * Copyright 2013 Alin Marcu 
+ * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ */
+
 /* Tab navigation */
-#gadwp-events, #gadwp-custom, #gadwp-advanced, #gadwp-exclude,
-	#gadwp-config {
+#gadwp-events, #gadwp-custom, #gadwp-advanced, #gadwp-exclude, #gadwp-config, #gadwp-tmdatalayervars, #gadwp-tmintegration, #gadwp-integration, #gadwp-tmadvanced {
 	display: none;
 }
 
@@ -15,7 +22,7 @@ table.gadwp-settings-options {
 }
 
 td.gadwp-settings-title, td.info {
-	width: 130px;
+	width: 140px;
 	padding-left: 20px;
 }
 
@@ -32,33 +39,48 @@ td.gadwp-settings-info {
 }
 
 td.gadwp-settings-title label {
-	font-weight: bold;
+	font-size: 1.1em;
 }
 
-.gadash-title {
+.gadwp-title {
 	float: left;
 	margin-right: 10px;
 	margin-top: 2px;
 	clear: left;
 }
 
-.gadash-desc {
+.gadwp-desc {
 	font-size: 1em;
 }
 
-.gadash-top {
+.gadwp-top {
 	vertical-align: top;
 }
 
 pre.gadwp-settings-logdata {
-	white-space: pre-wrap;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
+
+pre.gadwp-settings-logdata span{
+	color: #b30000;
+	font-weight: 800;
+}
+
+table.gadwp-settings-logdata {
+	table-layout:fixed;
+	width: 100%;
+}	
+
 
 td.gadwp-settings-roles {
 	padding-bottom: 15px;
 }
 
-#ga_speed_samplerate, #ga_realtime_pages {
+#ga_speed_samplerate, #ga_user_samplerate, #ga_realtime_pages {
 	width: 50px;
 }
 
@@ -68,27 +90,36 @@ td.gadwp-settings-roles {
 
 #poststuff.gadwp h2 {
 	padding-bottom: 0;
+	font-size: 19.5px;
+	font-weight: normal;
+	padding: 0;
+	margin: 20px 0 15px 0;
+}
+
+#poststuff.gadwp h2.nav-tab-wrapper {
+	border-bottom: 1px solid #ccc;
+	padding-bottom: 0;
 }
 
 /* Options pages ON/OFF Switch */
-.gadwp-settings-switchoo {
+.button-primary.gadwp-settings-switchoo {
 	position: relative;
 	width: 50px;
 	float: left;
-	border: none !important;
-	padding: 0 !important;
-	height: 22px !important;
-	-moz-box-shadow: none !important;
-	-webkit-box-shadow: none !important;
-	-o-box-shadow: none !important;
-	box-shadow: none !important;
+	border: none;
+	padding: 0;
+	height: 22px;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	-o-box-shadow: none;
+	box-shadow: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 }
 
-.gadwp-settings-switchoo-checkbox {
-	display: none !important;
+input.gadwp-settings-switchoo-checkbox {
+	display: none;
 }
 
 .gadwp-settings-switchoo-label {
@@ -98,6 +129,7 @@ td.gadwp-settings-roles {
 	background: transparent;
 	border: 1px solid #ddd;
 	border-radius: 2px;
+	text-shadow: none;
 }
 
 .gadwp-settings-switchoo-inner {
@@ -121,6 +153,7 @@ td.gadwp-settings-roles {
 	height: 22px;
 	line-height: 22px;
 	font-size: 12px;
+	text-shadow: none;
 }
 
 .gadwp-settings-switchoo-inner:before {
@@ -185,197 +218,4 @@ td.gadwp-settings-roles {
 	float: left;
 	margin-left: 10px;
 	line-height: 20px;
-}
-
-/* Admin Widget & Real-Time Stats*/
-
-/* Real-Time content */
-.gadash-pline {
-	width: 100%;
-	margin: 0 0;
-	padding: 5px 0 5px 0;
-	background: #fff;
-	-moz-box-shadow: 0px 0px 3px 0px #BBB;
-	-webkit-box-shadow: 0px 0px 3px 0px #BBB;
-	box-shadow: 0px 0px 3px 0px #BBB;
-	display: table;
-	overflow: hidden;
-}
-
-.gadash-pleft {
-	width: 90%;
-	float: left;
-	padding-left: 5px;
-}
-
-.gadash-pright {
-	width: 5%;
-	float: right;
-	padding-right: 5px;
-}
-
-#gadash-widget .realtime {
-	margin: 10px 0 0 0;
-	width: 100%;
-}
-
-.gadash-rt-box {
-	width: 100%;
-	margin: 0 0;
-	background: #fff;
-	text-align: center;
-	-moz-box-shadow: 0px 0px 5px 0px #BBB;
-	-webkit-box-shadow: 0px 0px 5px 0px #BBB;
-	box-shadow: 0px 0px 5px 0px #BBB;
-	display: table;
-}
-
-.gadash-tdo-left {
-	width: 60%;
-	padding: 33px 0;
-	float: left;
-	text-align: center;
-}
-
-.gadash-tdo-right {
-	width: 35%;
-	margin: 0px 10px 0px 0;
-	text-align: left;
-	font-weight: bold;
-	vertical-align: middle;
-	float: right;
-	display: table;
-}
-
-.gadash-online {
-	font-size: 100px;
-	font-weight: normal;
-	line-height: 1em;
-	margin: 0 auto;
-	width: 80%;
-}
-
-.gadash-bigtext {
-	font-size: 14px;
-	width: 100%;
-	margin: 0 0;
-	padding: 5px 5px 5px 5px;
-	background: #fff;
-	-moz-box-shadow: 0px 0px 3px 0px #BBB;
-	-webkit-box-shadow: 0px 0px 3px 0px #BBB;
-	box-shadow: 0px 0px 3px 0px #BBB;
-	display: table;
-	overflow: hidden;
-}
-
-.gadash-bleft {
-	float: left;
-	width: 80%;
-}
-
-.gadash-bright {
-	float: right;
-	width: 20%;
-}
-
-.gadash-pgdetailsr {
-	padding-left: 20px;
-	text-align: right;
-}
-
-.gadash-pgdetailsl {
-	min-width: 250px;
-}
-
-#gadash-mainchart {
-	width: 98%;
-	height: 100%;
-	margin: 10px auto 10px 0;
-	height: 250px;
-}
-
-.gadash-floatwraper {
-	display: table;
-	width: 100%;
-	height: 100%;
-}
-
-#gadash-trafficmediums, #gadash-traffictype, #gadash-socialnetworks,
-	#gadash-trafficorganic {
-	width: 47%;
-	margin: 10px 0 0 0;
-	height: 200px;
-}
-
-#gadash-trafficmediums, #gadash-trafficorganic {
-	float: left;
-}
-
-#gadash-traffictype, #gadash-socialnetworks {
-	float: right;
-}
-
-#gadash-map, #gadash-prs {
-	width: 98%;
-	height: 100%;
-	margin: 10px auto 10px 0;
-}
-
-#ga_dash_period, #ga_dash_profile_select {
-	font-size: 14px !important;
-	padding: 1px !important;
-	height: 26px !important;
-}
-
-#dashboard-widgets-wrap .postbox {
-	margin-right: 10px;
-}
-
-/* Admin Widget content */
-#gadash-progressbar {
-	width: 100%;
-	height: 3px;
-	margin: 5px 0 0px 0;
-}
-
-.gadash-wrapper {
-	width: 100%;
-}
-
-.gadash-wrapper .inside {
-	display: table;
-	margin: 0 auto;
-	padding: 0px;
-}
-
-.gadash-wrapper .inside .small-box {
-	width: 30%;
-	float: left;
-	margin: 0 5px 10px 5px;
-	background: #fff;
-	text-align: center;
-	-moz-box-shadow: 0px 0px 7px 0px #BBB;
-	-webkit-box-shadow: 0px 0px 7px 0px #BBB;
-	box-shadow: 0px 0px 7px 0px #BBB;
-}
-
-.gadash-wrapper .inside .small-box h3 {
-	font-size: 1em;
-	color: #777;
-	padding: 0px 5px 0px 5px;
-	margin: 0px 0px 0px 0px;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;	
-}
-
-.gadash-wrapper .inside .small-box p {
-	font-size: 1.2em;
-	margin: 0px 0px 2px 0px;
-}
-
-@media screen and (max-width: 410px) {
-	.gadash-wrapper .inside .small-box {
-		width: 45%;
-	}
 }

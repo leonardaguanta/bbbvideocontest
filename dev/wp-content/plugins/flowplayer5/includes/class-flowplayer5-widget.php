@@ -5,7 +5,7 @@
  * @package   Flowplayer5
  * @author    Ulrich Pogson <ulrich@pogson.ch>
  * @license   GPL-2.0+
- * @link      http://flowplayer.org/
+ * @link      https://flowplayer.org/
  * @copyright 2013 Flowplayer Ltd
  */
 
@@ -42,13 +42,13 @@ class Flowplayer5_Widget extends WP_Widget {
 
 		$widget_ops = array(
 			'classname'   => 'flowplayer5-video-widget',
-			'description' => __( 'Display your Flowplayer Videos in a Widget.', $this->plugin_slug )
+			'description' => __( 'Display your Flowplayer Videos in a Widget.', $this->plugin_slug ),
 		);
 
 		parent::__construct(
-				'flowplayer5-video-widget',
-				__( 'Flowplayer Video Widget', $this->plugin_slug ),
-				$widget_ops
+			'flowplayer5-video-widget',
+			__( 'Flowplayer Video Widget', $this->plugin_slug ),
+			$widget_ops
 		);
 
 	}
@@ -57,10 +57,12 @@ class Flowplayer5_Widget extends WP_Widget {
 	 * Admin side Widget form.
 	 *
 	 * @since    1.4.0
+	 *
+	 * @param array $instance
 	 */
 	public function form( $instance ) {
 
-		// Merge with defaults
+		// Merge with defaults.
 		$instance = wp_parse_args(
 			( array ) $instance,
 			$this->defaults
@@ -68,12 +70,16 @@ class Flowplayer5_Widget extends WP_Widget {
 
 		$id = isset( $instance['id'] ) ? absint( $instance['id'] ) : '';
 
-		// WP_Query arguments
+		// WP_Query arguments.
 		$args = array(
-			'post_type' => 'flowplayer5',
+			'post_type'              => 'flowplayer5',
+			'posts_per_page'         => 100,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'no_found_rows'          => true,
 		);
 
-		// The Query
+		// The Query.
 		$query = new WP_Query( $args );
 		$posts = $query->posts;
 
@@ -92,6 +98,9 @@ class Flowplayer5_Widget extends WP_Widget {
 	 * Update widget settings.
 	 *
 	 * @since    1.4.0
+	 *
+	 * @param array $new_instance
+	 * @param array $old_instance
 	 */
 	public function update( $new_instance, $old_instance ) {
 
@@ -107,6 +116,9 @@ class Flowplayer5_Widget extends WP_Widget {
 	 * Display widget frontend.
 	 *
 	 * @since    1.4.0
+	 *
+	 * @param array $args
+	 * @param array $instance
 	 */
 	public function widget( $args, $instance ) {
 
@@ -119,7 +131,6 @@ class Flowplayer5_Widget extends WP_Widget {
 		echo $args['after_widget'];
 
 	}
-
 }
 
 /**

@@ -1,23 +1,23 @@
 <?php
-
-/***
- {
-	Module: photocrati-datamapper,
-	Depends: { photocrati-validation }
- }
-***/
 class M_DataMapper extends C_Base_Module
 {
-	function define()
+	function define($id = 'pope-module',
+                    $name = 'Pope Module',
+                    $description = '',
+                    $version = '',
+                    $uri = '',
+                    $author = '',
+                    $author_uri = '',
+                    $context = FALSE)
 	{
 		parent::define(
 			'photocrati-datamapper',
 			'DataMapper',
 			'Provides a database abstraction layer following the DataMapper pattern',
-			'0.8',
-			'http://www.photocrati.com',
-			'Photocrati Media',
-			'http://www.photocrati.com'
+			'3.0.0',
+            'https://www.imagely.com/wordpress-gallery-plugin/nextgen-gallery/',
+            'Imagely',
+            'https://www.imagely.com'
 		);
 
 		C_Photocrati_Installer::add_handler($this->module_id, 'C_Datamapper_Installer');
@@ -31,10 +31,10 @@ class M_DataMapper extends C_Base_Module
 
 	function _register_hooks()
 	{
-		add_filter('posts_request', array(&$this, 'set_custom_wp_query'), 50, 2);
-		add_filter('posts_fields', array(&$this, 'set_custom_wp_query_fields'), 50, 2);
-		add_filter('posts_where', array(&$this, 'set_custom_wp_query_where'), 50, 2);
-        add_filter('posts_groupby', array(&$this, 'set_custom_wp_query_groupby'), 50, 2);
+		add_filter('posts_request', array($this, 'set_custom_wp_query'), 50, 2);
+		add_filter('posts_fields', array($this, 'set_custom_wp_query_fields'), 50, 2);
+		add_filter('posts_where', array($this, 'set_custom_wp_query_where'), 50, 2);
+        add_filter('posts_groupby', array($this, 'set_custom_wp_query_groupby'), 50, 2);
 	}
 
 
@@ -45,7 +45,7 @@ class M_DataMapper extends C_Base_Module
 	 * @param WP_Query $wp_query
 	 * @return string
 	 */
-	function set_custom_wp_query($sql, &$wp_query)
+	function set_custom_wp_query($sql, $wp_query)
 	{
 		if ($wp_query->get('datamapper')) {
 
@@ -71,10 +71,10 @@ class M_DataMapper extends C_Base_Module
 	 * @param WP_Query $wp_query
 	 * @return string
 	 */
-	function set_custom_wp_query_fields($fields, &$wp_query)
+	function set_custom_wp_query_fields($fields, $wp_query)
 	{
 		if ($wp_query->get('datamapper')) {
-			if (($custom_fields = $wp_query->get('fields'))) {
+			if (($custom_fields = $wp_query->get('fields')) && $custom_fields != 'ids') {
 				$fields = $custom_fields;
 			}
 		}
@@ -89,7 +89,7 @@ class M_DataMapper extends C_Base_Module
 	 * @param WP_Query $wp_query
 	 * @return string
 	 */
-	function set_custom_wp_query_where($where, &$wp_query)
+	function set_custom_wp_query_where($where, $wp_query)
 	{
 		if ($wp_query->get('datamapper')) {
 			$this->add_post_title_where_clauses($where, $wp_query);
@@ -106,7 +106,7 @@ class M_DataMapper extends C_Base_Module
      * @param WP_Query $wp_query
      * @return string
      */
-    function set_custom_wp_query_groupby($groupby, &$wp_query)
+    function set_custom_wp_query_groupby($groupby, $wp_query)
     {
         $retval = $groupby;
         $group_by_columns = $wp_query->get('group_by_columns');
@@ -170,6 +170,8 @@ class M_DataMapper extends C_Base_Module
 		elseif (($value = $wp_query->get('post_title__like'))) {
 			$where .= " AND {$wpdb->posts}.post_title LIKE '{$value}'";
 		}
+
+		return $where;
 	}
 
 
@@ -193,34 +195,35 @@ class M_DataMapper extends C_Base_Module
 
     /**
      * Unserializes data using our proprietary format
+     * TODO: This is redundant with C_Ngg_Serializer
      * @param string $value
      * @return mixed
      */
-    static function unserialize($value)
-    {
-        $retval = NULL;
-        if (is_string($value))
-        {
-            $retval = stripcslashes($value);
+	static function unserialize($value)
+	{
+		$retval = NULL;
+		if (is_string($value))
+		{
+			$retval = stripcslashes($value);
 
-            if (strlen($value) > 1)
-            {
-                // We can't always rely on base64_decode() or json_decode() to return FALSE as their documentation
-                // claims so check if $retval begins with a: as that indicates we have a serialized PHP object.
-                if (strpos($retval, 'a:') === 0)
-                {
-                    $er = error_reporting(0);
-                    $retval = unserialize($value);
-                    error_reporting($er);
-                }
-                else {
-                    // We use json_decode() here because PHP's unserialize() is not Unicode safe.
-                    $retval = json_decode(base64_decode($retval), TRUE);
-                }
-            }
-        }
+			if (strlen($value) > 1)
+			{
+				// We can't always rely on base64_decode() or json_decode() to return FALSE as their documentation
+				// claims so check if $retval begins with a: as that indicates we have a serialized PHP object.
+				if (strpos($retval, 'a:') === 0)
+				{
+					$er = error_reporting(0);
+					$retval = unserialize($value);
+					error_reporting($er);
+				}
+				else {
+					// We use json_decode() here because PHP's unserialize() is not Unicode safe.
+					$retval = json_decode(base64_decode($retval), TRUE);
+				}
+			}
+		}
 
-        return $retval;
+		return $retval;
     }
 
     /**
@@ -230,8 +233,8 @@ class M_DataMapper extends C_Base_Module
      */
     static function serialize($value)
     {
-        //Using json_encode here because PHP's serialize is not Unicode safe
-        return base64_encode(json_encode($value));
+	    //Using json_encode here because PHP's serialize is not Unicode safe
+	    return base64_encode(json_encode($value));
     }
 
     function get_type_list()
@@ -261,5 +264,4 @@ class C_DataMapper_Installer
 		$this->settings->set_default_value('datamapper_driver', 'custom_post_datamapper');
 	}
 }
-
 new M_DataMapper();

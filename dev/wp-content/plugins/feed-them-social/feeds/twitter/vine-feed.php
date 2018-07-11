@@ -15,8 +15,9 @@ class FTS_Vine_Feed extends feed_them_social_functions {
 	 * @since 1.9.6
 	 */
 	function __construct() {
-		add_shortcode( 'fts_vine', array( $this, 'fts_vine_func'));
-		add_action('wp_enqueue_scripts', array( $this, 'fts_vine_head'));
+      // ommitting these from outputting for now
+	 //	add_shortcode( 'fts_vine', array( $this, 'fts_vine_func'));
+	//	add_action('wp_enqueue_scripts', array( $this, 'fts_vine_head'));
 	}
 
 	/**

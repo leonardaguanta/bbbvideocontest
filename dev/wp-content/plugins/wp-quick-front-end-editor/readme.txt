@@ -1,14 +1,14 @@
  === WP Quick FrontEnd Editor === 
  Contributors: Labibahmed42
- Tags: front end editor,responsive,bootstrap,featured image,quick,woocommerce, products, product title, product contents, desciption, post title, post contents, page title, visual editor, front editor, wp editor, custom post type, site contents, simple user edit, simple editor, wp content editor, post, update post, contents, edit, edit contents, front edit, simple, posts, pages, page, products,inline, editor, edit-in-place, visual, wysiwyg
- Donate link: http://labibahmed.com/get-in-touch/
+ Tags: front end editor,post frontend editor,wordpress frontend editor,WYSIWYG frontend editor,quick editing,post frontend editing
+ Donate link: https://www.paypal.me/labibahmed/5
  Requires at least: 3.5
- Tested up to: 4.2.1
- Stable tag: 3.0
+ Tested up to: 4.8
+ Stable tag: 5.3
  License: GPLv2 or later
  License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
- Best frontend editor with admin options to Edit Posts,Custom posts and Pages content including Featured image from frontend with visual editor with full control on typography.
+ Best frontend editor with admin options to Edit Posts,Custom posts and Pages content including Featured image from frontend.
 
 == Description ==
 
@@ -16,23 +16,18 @@ WP Quick FrontEnd Editor is a best front end editor that will allow you to chang
 You can also add images from wordpress gallery by drag and drop and by using upload button.You can add,remove and change featured image.
 
 <h4>Rate it to appreciate my work</h4>
-<a href="http://labibahmed.com/wp-quick-frontend-editor/">Support</a><br>
+<a href="http://webdevocean.com/wp-quick-frontend-editor/">Support</a><br>
 
 <h3>Features</h3>
 <ul>
-	<li> Edit content with visula responsive editor </li>
-	<li> Add,remove and change feature image </li>
-	<li> Responsive  </li>
+	<li> Edit content with visual responsive editor </li>
 	<li> Compatible with all themes  </li>
 	<li> Add images to content from wordpress gallery  </li>
-	<li> Create dynamic tables  </li>
-	<li> Embed video in your content  </li>
-	<li> Add and resize image in content  </li>
 	<li> Listing option available  </li>
 	<li> Generate html of content  </li>
 </ul>
 
-<h2>Goals</h2>
+<h3>Goals</h3>
 <ul>
 <li> responsive </li>
 <li> save time</li>
@@ -41,6 +36,22 @@ You can also add images from wordpress gallery by drag and drop and by using upl
 <li> compatible with any theme</li>
 <li> light and fast</li>
 <li> AJAX based process </li>
+</ul>
+
+<a href="http://codecanyon.net/item/wp-quick-frontend-editor/13077804?ref=labibahmed">Get Pro</a>
+
+<h3>Pro Features</h3>
+<ul>
+<li>Title Does not get removed</li>
+<li>Embed Videos</li>
+<li>Image Resize Option</li>
+<li>Listing Options</li>
+<li>Set Roles</li>
+<li>Dynamic Table Generator</li>
+<li>Multiple Fonts</li>
+<li>Text Formating Options</li>
+<li>Add,Change and Remove Featured Image</li>
+<li>24/7 Support</li>
 </ul>
 
 == Installation ==
@@ -62,7 +73,8 @@ You can also add images from wordpress gallery by drag and drop and by using upl
 
 
 == Changelog ==
-
+= 5.2 =
+* Bugs Removed
 = 5.0 =
 * Unregistered floral editor removed
 

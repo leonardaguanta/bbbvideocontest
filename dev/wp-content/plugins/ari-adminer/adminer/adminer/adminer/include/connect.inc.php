@@ -17,7 +17,6 @@ function connect_error() {
 			'processlist' => lang('Process list'),
 			'variables' => lang('Variables'),
 			'status' => lang('Status'),
-			'replication' => lang('Replication'),
 		) as $key => $val) {
 			if (support($key)) {
 				echo "<a href='" . h(ME) . "$key='>$val</a>\n";
@@ -30,13 +29,14 @@ function connect_error() {
 			$scheme = support("scheme");
 			$collations = collations();
 			echo "<form action='' method='post'>\n";
-			echo "<table cellspacing='0' class='checkable' onclick='tableClick(event);' ondblclick='tableClick(event, true);'>\n";
+			echo "<table cellspacing='0' class='checkable'>\n";
+			echo script("mixin(qsl('table'), {onclick: tableClick, ondblclick: partialArg(tableClick, true)});");
 			echo "<thead><tr>"
 				. (support("database") ? "<td>&nbsp;" : "")
 				. "<th>" . lang('Database') . " - <a href='" . h(ME) . "refresh=1'>" . lang('Refresh') . "</a>"
 				. "<td>" . lang('Collation')
 				. "<td>" . lang('Tables')
-				. "<td>" . lang('Size') . " - <a href='" . h(ME) . "dbsize=1' onclick=\"return !ajaxSetHtml('" . h(js_escape(ME)) . "script=connect');\">" . lang('Compute') . "</a>"
+				. "<td>" . lang('Size') . " - <a href='" . h(ME) . "dbsize=1'>" . lang('Compute') . "</a>" . script("qsl('a').onclick = partial(ajaxSetHtml, '" . js_escape(ME) . "script=connect');", "")
 				. "</thead>\n"
 			;
 			
@@ -46,7 +46,7 @@ function connect_error() {
 				$root = h(ME) . "db=" . urlencode($db);
 				$id = h("Db-" . $db);
 				echo "<tr" . odd() . ">" . (support("database") ? "<td>" . checkbox("db[]", $db, in_array($db, (array) $_POST["db"]), "", "", "", $id) : "");
-				echo "<th><a href='$root' id='$db'>" . h($db) . "</a>";
+				echo "<th><a href='$root' id='$id'>" . h($db) . "</a>";
 				$collation = nbsp(db_collation($db, $collations));
 				echo "<td>" . (support("database") ? "<a href='$root" . ($scheme ? "&amp;ns=" : "") . "&amp;database=' title='" . lang('Alter database') . "'>$collation</a>" : $collation);
 				echo "<td align='right'><a href='$root&amp;schema=' id='tables-" . h($db) . "' title='" . lang('Database schema') . "'>" . ($_GET["dbsize"] ? $tables : "?") . "</a>";
@@ -56,15 +56,17 @@ function connect_error() {
 			
 			echo "</table>\n";
 			echo (support("database")
-				? "<fieldset><legend>" . lang('Selected') . " <span id='selected'></span></legend><div>\n"
-					. "<input type='hidden' name='all' value='' onclick=\"selectCount('selected', formChecked(this, /^db/));\">\n" // used by trCheck()
-					. "<input type='submit' name='drop' value='" . lang('Drop') . "'" . confirm() . ">\n"
+				? "<div class='footer'><div>\n"
+					. "<fieldset><legend>" . lang('Selected') . " <span id='selected'></span></legend><div>\n"
+					. "<input type='hidden' name='all' value=''>" . script("qsl('input').onclick = function () { selectCount('selected', formChecked(this, /^db/)); };") // used by trCheck()
+					. "<input type='submit' name='drop' value='" . lang('Drop') . "'>" . confirm() . "\n"
 					. "</div></fieldset>\n"
+					. "</div></div>\n"
 				: ""
 			);
-			echo "<script type='text/javascript'>tableCheck();</script>\n";
 			echo "<input type='hidden' name='token' value='$token'>\n";
 			echo "</form>\n";
+			echo script("tableCheck();");
 		}
 	}
 	
@@ -78,7 +80,7 @@ if (isset($_GET["import"])) {
 	$_GET["sql"] = $_GET["import"];
 }
 
-if (!(DB != "" ? $connection->select_db(DB) : isset($_GET["sql"]) || isset($_GET["dump"]) || isset($_GET["database"]) || isset($_GET["processlist"]) || isset($_GET["privileges"]) || isset($_GET["user"]) || isset($_GET["replication"]) || isset($_GET["variables"]) || $_GET["script"] == "connect" || $_GET["script"] == "kill")) {
+if (!(DB != "" ? $connection->select_db(DB) : isset($_GET["sql"]) || isset($_GET["dump"]) || isset($_GET["database"]) || isset($_GET["processlist"]) || isset($_GET["privileges"]) || isset($_GET["user"]) || isset($_GET["variables"]) || $_GET["script"] == "connect" || $_GET["script"] == "kill")) {
 	if (DB != "" || $_GET["refresh"]) {
 		restart_session();
 		set_session("dbs", null);

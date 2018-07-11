@@ -1,33 +1,33 @@
-.gfield_list .results.done .results-bar-success, 
+.gfield_list .results.done .results-bar-success,
 .itsg_single_ajax .results.done .results-bar-success,
-.gfield_list .results.done-thumbnail .results-bar-success img:not(.thumbnail), 
+.gfield_list .results.done-thumbnail .results-bar-success img:not(.thumbnail),
 .itsg_single_ajax .results.done-thumbnail .results-bar-success img:not(.thumbnail) {
     background: #008000;
 }
 
-.gfield_list .results-bar, 
+.gfield_list .results-bar,
 .itsg_single_ajax .results-bar {
 	white-space: nowrap;
 	overflow: hidden;
 	padding: 0 5px;
 	color: #fff;
-	border-radius: 3px;	
+	border-radius: 3px;
 }
 
-.gfield_list .results-bar a, 
-.itsg_single_ajax .results-bar a {
+.gfield_list .results:not(.done-thumbnail) a,
+.itsg_single_ajax .results:not(.done-thumbnail) a {
     color: #fff;
 	text-decoration: underline;
 }
 
-.gfield_list .progress.uploading, 
+.gfield_list .progress.uploading,
 .itsg_single_ajax .progress.uploading {
 	background-color: #f5f5f5;
 	margin-bottom: 5px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
 	border-radius: 4px;
 }
-.gfield_list .progress.uploading .progress-bar, 
+.gfield_list .progress.uploading .progress-bar,
 .itsg_single_ajax .progress.uploading .progress-bar {
 	animation: 2s linear 0s normal none infinite running progress-bar-stripes;
     background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
@@ -77,9 +77,20 @@ li.gform_ajax_file_upload div.done-thumbnail div.progress-bar img.thumbnail {
     margin-bottom: 10px;
 }
 
-.itsg_single_ajax_remove, 
+.itsg_single_ajax_remove,
 .itsg_single_ajax_cancel {
    margin: 10px 0;
+}
+
+.has-advanced-upload.is-dragover {
+    border: 3px dashed #c1c3c5;
+}
+
+div.itsg_single_ajax, div.itsg_list_ajax {
+    border: 3px dashed transparent;
+    margin: -8px 0;
+    padding: 5px;
+    transition: all 0.5s ease 0s;
 }
 
 @keyframes progress-bar-stripes {

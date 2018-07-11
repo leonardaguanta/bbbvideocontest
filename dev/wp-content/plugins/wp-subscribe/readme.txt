@@ -1,10 +1,10 @@
 === WP Subscribe ===
 Contributors: mythemeshop
 Creator's website link: http://mythemeshop.com/plugins/wp-subscribe/
-Tags: subscribe, subscription, subscription box, newsletter, subscribe widget, mailchimp, aweber, feedburner, 
-Requires at least: 3.0.1
-Tested up to: 4.2
-Stable tag: 1.0.5
+Tags: subscribe, subscription, subscription box, newsletter, subscribe widget, mailchimp, aweber, feedburner,
+Requires at least: 4.0
+Tested up to: 4.9.1
+Stable tag: 1.2.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,13 +31,23 @@ See the WP Subscribe Plugin in action on our demo page: <a href="http://demo.myt
 * Super lightweight.
 * Compatible with caching and SEO plugins.
 * Eye-catching design.
-* Choose between 3 unique styles of thumbnails: small, big or no thumbnails.
 * Position it anywhere where a widget is configured in your theme.
 
 = Support =
-We will do our best to provide support through the WordPress forums. However, all plugin support is provided in our forum. If you have not registered yet, you can do so here: <a href="https://mythemeshop.com/go/signup/index/c/free">https://mythemeshop.com/go/signup/index/c/free</a>. After searching the knowledge base and forum, if you are still stuck, feel free to open a new thread, and a member of our support team will be happy to help.<br/>
-Cheers!<br>
-Support link: <a href="http://community.mythemeshop.com/forum/free/plugin-support">http://community.mythemeshop.com/forum/free/plugin-support</a>
+
+All support for this plugin is provided through our forums. If you have not registered yet, you can do so here for **FREE** <br>
+<a href=“https://mythemeshop.com/#signup”>https://mythemeshop.com/#signup</a>
+
+If after checking our Free WordPress video tutorials here:<br>
+<a href=“https://mythemeshop.com/wordpress-101/”>https://mythemeshop.com/wordpress-101/</a><br>
+&<br>
+<a href=“https://community.mythemeshop.com/tutorials/category/2-free-video-tutorials/“>https://community.mythemeshop.com/tutorials/category/2-free-video-tutorials/</a><br>
+<br>
+you are still stuck, please feel free to open a new thread, and a member of our support team will be happy to help.<br>
+
+Support link:<br>
+<a href=“https://community.mythemeshop.com/forum/11-free-plugin-support/”>https://community.mythemeshop.com/forum/11-free-plugin-support/</a><br>
+<br>
 
 = Help to make it better =
 
@@ -47,7 +57,7 @@ GitHub link: <a href="https://github.com/MyThemeShop/WP-Subscribe/">https://gith
 
 = Feedback =
 If you like this plugin, then please leave us a good rating and review.<br/>
-Consider following us on <a rel="author" href="https://plus.google.com/+Mythemeshop/">Google+</a>, <a href="https://twitter.com/MyThemeShopTeam">Twitter</a>, and <a href="https://www.facebook.com/MyThemeShop">Facebook</a> 
+Consider following us on <a rel="author" href="https://plus.google.com/+Mythemeshop/">Google+</a>, <a href="https://twitter.com/MyThemeShopTeam">Twitter</a>, and <a href="https://www.facebook.com/MyThemeShop">Facebook</a>
 
 == Installation ==
 
@@ -71,6 +81,77 @@ Please disable all plugins and check if plugin is working properly. Then you can
 2. WP Subscribe Settings
 
 == Changelog ==
+
+= 1.2.10 =
+* Changed admin notices
+
+= 1.2.9 =
+* Updated admin notices
+
+= 1.2.8 =
+* Added consent field
+
+= 1.2.7 =
+* Fixed SVN issue
+
+= 1.2.6 =
+* Fixed PHP notices
+
+= 1.2.5 =
+* Fixed aweber list issue
+
+= 1.2.4 =
+* Fixed aweber issues
+
+= 1.2.3 =
+* Fixed some CSS issues
+
+= 1.2.2 =
+* Fixed some javascript issues
+* Fixed some credentials in Aweber
+* Improve Mailchimp class
+* Remove notices and warnings on some places
+* Change the behavior of saving mailing service lists
+
+= 1.2.1 =
+* Provided backward compatibility for CSS
+* Provided backward compatibility for Scoped CSS
+* Remove magnific popup classes from inline form
+* Add loader when submitting form
+* Fixed inline form responsiveness
+* Minify the CSS File
+
+= 1.2.0 =
+* Whole plugin is re-written in OOP
+* Huge performance Improvements
+* Moved JS and CSS folders inside assets folder
+* Enhanced: Functions are more organized in wps-helpers and wps-functions-options file.
+* Fixed: Missing and in-correct textdomain
+
+= 1.1.4 =
+* Changed AWeber form URL to HTTPS
+
+= 1.1.3 =
+* Added option to enable name field
+* Added MyThemeShop tab in "Add Plugins" page
+
+= 1.1.2 =
+* Removed nonce from frontend
+
+= 1.1.0 =
+* Replaced Feedburner HTTP link with HTTPS
+
+= 1.0.9 =
+* Fixed spelling mistake in Pro Notification
+
+= 1.0.8 =
+* Fixed translation and text domain issue
+
+= 1.0.7 =
+* Fixed notification closing issue
+
+= 1.0.6 =
+* Switched to PHP 5 style constructor method for the widget class
 
 = 1.0.5 =
 * Improvement - input placeholder text hides on click.

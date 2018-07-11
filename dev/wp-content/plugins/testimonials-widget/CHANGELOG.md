@@ -2,6 +2,69 @@
 
 ## master
 
+## 3.4.5
+* Fix issue with slider/list to filter/display testimonials using category and tags.
+
+## 3.4.4
+* Fix `Parse error: syntax error, unexpected ‘[‘` 
+
+## 3.4.3
+* Add setting for scroll on hover
+* Add TW Slider start from 1st index
+* Confirm WordPress 4.9.5 compatibility
+* Require Aihrus Framework 1.3.1
+* Update bxSlider-4 version
+* User defined settings not being saved fixed
+
+## 3.4.2
+* Confirm WordPress 4.8 compatibility
+
+## 3.4.1
+* Remove review schema completely
+* Set max rating variable to 5
+
+## 3.4.0
+* Remove review schema code
+
+## 3.3.6
+* Change support email address to `support@axelerant.com`
+* Require Aihrus Framework 1.2.9
+
+## 3.3.5
+* Change Axelerant's plugins FAQ links
+* Change support email address to `support@axelerant.atlassian.net`
+* Confirm WordPress 4.7.1 compatibility
+* Require Aihrus Framework 1.2.6
+
+## 3.3.4
+* Change verbiage for schema notice
+* Confirm WordPress 4.6 compatibility
+
+## 3.3.3
+* Fix `Fatal error: Can't use function return value in write context`
+
+## 3.3.1
+* Add notice for existing users about review schema
+* Confirm WordPress 4.5.3 compatibility
+* Confirm PHP7 compatibility
+* Disable use of review schema by default
+* Update Gamajo-Template-Loader library
+
+## 3.3.0
+* Change support email address to support@axelerant.com
+* Confirm WordPress 4.4 compatibility
+* Fix aggregate rating count
+* Fix coding standards for CI
+* Remove option to disable the license not saved notice rather set sslverify to false.
+* Remove the use of deprecated function `wp_htmledit_pre()` and use `format_for_editor()` instead.
+* Require Aihrus Framework 1.2.4
+* RESOLVE #178 Provide ways to display the testimonial title on top of the testimonial content
+* RESOLVE #180 Add missing required `ratingValue` for AggregateRating schema property
+* RESOLVE #183 Rename core class name to prevent fatal errors
+* RESOLVE #193 Warning in Google's structured data testing tool for `aggregateRating` in testimonials
+* RESOLVE Replace deprecated 'post_permalink' with 'get_permalink'
+* Update Gamajo-Template-Loader
+
 ## 3.2.0
 * Add filter tw_testimonial_query to alter WP_Query in get_testimonials
 * Require Aihrus Framework 1.2.2

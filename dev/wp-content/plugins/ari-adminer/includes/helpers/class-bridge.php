@@ -24,12 +24,16 @@ class Bridge {
 
                         '"static/',
 
+                        '\'static/',
+
                         '../externals/',
                     ),
                     array(
                         'adminer/adminer/static/',
 
                         '"adminer/' . $app_type . '/static/',
+
+                        '\'adminer/' . $app_type . '/static/',
 
                         'adminer/externals/'
                     ),

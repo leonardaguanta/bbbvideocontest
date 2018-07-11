@@ -1,358 +1,378 @@
 <?php
-/*
-Plugin Name: WP Subscribe
-Plugin URI: http://mythemeshop.com/plugins/wp-subscribe/
-Description: WP Subscribe is a simple but powerful subscription plugin which supports MailChimp, Aweber and Feedburner.
-Author: MyThemeShop
-Version: 1.0.5
-Author URI: http://mythemeshop.com/
-*/
+/**
+ * Plugin Name: WP Subscribe
+ * Plugin URI: http://mythemeshop.com/plugins/wp-subscribe/
+ * Description: WP Subscribe is a simple but powerful subscription plugin which supports MailChimp, Aweber and Feedburner.
+ * Version: 1.2.10
+ * Author: MyThemeShop
+ * Author URI: http://mythemeshop.com/
+ * Text Domain: wp-subscribe
+ */
 
-if (!class_exists('Mailchimp'))
-    require_once dirname(__FILE__) . '/Mailchimp.php';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+} // Exit if accessed directly.
 
-// Add function to widgets_init that'll load our widget.
-add_action( 'widgets_init', 'wp_subscribe_register_widget' );
+/**
+ * Include Base Class
+ * From which all other classes are derived
+ */
+include_once 'includes/class-wps-base.php';
 
-// Register widget.
-function wp_subscribe_register_widget() {
-    register_widget( 'wp_subscribe' );
-}
+if( ! class_exists('MTS_WP_Subscribe') ) :
 
-// Widget class.
-class wp_subscribe extends WP_Widget {
+	final class MTS_WP_Subscribe extends WPS_Base {
 
+		/**
+		 * Plugin Version
+		 * @var string
+		 */
+		private $version = '1.2.10';
 
-/*-----------------------------------------------------------------------------------*/
-/*  Widget Setup
-/*-----------------------------------------------------------------------------------*/
-    
-    function wp_subscribe() {
-        
-        add_action('wp_enqueue_scripts', array(&$this, 'register_scripts'));
-        add_action('admin_enqueue_scripts', array(&$this, 'register_admin_scripts'));
+		/**
+		 * Hold an instance of MTS_WP_Subscribe class
+		 * @var MTS_WP_Subscribe
+		 */
+		protected static $instance = null;
 
-        /* Widget settings. */
-        $widget_ops = array( 'classname' => 'wp_subscribe', 'description' => __('Displays Subscription Form, Supports - FeedBurner, MailChimp & AWeber.', 'wp-subscribe') );
+		/**
+		 * Hold WPS_Settings instance.
+		 * @var WPS_Settings
+		 */
+		public $settings;
 
-        /* Widget control settings. */
-        $control_ops = array( 'id_base' => 'wp_subscribe' );
+		/**
+		 *  Hold an instance of MTS_ContentLocker class.
+		 * @return MTS_WP_Subscribe
+		 */
+		public static function get_instance() {
 
-        /* Create the widget. */
-        $this->WP_Widget( 'wp_subscribe', __('WP Subscribe Widget', 'wp-subscribe'), $widget_ops, $control_ops );
-    }
+			if( is_null( self::$instance ) ) {
+				self::$instance = new MTS_WP_Subscribe;
+			}
 
-/*-----------------------------------------------------------------------------------*/
-/*  Enqueue assets
-/*-----------------------------------------------------------------------------------*/
-    function register_scripts() { 
-        // JS    
-        // wp_register_script('wp-subscribe', plugins_url('js/wp-subscribe.js', __FILE__), array('jquery'));     
-        // CSS     
-        wp_register_style('wp-subscribe', plugins_url('css/wp-subscribe.css', __FILE__));
-    }  
-    function register_admin_scripts($hook) {
-        if ($hook != 'widgets.php')
-            return;
-        wp_register_script('wp-subscribe-admin', plugins_url('js/wp-subscribe-admin.js', __FILE__), array('jquery'));  
-        wp_enqueue_script('wp-subscribe-admin');
-        wp_register_style('wp-subscribe-admin', plugins_url('css/wp-subscribe-admin.css', __FILE__));
-        wp_enqueue_style('wp-subscribe-admin');
-    }
-    
+			return self::$instance;
+		}
 
-/*-----------------------------------------------------------------------------------*/
-/*  Display Widget
-/*-----------------------------------------------------------------------------------*/
-    
-    function widget( $args, $instance ) {
-        extract( $args );
-        $defaults = $this->get_defaults();
-        $instance = wp_parse_args( (array) $instance, $defaults ); 
-        wp_enqueue_style( 'wp-subscribe' );
+		/**
+		 * You cannot clone this class
+		 */
+		public function __clone() {
+			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wp-subscribe' ), $this->version );
+		}
 
-        /* Before widget (defined by themes). */
-        echo $before_widget;
-       
-        /* Display Widget */
-        ?>
-            
-            <div class="wp-subscribe" id="wp-subscribe">
-                <h4 class="title"><?php echo $instance['title'];?></h4>
-                <p class="text"><?php echo $instance['text'];?></p>
+		/**
+		 * You cannot unserialize instances of this class
+		 */
+		public function __wakeup() {
+			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wp-subscribe' ), $this->version );
+		}
 
-                <?php if ($instance['service'] == 'feedburner') { ?>
-                
-                    <form action="http://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open('http://feedburner.google.com/fb/a/mailverify?uri=<?php echo $instance['feedburner_id']; ?>', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true" _lpchecked="1">
-                        <input class="email-field" type="text" value="" placeholder="<?php echo $instance['email_placeholder']; ?>" name="email">
-                        <input type="hidden" value="<?php echo $instance['feedburner_id']; ?>" name="uri"><input type="hidden" name="loc" value="en_US">
-                        <input class="submit" name="submit" type="submit" value="<?php echo $instance['button_text']; ?>">
-                    </form>
-                
-                <?php } elseif ($instance['service'] == 'mailchimp') { ?>
-                
-                    <?php if (empty($_POST['mailchimp_email']) || (!empty($_POST['widget_id']) && $_POST['widget_id'] != $this->id)) { ?>
-                    <form action="<?php echo esc_url(add_query_arg('mailchimp_signup', '1')); ?>" method="post">
-                        <input class="email-field" type="text" value="" placeholder="<?php echo $instance['email_placeholder']; ?>" name="mailchimp_email">
-                        <input class="submit" name="submit" type="submit" value="<?php echo $instance['button_text']; ?>">
-                        <input type="hidden" name="widget_id" value="<?php echo $this->id ?>" />
-                        <?php wp_nonce_field('wp-subscribe-mailchimp'); ?>
-                    </form>
-                    <?php } else {
-                        // process signup through API
-                        $signup = $this->mailchimp_subscribe();
-                        if ($signup['success']) { ?>
-                            <p class="thanks"><?php echo $signup['message']; ?></p>
-                        <?php } else { ?>
-                            <p class="error"><?php echo $signup['message']; ?></p>
-                        <?php }
-                        }
+		/**
+		 * The Constructor
+		 */
+		private function __construct() {
 
-                    } elseif ($instance['service'] == 'aweber') { ?>
-                
-                    <?php if (empty($_GET['aweber_signedup'])) { ?>
-                        <form method="post" action="http://www.aweber.com/scripts/addlead.pl" target="_blank">
-                            <div style="display: none;">
-                                <input type="hidden" name="listname" value="<?php echo esc_attr($instance['aweber_list_id']); ?>" />
-                                <!-- <input type="hidden" name="meta_split_id" value="" />
-                                <input type="hidden" name="redirect" value="<?php echo esc_url(add_query_arg('aweber_signedup', '1')); ?>" />
-                                <input type="hidden" name="meta_redirect_onlist" value="<?php echo esc_url(add_query_arg('aweber_signedup', '-1')); ?>" /> -->
-                            </div>
-                            <input class="email-field" type="text" value="" placeholder="<?php echo esc_attr($instance['email_placeholder']); ?>" name="email">
-                            <input class="submit" name="submit" type="submit" value="<?php echo esc_attr($instance['button_text']); ?>">
-                        </form>
-                    <?php } elseif ($_GET['aweber_signedup'] == 1) { ?>
-                        <p class="thanks"><?php echo $instance['success_message']; ?></p>
-                    <?php } elseif ($_GET['aweber_signedup'] == -1) { ?>
-                        <p class="error"><?php echo $instance['already_subscribed_message']; ?></p>
-                    <?php } ?>
-                
-                <?php } ?>
-                <div class="clear"></div>
-                
-                <p class="footer-text"><?php echo $instance['footer_text'];?></p>
-                
-            </div><!--subscribe_widget-->
-        
-        <?php
+			// Include files
+			include_once 'includes/wps-helpers.php';
+			include_once 'includes/wps-functions-options.php';
+			include_once 'includes/wps-widget.php';
+			register_activation_hook( __FILE__, array( $this, 'activate_plugin' ) );
+			$this->autoloader();
+			$this->hooks();
+		}
 
-        /* After widget (defined by themes). */
-        echo $after_widget;
-    }
+		/**
+		 * Register file autoloading mechanism
+		 * @return void
+		 */
+		private function autoloader() {
 
+			if ( function_exists( '__autoload' ) ) {
+				spl_autoload_register( '__autoload' );
+			}
 
-/*-----------------------------------------------------------------------------------*/
-/*  Update Widget
-/*-----------------------------------------------------------------------------------*/
-    
-    function update( $new_instance, $old_instance ) {
-        $instance = $old_instance;
+			spl_autoload_register( array( $this, 'autoload' ) );
+		}
 
-        $instance = array_merge($instance, $new_instance);
+		/**
+		 * Add hooks
+		 * @return void
+		 */
+		private function hooks() {
 
-        // Feedburner ID -- make sure the user didn't insert full url
-        if (strpos($instance['feedburner_id'], 'http') === 0)
-            $instance['feedburner_id'] = substr( $instance['feedburner_id'], strrpos( $instance['feedburner_id'], '/' )+1 );
+			$this->add_action( 'init', 'load_textdomain' );
 
-        return $instance;
-    }
-    
+			// AJAX
+			$this->add_action( 'wp_ajax_wps_get_service_list', 'get_service_list' );
+			$this->add_action( 'wp_ajax_validate_subscribe', 'validate_subscribe' );
+			$this->add_action( 'wp_ajax_nopriv_validate_subscribe', 'validate_subscribe' );
+			$this->add_action( 'wp_ajax_connect_aweber', 'connect_aweber' );
 
-/*-----------------------------------------------------------------------------------*/
-/*  Widget Settings
-/*-----------------------------------------------------------------------------------*/
-     
-    function form( $instance ) {
-        $defaults = $this->get_defaults();
-        $instance = wp_parse_args( (array) $instance, $defaults );
-        ?>
-        <div class="wp_subscribe_options_form">
+			/* Display a notice */
+			$this->add_action('admin_notices', 'wp_subscribe_admin_notice');
+			$this->add_action('wp_ajax_mts_dismiss_wpsubscribe_notice', 'wp_subscribe_admin_notice_ignore');
+		}
 
-        <?php $this->output_select_field('service', __('Service:', 'wp-subscribe'), array('feedburner' => 'FeedBurner', 'mailchimp' => 'MailChimp', 'aweber' => 'AWeber'), $instance['service']); ?>
-        
-        <div class="clear"></div>
-        
-        <div class="wp_subscribe_account_details">
-        <div class="wp_subscribe_account_details_feedburner" style="display: none;">
-            <?php $this->output_text_field('feedburner_id', __('Feedburner ID', 'wp-subscribe'), $instance['feedburner_id']); ?>
-        </div><!-- .wp_subscribe_account_details_mailchimp -->
+		public function wp_subscribe_admin_notice() {
+			global $current_user ;
+			$user_id = $current_user->ID;
+			/* Check that the user hasn't already clicked to ignore the message */
+			/* Only show the notice 2 days after plugin activation */
+			if ( ! get_user_meta($user_id, 'wp_subscribe_ignore_notice') && time() >= (get_option( 'wp_subscribe_activated', 0 ) + (2 * 24 * 60 * 60)) ) {
+				echo '<div class="updated notice-info wp-subscribe-notice" id="wpsubscribe-notice" style="position:relative;">';
+				echo __('<p>Like WP Subscribe plugin? You will LOVE <a target="_blank" href="https://mythemeshop.com/plugins/wp-subscribe-pro/?utm_source=WP+Subscribe&utm_medium=Notification+Link&utm_content=WP+Subscribe+Pro+LP&utm_campaign=WordPressOrg"><strong>WP Subscribe Pro!</strong></a></p><a class="notice-dismiss wpsubscribe-dismiss-notice" data-ignore="0" href="#"></a>', 'wp-subscribe');
+				echo "</div>";
+			}
+			/* Other notice appears right after activating */
+			/* And it gets hidden after showing 3 times */
+			if ( ! get_user_meta($user_id, 'wp_subscribe_ignore_notice_2') && get_option('wp_subscribe_notice_views', 0) < 3 && get_option( 'wp_subscribe_activated', 0 ) ) {
+				$views = get_option('wp_subscribe_notice_views', 0);
+				update_option( 'wp_subscribe_notice_views', ($views + 1) );
+				echo '<div class="updated notice-info wp-subscribe-notice" id="wpsubscribe-notice2" style="position:relative;">';
+				echo '<p>';
+				_e('Thank you for trying WP Subscribe. We hope you will like it.', 'wp-subscribe');
+				echo '</p>';
+				echo '<a class="notice-dismiss wpsubscribe-dismiss-notice" data-ignore="1" href="#"></a>';
+				echo "</div>";
+			}
+		}
 
-        <div class="wp_subscribe_account_details_mailchimp" style="display: none;">
-            <?php $this->output_text_field('mailchimp_api_key', __('Mailchimp API key', 'wp-subscribe'), $instance['mailchimp_api_key']); ?>
-            <a href="http://kb.mailchimp.com/accounts/management/about-api-keys#Finding-or-generating-your-API-key" target="_blank"><?php _e('Find your API key', 'wp-subscribe'); ?></a>
-            <?php $this->output_text_field('mailchimp_list_id', __('Mailchimp List ID', 'wp-subscribe'), $instance['mailchimp_list_id']); ?>
-            <a href="http://kb.mailchimp.com/lists/managing-subscribers/find-your-list-id" target="_blank"><?php _e('Find your list ID', 'wp-subscribe'); ?></a>
-            <p class="wp_subscribe_mailchimp_double_optin"><label for="<?php echo $this->get_field_id('mailchimp_double_optin'); ?>">
-                <input type="hidden" name="<?php echo $this->get_field_name('mailchimp_double_optin'); ?>" value="0">
-                <input id="<?php echo $this->get_field_id('mailchimp_double_optin'); ?>" type="checkbox" name="<?php echo $this->get_field_name('mailchimp_double_optin'); ?>" value="1" <?php checked($instance['mailchimp_double_optin']); ?>>
-                <?php _e( 'Send double opt-in notification', 'wp-subscribe' ); ?>
-            </label></p>
-        </div><!-- .wp_subscribe_account_details_mailchimp -->
+		public function wp_subscribe_admin_notice_ignore() {
+			global $current_user;
+			$user_id = $current_user->ID;
+			/* If user clicks to ignore the notice, add that to their user meta */
+			if ( isset($_POST['dismiss']) ) {
+				if ( '0' == $_POST['dismiss'] ) {
+					add_user_meta($user_id, 'wp_subscribe_ignore_notice', '1', true);
+				} elseif ( '1' == $_POST['dismiss'] ) {
+					add_user_meta($user_id, 'wp_subscribe_ignore_notice_2', '1', true);
+				}
+			}
+		}
 
-        <div class="wp_subscribe_account_details_aweber" style="display: none;">
-            <?php $this->output_text_field('aweber_list_id', __('AWeber List ID', 'wp-subscribe'), $instance['aweber_list_id']); ?>
-            <a href="https://help.aweber.com/entries/61177326-What-Is-The-Unique-List-ID-" target="_blank"><?php _e('Find your list ID', 'wp-subscribe'); ?></a>
-        </div><!-- .wp_subscribe_account_details_aweber -->
-        </div><!-- .wp_subscribe_account_details -->
+		public function activate_plugin() {
+			update_option('wp_subscribe_activated', time());
+		}
 
-        <h4 class="wp_subscribe_labels_header"><a class="wp-subscribe-toggle" href="#" rel="wp_subscribe_labels"><?php _e('Labels', 'wp-subscribe'); ?></a></h4>
-        <div class="wp_subscribe_labels" style="display: none;">
-        <?php 
-        $this->output_textarea_field('title', __('Title', 'wp-subscribe'), $instance['title']);
-        $this->output_text_field('text', __('Text', 'wp-subscribe'), $instance['text']);
-        $this->output_text_field('email_placeholder', __('Email Placeholder', 'wp-subscribe'), $instance['email_placeholder']);
-        $this->output_text_field('button_text', __('Button Text', 'wp-subscribe'), $instance['button_text']);
-        $this->output_text_field('success_message', __('Success Message', 'wp-subscribe'), $instance['success_message']);
-        $this->output_text_field('error_message', __('Error Message', 'wp-subscribe'), $instance['error_message']);
-        $this->output_text_field('already_subscribed_message', __('Error: Already Subscribed', 'wp-subscribe'), $instance['already_subscribed_message']);
-        $this->output_text_field('footer_text', __('Footer Text', 'wp-subscribe'), $instance['footer_text']);
-        ?>
-        </div><!-- .wp_subscribe_labels -->
+		/**
+		 * Autoload strategy
+		 *
+		 * @param  string $class
+		 * @return void
+		 */
+		public function autoload( $class ) {
 
-        </div><!-- .wp_subscribe_options_form -->
+			if( ! wps_str_start_with( 'WPS_', $class ) ) {
+				return;
+			}
 
-    <?php
-    }
+			$path = '';
+			$class = strtolower( $class );
+			$file = 'class-' . str_replace( '_', '-', strtolower( $class ) ) . '.php';
+			$path = $this->plugin_dir() . '/includes/';
 
+			if( wps_str_start_with('wps_subscription', $class ) ) {
+				$path .= 'subscription/';
+				$file = str_replace( 'subscription-', '', $file );
+			}
 
-    public function output_text_field($setting_name, $setting_label, $setting_value) {
-        ?>
+			// Load File
+			$load = $path . $file;
+			if ( $load && is_readable( $load ) ) {
+				include_once $load;
+			}
+		}
 
-        <p class="wp-subscribe-<?php echo $setting_name; ?>-field">
-            <label for="<?php echo $this->get_field_id($setting_name) ?>">
-                <?php echo $setting_label ?>
-            </label>
+		/**
+		 * Load localization files
+		 * @return void
+		 */
+		public function load_textdomain() {
+			$locale = apply_filters( 'plugin_locale', get_locale(), 'wp-subscribe' );
 
-            <input class="widefat" 
-                   id="<?php echo $this->get_field_id($setting_name) ?>" 
-                   name="<?php echo $this->get_field_name($setting_name) ?>" 
-                   type="text" 
-                   value="<?php echo esc_attr($setting_value) ?>" />
-        </p>
+			load_textdomain( 'wp-subscribe', WP_LANG_DIR . '/wp-subscribe/wp-subscribe-' . $locale . '.mo' );
+			load_plugin_textdomain( 'wp-subscribe', false, $this->plugin_dir() . '/languages' );
+		}
+		
+		public function connect_aweber() {
 
-        <?php
-    }
+			// check for data
+			$aweber_code = isset( $_REQUEST['aweber_code'] ) ? $_REQUEST['aweber_code'] : array();
+			if( empty( $aweber_code ) ) {
+				wp_send_json( array(
+					'success' => false,
+					'error' => esc_html__( 'No aweber authorization code found.', 'wp-subscribe' )
+				) );
+			}
 
-    public function output_textarea_field($setting_name, $setting_label, $setting_value) {
-        ?>
+			try {
+				$service = new WPS_Subscription_Aweber();
+				$data = $service->connect( $aweber_code );
 
-        <p class="wp-subscribe-<?php echo $setting_name; ?>-field">
-            <label for="<?php echo $this->get_field_id($setting_name) ?>">
-                <?php echo $setting_label ?>
-            </label>
+				wp_send_json(array(
+					'success' => true,
+					'data' => $data
+				));
+			}
+			catch( Exception $e ) {
+				wp_send_json(array(
+					'success' => false,
+					'error' => $e->getMessage()
+				));
+			}
+		}
 
-            <textarea class="widefat" id="<?php echo $this->get_field_id($setting_name) ?>" name="<?php echo $this->get_field_name($setting_name) ?>"><?php echo esc_attr($setting_value); ?></textarea>
-        </p>
+		/**
+		 * Validate subscription
+		 * @return void
+		 */
+		public function validate_subscribe() {
 
-        <?php
-    }
+			// check for data
+			$data = isset( $_POST['wps_data'] ) ? $_POST['wps_data'] : array();
+			if( empty( $data ) ) {
+				wp_send_json( array(
+					'success' => false,
+					'error' => esc_html__( 'No data found.', 'wp-subscribe' )
+				) );
+			}
 
-    public function output_select_field($setting_name, $setting_label, $setting_values, $selected) {
-        ?>
+			// check for valid data
+			if( empty( $data['email'] ) ) {
+				wp_send_json( array(
+					'success' => false,
+					'error' => esc_html__( 'No email address found.', 'wp-subscribe' )
+				) );
+			}
 
-        <p class="wp-subscribe-<?php echo $setting_name; ?>-field">
-            <label for="<?php echo $this->get_field_id($setting_name) ?>">
-                <?php echo $setting_label ?>
-            </label>
+			if( !filter_var( $data['email'], FILTER_VALIDATE_EMAIL ) ) {
+				wp_send_json( array(
+					'success' => false,
+					'error' => esc_html__( 'Not a valid email address.', 'wp-subscribe' )
+				) );
+			}
 
-            <select class="widefat" 
-                    id="<?php echo $this->get_field_id($setting_name) ?>" 
-                    name="<?php echo $this->get_field_name($setting_name) ?>">
+			// check for valid service
+			$services = wps_get_mailing_services('options');
+			if( !array_key_exists( $data['service'], $services ) ) {
+				wp_send_json( array(
+					'success' => false,
+					'error' => esc_html__( 'Unknown mailing service called.', 'wp-subscribe' )
+				) );
+			}
 
-                <?php foreach ($setting_values as $value => $label) : ?>
+			// Call service subscription method
+			try {
+				$service = wps_get_subscription_service( $data['service'] );
+				$status = $service->subscribe( $data, $service->get_options( $data ) );
 
-                    <option value="<?php echo $value; ?>" <?php selected( $selected, $value ); ?>>
-                        <?php echo $label; ?>
-                    </option>
+				wp_send_json(array(
+					'success' => true,
+					'status' => $status['status']
+				));
+			}
+			catch( Exception $e ) {
+				wp_send_json(array(
+					'success' => false,
+					'error' => $e->getMessage()
+				));
+			}
+		}
 
-                <?php endforeach ?>
-            </select>
-        </p>
+		/**
+		 * Get mailing lists according to service
+		 *
+		 * @return array
+		 */
+		public function get_service_list() {
 
-        <?php
-    }
+			$name = $_REQUEST['service'];
+			$args = $_REQUEST['args'];
 
-    public function get_defaults() {
-        return array(
-            'service' => 'feedburner',
-            'feedburner_id' => '',
-            'mailchimp_api_key' => '',
-            'mailchimp_list_id' => '',
-            'mailchimp_double_optin' => 0,
-            'aweber_list_id' => '',
+			if( empty( $name ) || empty( $args ) ) {
+				wp_send_json(array(
+					'success' => false,
+					'error' => esc_html__( 'Not permitted.', 'wp-subscribe' )
+				));
+			}
 
-            'title' => __('Get more stuff like this<br/> <span>in your inbox</span>', 'wp-subscribe'),
-            'text' => __('Subscribe to our mailing list and get interesting stuff and updates to your email inbox.', 'wp-subscribe'),
-            'email_placeholder' => __('Enter your email here', 'wp-subscribe'),
-            'button_text' => __('Sign Up Now', 'wp-subscribe'),
-            'success_message' => __('Thank you for subscribing.', 'wp-subscribe'),
-            'error_message' => __('Something went wrong.', 'wp-subscribe'),
-            'already_subscribed_message' => __('This email is already subscribed', 'wp-subscribe'),
-            'footer_text' => __('we respect your privacy and take protecting it seriously', 'wp-subscribe'),
-        );
-    }
+			$service = wps_get_subscription_service( $name );
 
-    // For MailChimp subscribe
-    function get_widget_settings($widget_id) {
-        global $wp_registered_widgets;
-        $ret = array();
+			if( is_null( $service ) ) {
+				wp_send_json(array(
+					'success' => false,
+					'error' => esc_html__( 'Service not defined.', 'wp-subscribe' )
+				));
+			}
 
-        if (isset($wp_registered_widgets)) {
-            $widget = $wp_registered_widgets[$widget_id];
-            $option_data = get_option($widget['callback'][0]->option_name);
+			try {
+				$args['raw'] = $args;
+				$lists = call_user_func_array( array( $service, 'get_lists' ), $args );
+			}
+			catch( Exception $e ) {
+				wp_send_json(array(
+					'success' => false,
+					'error' => $e->getMessage()
+				));
+			}
 
-            if (isset($option_data[$widget['params'][0]['number']])) {
-                $ret = $option_data[$widget['params'][0]['number']];
-            }
-        }
+			if( empty( $lists ) ) {
+				wp_send_json(array(
+					'success' => false,
+					'error' => esc_html__( 'No lists found.', 'wp-subscribe' )
+				));
+			}
 
-        return $ret;
-    }
+			// Save for letter use
+			update_option( 'mts_wps_'. $name . '_lists', $lists );
 
-    function mailchimp_subscribe() {
-        $ret = array(
-            'success' => false,
-            'message' => '',
-        );
+			wp_send_json(array(
+				'success' => true,
+				'lists' => $lists
+			));
+		}
 
-        $email = isset($_POST['mailchimp_email']) ? trim($_POST['mailchimp_email']) : '';
-        $nonce = isset($_POST['_wpnonce']) ? trim($_POST['_wpnonce']) : '';
+		// Helper ------------------------------------------------------
 
-        $mc_api_key = null;
-        $mc_list_id = null;
-        $error_message = '';
-        $widget_id = isset($_POST['widget_id']) ? trim($_POST['widget_id']) : '';
+		/**
+		 * Get plugin directory
+		 *
+		 * @return string
+		 */
+		public function plugin_dir() {
+			return untrailingslashit( plugin_dir_path( __FILE__ ) );
+		}
 
-        if (($widget_settings = $this->get_widget_settings($widget_id))) {
-            $mc_api_key = isset($widget_settings['mailchimp_api_key']) ? $widget_settings['mailchimp_api_key'] : null;
-            $mc_list_id = isset($widget_settings['mailchimp_list_id']) ? $widget_settings['mailchimp_list_id'] : null;
-            $error_message = isset($widget_settings['error_message']) ? $widget_settings['error_message'] : '';
-            $double_optin = !empty($widget_settings['mailchimp_double_optin']) ? true : false;
-        }
+		/**
+		 * Get plugin uri
+		 *
+		 * @return string
+		 */
+		public function plugin_url() {
+			return untrailingslashit( plugin_dir_url( __FILE__ ) );
+		}
 
-        if ($email &&
-                $widget_settings &&
-                $mc_api_key != null &&
-                $mc_list_id != null &&
-                wp_verify_nonce($nonce, 'wp-subscribe-mailchimp')) {
+		/**
+		 * Get plugin version
+		 *
+		 * @return string
+		 */
+		public function get_version() {
+			return $this->version;
+		}
+	}
 
-            try {
-                $list = new Mailchimp_Lists(new Mailchimp($mc_api_key));
-                $resp = $list->subscribe($mc_list_id, array('email' => $email), null, 'html', (bool) $double_optin, true);
+	/**
+	 * Main instance of MTS_WP_Subscribe
+	 *
+	 * Return the main instance of MTS_WP_Subscribe to prevent the need to use globals.
+	 *
+	 * @return MTS_WP_Subscribe
+	 */
+	function wps() {
+		return MTS_WP_Subscribe::get_instance();
+	}
+	wps(); // Init it
 
-                if ($resp) {
-                    $ret['success'] = true;
-                    $ret['message'] = $widget_settings['success_message'];
-                } else {
-                    $ret['message'] = $widget_settings['error_message'];
-                }
-            } catch (Exception $ex) {
-                $ret['message'] = $widget_settings['error_message'];
-            }
-        } else {
-            $ret['message'] = $error_message;
-        }
-        return $ret;
-    }
-
-}
+endif;

@@ -1,15 +1,20 @@
 <?php
+/**
+ * Class C_Ajax_Controller
+ * @implements I_Ajax_Controller
+ */
 class C_Ajax_Controller extends C_MVC_Controller
 {
     static $_instances = array();
-    public function define($context = FALSE)
+    function define($context = FALSE)
     {
         parent::define($context);
         $this->implement('I_Ajax_Controller');
     }
-    public function index_action()
+    function index_action($return = FALSE)
     {
         $retval = NULL;
+        define('DOING_AJAX', TRUE);
         // Inform the MVC framework what type of content we're returning
         $this->set_content_type('json');
         // Start an output buffer to avoid displaying any PHP warnings/errors
@@ -54,7 +59,7 @@ class C_Ajax_Controller extends C_MVC_Controller
         }
         return self::$_instances[$context];
     }
-    public function validate_ajax_request($action = NULL, $check_token = false)
+    function validate_ajax_request($action = NULL, $check_token = false)
     {
         // TODO: remove this. Pro 2.1's proofing calls validate_ajax_request() with a null $action
         if (!$action) {

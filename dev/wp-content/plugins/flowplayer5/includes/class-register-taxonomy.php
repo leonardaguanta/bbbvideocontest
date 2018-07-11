@@ -39,7 +39,7 @@ class Flowplayer5_Taxonomy {
 	 */
 	private function __construct() {
 
-		// Register Custom Taxonomy
+		// Register Custom Taxonomy.
 		add_action( 'init', array( $this, 'register_playlist' ) );
 
 	}
@@ -102,6 +102,7 @@ class Flowplayer5_Taxonomy {
 			'show_in_nav_menus'          => true,
 			'show_tagcloud'              => false,
 			'query_var'                  => 'playlist',
+			'meta_box_cb'                => 'fp5_playlist_meta_box',
 			'rewrite'                    => $rewrite,
 		);
 
@@ -110,5 +111,4 @@ class Flowplayer5_Taxonomy {
 		register_taxonomy( 'playlist', array( 'flowplayer5' ), $args );
 
 	}
-
 }
