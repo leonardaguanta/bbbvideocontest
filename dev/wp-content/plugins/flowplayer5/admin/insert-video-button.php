@@ -5,7 +5,7 @@
  * @package   Flowplayer 5 for WordPress
  * @author    Ulrich Pogson <ulrich@pogson.ch>
  * @license   GPL-2.0+
- * @link      https://flowplayer.org/
+ * @link      http://flowplayer.org/
  * @copyright 2013 Flowplayer Ltd
  */
 
@@ -96,11 +96,7 @@ function fp5_modal_content() {
 					<?php
 					// WP_Query arguments
 					$args = array(
-						'post_type'              => 'flowplayer5',
-						'posts_per_page'         => 100,
-						'update_post_meta_cache' => false,
-						'update_post_term_cache' => false,
-						'no_found_rows'          => true,
+						'post_type' => 'flowplayer5',
 					);
 
 					// The Query

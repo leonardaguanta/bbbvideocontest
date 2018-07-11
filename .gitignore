@@ -97,6 +97,7 @@ dev/wp-content/plugins/akismet/
 
 # ignore specific themes
 dev/wp-content/themes/twenty*/
+dev/wp-content/uploads
 
 # ignore node/grunt dependency directories
 node_modules/

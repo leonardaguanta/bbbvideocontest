@@ -106,6 +106,107 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 	font-size: 16px;
 }
 
+.home-ad {
+    border: 2px solid #ddd;
+    padding: 10px 0 5px;
+}
+
+.bbb-social-feed .et_pb_tab { padding: 15px 0; }
+.bbb-social-feed .et_pb_tab .fts-jal-fb-group-display { height: 700px; overflow-y: scroll; padding: 0 15px; }
+.bbb-social-feed .fts-twitter-div { height: 900px; overflow-y: scroll; padding: 0 15px; }
+.bbb-social-feed .fts-jal-fb-header { border-bottom: 1px solid #ddd; margin: 0 15px; }
+.bbb-social-feed .fts-twitter-div img { margin: 0; }
+.bbb-social-feed .fts-jal-fb-user-name { font-size: 14px; }
+.bbb-social-feed .fts-twitter-image { width: 30px; }
+.bbb-social-feed .tweeter-info .fts-right { padding-left: 40px; }
+
+.bbb-social-feed .et_pb_tab .fts-jal-fb-group-display::-webkit-scrollbar, .bbb-social-feed .fts-twitter-div::-webkit-scrollbar { width: 5px; }
+.bbb-social-feed .et_pb_tab .fts-jal-fb-group-display::-webkit-scrollbar-track, .bbb-social-feed .fts-twitter-div::-webkit-scrollbar-track { background: #f1f1f1; }
+.bbb-social-feed .et_pb_tab .fts-jal-fb-group-display::-webkit-scrollbar-thumb, .bbb-social-feed .fts-twitter-div::-webkit-scrollbar-thumb { background: #ddd; }
+.bbb-social-feed .et_pb_tab .fts-jal-fb-group-display::-webkit-scrollbar-thumb, .bbb-social-feed .fts-twitter-div::-webkit-scrollbar-thumb { background: #bbb; }
+
+.bbb-social-feed .et_pb_tab h1 { font-size: 17px; }
+.bbb-social-feed .et_pb_tabs_controls li { 
+	width: 25% !important; 
+	text-align: center; 
+	float: left; 
+	background-color: #fff;
+/* 	box-shadow: 0 3px 10px 0 rgb(221, 221, 221); */
+	display: block;
+}
+.bbb-social-feed .et_pb_tabs_controls { height: 35px; }
+
+.bbb-social-feed .et_pb_tab_0 > a { color: #fff !important; padding: 4px 0; }
+.bbb-social-feed .et_pb_tab_0 > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_facebook-1.png); 
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+.bbb-social-feed .et_pb_tab_0.et_pb_tab_active > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_facebook_active.png);
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+
+.bbb-social-feed .et_pb_tab_1 > a { color: #fff !important;  padding: 4px 0; }
+.bbb-social-feed .et_pb_tab_1 > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_twitter.png); 
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+.bbb-social-feed .et_pb_tab_1.et_pb_tab_active > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_twitter_active.png);
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+
+.bbb-social-feed .et_pb_tab_2 > a { color: #fff !important;  padding: 4px 0; }
+.bbb-social-feed .et_pb_tab_2 > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_pinterest.png); 
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+.bbb-social-feed .et_pb_tab_2.et_pb_tab_active > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_pinterest_active.png);
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+
+.bbb-social-feed .et_pb_tab_3 > a { color: #fff !important;  padding: 4px 0; }
+.bbb-social-feed .et_pb_tab_3 > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_instagram.png); 
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+.bbb-social-feed .et_pb_tab_3.et_pb_tab_active > a:before { 
+	content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/07/social_instagram_active.png);
+	top: 3px;
+    position: relative;
+	left: -5px;
+}
+
+.videos-module .videos-home:nth-child(3n+4) { margin-right: 0; }
+.videos-module .videos-home { min-height: 230px; margin-bottom: 15px; }
+
+.videos-home .et_pb_image { height: 160px; overflow: hidden; box-shadow: 0 3px 10px 0 rgb(221, 221, 221); margin-bottom: 10px !important; }
+.videos-home .et_pb_image_wrap { height: 100%; }
+.videos-home .et_pb_image img { padding: 5px; width: 100%; height: 100%; }
+
+.videos-home .et_pb_image .et_overlay { opacity: 1 !important; z-index: 3 !important; background: rgba(0, 0, 0, 0); }
+.video-author { color: #3f869d; }
+.videos-home .et_pb_image .et_overlay:before {
+    top: 38%;
+    left: 43%;
+    font-size: 70px;
+    color: #fff;
+}
 /* .contact-social.et_pb_social_media_follow li a.icon {
     width: 40px;
     height: 40px;
@@ -136,7 +237,6 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 .et_pb_column_1_2.schools-home {
 	width: 20%;
 	float: left;
-	padding: 0 25px;
 	margin-right: 0;
 }
 

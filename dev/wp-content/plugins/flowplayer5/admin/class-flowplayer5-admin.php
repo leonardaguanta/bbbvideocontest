@@ -5,7 +5,7 @@
  * @package   Flowplayer5_Admin
  * @author    Ulrich Pogson <ulrich@pogson.ch>
  * @license   GPL-2.0+
- * @link      https://flowplayer.org/
+ * @link      http://flowplayer.org/
  * @copyright 2013 Flowplayer Ltd
  */
 
@@ -76,10 +76,6 @@ class Flowplayer5_Admin {
 		add_action( 'dashboard_glance_items', array( $this, 'add_dashboard_counts' ) );
 		add_action( 'right_now_content_table_end', array( $this, 'add_dashboard_counts_old' ) );
 
-		// Delete cache on update
-		add_action( 'save_post_flowplayer5', array( $this, 'delete_cache_post' ), 10, 3 );
-		add_action( 'edited_playlist', array( $this, 'delete_cache_tax' ), 10, 2 );
-
 	}
 
 	/**
@@ -136,62 +132,53 @@ class Flowplayer5_Admin {
 		// Only run on flowplayer new and edit post screens
 		if ( $screen->post_type === $this->plugin_slug && $screen->base == 'post' ) {
 
-			wp_enqueue_script( 'repeatable-fields', plugins_url( '/assets/js/repeatable-fields' . $suffix . '.js', __FILE__ ), array( 'jquery-ui-sortable' ), $this->plugin_version, false );
 			wp_enqueue_script( $this->plugin_slug . '-media', plugins_url( '/assets/js/media' . $suffix . '.js', __FILE__ ), array( 'jquery-ui-tabs' ), $this->plugin_version, false );
-			wp_localize_script(
-				$this->plugin_slug . '-media',
-				'fp5_splash_image',
+			wp_localize_script( $this->plugin_slug . '-media', 'splash_image',
 				array(
 					'title'  => __( 'Upload or choose a splash image', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert Splash Image', $this->plugin_slug )              // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-media',
-				'fp5_mp4_video',
+			wp_localize_script( $this->plugin_slug . '-media', 'mp4_video',
 				array(
 					'title'  => __( 'Upload or choose a MP4 video file', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert MP4 Video', $this->plugin_slug )                   // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-media',
-				'fp5_webm_video',
+			wp_localize_script( $this->plugin_slug . '-media', 'webm_video',
 				array(
 					'title'  => __( 'Upload or choose a WEBM video file', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert WEBM Video', $this->plugin_slug )                   // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-media',
-				'fp5_ogg_video',
+			wp_localize_script( $this->plugin_slug . '-media', 'ogg_video',
 				array(
 					'title'  => __( 'Upload or choose a OGG video file', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert OGG Video', $this->plugin_slug )                   // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-media',
-				'fp5_flash_video',
+			wp_localize_script( $this->plugin_slug . '-media', 'flash_video',
 				array(
 					'title'  => __( 'Upload or choose a flash optimized video file', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert Flash Video', $this->plugin_slug )                             // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-media',
-				'fp5_hls_video',
+			wp_localize_script( $this->plugin_slug . '-media', 'hls_video',
 				array(
 					'title'  => __( 'Upload or choose a HLS video file', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert HLS Video', $this->plugin_slug )                   // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-media',
-				'fp5_webvtt',
+			wp_localize_script( $this->plugin_slug . '-media', 'webvtt',
 				array(
 					'title'  => __( 'Upload or choose a webvtt file', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert webvtt', $this->plugin_slug )                   // This will be used as the default button text
+				)
+			);
+			wp_localize_script( $this->plugin_slug . '-media', 'logo',
+				array(
+					'title'  => __( 'Upload or choose a logo', $this->plugin_slug ), // This will be used as the default title
+					'button' => __( 'Insert Logo', $this->plugin_slug )              // This will be used as the default button text
 				)
 			);
 
@@ -203,25 +190,19 @@ class Flowplayer5_Admin {
 		if ( $screen->post_type === $this->plugin_slug && $screen->id == 'flowplayer5_page_flowplayer5_settings' ) {
 
 			wp_enqueue_script( $this->plugin_slug . '-settings', plugins_url( '/assets/js/settings' . $suffix . '.js', __FILE__ ), array(), $this->plugin_version, false );
-			wp_localize_script(
-				$this->plugin_slug . '-settings',
-				'fp5_logo',
+			wp_localize_script( $this->plugin_slug . '-settings', 'logo',
 				array(
 					'title'  => __( 'Upload or choose a logo', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert Logo', $this->plugin_slug )              // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-settings',
-				'fp5_asf_js',
+			wp_localize_script( $this->plugin_slug . '-settings', 'asf_css',
 				array(
-					'title'  => __( 'Upload or choose a JS file', $this->plugin_slug ), // This will be used as the default title
-					'button' => __( 'Insert JS file', $this->plugin_slug )              // This will be used as the default button text
+					'title'  => __( 'Upload or choose a CSS file', $this->plugin_slug ), // This will be used as the default title
+					'button' => __( 'Insert CSS file', $this->plugin_slug )              // This will be used as the default button text
 				)
 			);
-			wp_localize_script(
-				$this->plugin_slug . '-settings',
-				'fp5_vast_js',
+			wp_localize_script( $this->plugin_slug . '-settings', 'asf_js',
 				array(
 					'title'  => __( 'Upload or choose a JS file', $this->plugin_slug ), // This will be used as the default title
 					'button' => __( 'Insert JS file', $this->plugin_slug )              // This will be used as the default button text
@@ -234,11 +215,11 @@ class Flowplayer5_Admin {
 
 		// Only run on new and edit post screens
 		if ( $screen->base == 'post' ) {
-			wp_enqueue_script( 'jquery-colorbox', plugins_url( '/assets/jquery-colorbox/jquery.colorbox' . $suffix . '.js', __FILE__ ), 'jquery', '1.6.3', false );
+			wp_enqueue_script( 'jquery-colorbox', plugins_url( '/assets/jquery-colorbox/jquery.colorbox' . $suffix . '.js', __FILE__ ), 'jquery', '1.4.37', false );
 		}
 
 		// Only run on new and edit post screens
-		if ( 'edit-playlist' === $screen->id ) {
+		if ( $screen->base == 'edit-tags' ) {
 			wp_enqueue_script( 'jquery-ui-sortable' );
 		}
 
@@ -268,7 +249,9 @@ class Flowplayer5_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_page() {
-		include_once dirname( __FILE__ ) . '/views/display-settings.php';
+
+		include_once( 'views/display-settings.php' );
+
 	}
 
 	/**
@@ -300,9 +283,9 @@ class Flowplayer5_Admin {
 			$input = array_merge(
 				$input,
 				array(
-					'<a href="https://wordpress.org/plugins/flowplayer5/faq/">' . esc_html__( 'FAQ', $this->plugin_slug ) . '</a>',
-					'<a href="https://wordpress.org/support/plugin/flowplayer5">' . esc_html__( 'Support', $this->plugin_slug ) . '</a>',
-					'<a href="https://wordpress.org/support/view/plugin-reviews/flowplayer5?filter=5">' . esc_html__( 'Rate Plugin', $this->plugin_slug ) . '</a>',
+					'<a href="http://wordpress.org/plugins/flowplayer5/faq/">' . esc_html__( 'FAQ', $this->plugin_slug ) . '</a>',
+					'<a href="http://wordpress.org/support/plugin/flowplayer5">' . esc_html__( 'Support', $this->plugin_slug ) . '</a>',
+					'<a href="http://wordpress.org/support/view/plugin-reviews/flowplayer5?filter=5">' . esc_html__( 'Rate Plugin', $this->plugin_slug ) . '</a>',
 				)
 			);
 		}
@@ -319,26 +302,22 @@ class Flowplayer5_Admin {
 	public function set_messages( $messages ) {
 
 		global $post;
-		
-		/* translators: Publish box date format, see http://php.net/date */
-		$scheduled_date = date_i18n( __( 'M j, Y @ H:i', $this->plugin_slug ), strtotime( $post->post_date ) );
-		$shortcode_preview = sprintf( __( 'Shortcode: %1$s', $this->plugin_slug ), '[flowplayer id="' . get_the_ID() . '"]' );
 
-		$video_messages = array(
+		$messages[ $this->plugin_slug ] = apply_filters( 'fp5_filter_set_messages', array(
+
 			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Video updated.', $this->plugin_slug ) . ' ' . $shortcode_preview,
+			1  => __( 'Video updated.', $this->plugin_slug ) . ' ' . sprintf( __( 'Shortcode: %1$s', $this->plugin_slug ), '[flowplayer id="' . get_the_ID() . '"]' ),
 			2  => __( 'Custom field updated.', $this->plugin_slug ),
 			3  => __( 'Custom field deleted.', $this->plugin_slug ),
-			4  => __( 'Video updated.', $this->plugin_slug ) . ' ' . $shortcode_preview,
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Video restored to revision from %s', $this->plugin_slug ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Video published.', $this->plugin_slug ) . ' ' . $shortcode_preview,
-			7  => __( 'Video saved.', $this->plugin_slug ) . ' ' . $shortcode_preview,
-			8  => __( 'Video submitted.', $this->plugin_slug ) . ' ' . $shortcode_preview,
-			9  => sprintf( __( 'Video scheduled for: %1$s', $this->plugin_slug ), '<strong>' . $scheduled_date . '</strong>' ) . ' ' . $shortcode_preview,
-			10 => __( 'Video draft updated.', $this->plugin_slug ) . ' ' . $shortcode_preview,
-		);
+			4  => __( 'Video updated.', $this->plugin_slug ) . ' ' . sprintf( __( 'Shortcode: %1$s', $this->plugin_slug ), '[flowplayer id="' . get_the_ID() . '"]' ),
+			5  => isset( $_GET['revision'] ) ? sprintf( __( $singular . ' restored to revision from %s', $this->plugin_slug ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'Video published.', $this->plugin_slug ) . ' ' . sprintf( __( 'Shortcode: %1$s', $this->plugin_slug ), '[flowplayer id="' . get_the_ID() . '"]' ),
+			7  => __( 'Video saved.', $this->plugin_slug ) . ' ' . sprintf( __( 'Shortcode: %1$s', $this->plugin_slug ), '[flowplayer id="' . get_the_ID() . '"]' ),
+			8  => __( 'Video submitted.', $this->plugin_slug ) . ' ' . sprintf( __( 'Shortcode: %1$s', $this->plugin_slug ), '[flowplayer id="' . get_the_ID() . '"]' ),
+			9  => sprintf( __( 'Video scheduled for: %1$s', $this->plugin_slug ), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
+			10 => __( 'Video draft updated.', $this->plugin_slug ),
 
-		$messages[ $this->plugin_slug ] = apply_filters( 'fp5_filter_set_messages', $video_messages );
+		) );
 
 		return $messages;
 
@@ -396,34 +375,6 @@ class Flowplayer5_Admin {
 	public function add_dashboard_counts_old() {
 		$glancer = new Gamajo_Dashboard_RightNow;
 		$glancer->add( 'flowplayer5' );
-	}
-
-	/**
-	 * When the post is saved or updated delete the playlist query cache.
-	 *
-	 * @param    int     $post_id    Post ID
-	 * @param    WP_Post $post       Post object
-	 * @param    bool    $update     Whether this is an existing post being updated or not
-	 * @since    1.13.0
-	 */
-	public function delete_cache_post( $post_id, $post, $update ) {
-		$playlists = get_the_terms( $post_id, 'playlist' );
-		if ( $playlists ){
-			foreach ( $playlists as $playlist ) {
-				wp_cache_delete( 'playlist_query_' . $playlist->term_id );
-			}
-		}
-	}
-
-	/**
-	 * When the taxonomy is saved or updated, delete the playlist query cache.
-	 *
-	 * @param    int     $term_id   Term ID
-	 * @param    int     $tt_id     Term taxonmy ID
-	 * @since    1.13.0
-	 */
-	public function delete_cache_tax( $term_id, $tt_id ) {
-		wp_cache_delete( 'playlist_query_' . $term_id );
 	}
 
 }

@@ -5,13 +5,13 @@
  * @package   Flowplayer 5 for WordPress
  * @author    Ulrich Pogson <ulrich@pogson.ch>
  * @license   GPL-2.0+
- * @link      https://flowplayer.org/
+ * @link      http://flowplayer.org/
  * @copyright 2013 Flowplayer Ltd
  */
 
-// If uninstall not called from WordPress exit.
+//if uninstall not called from WordPress exit
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	exit();
+	exit ();
 }
 
 /**
@@ -20,7 +20,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  * @since    1.0.0
  */
 function flowplayer5_delete_data() {
-	// Delete All the Custom Post Types.
+	// Delete All the Custom Post Types
 	$fp5_post_types = array( 'flowplayer5' );
 	foreach ( $fp5_post_types as $post_type ) {
 
@@ -39,7 +39,7 @@ function flowplayer5_delete_data() {
 		}
 	}
 
-	// Delete all the Plugin Options.
+	// Delete all the Plugin Options
 	delete_option( 'fp5_settings_general' );
 }
 

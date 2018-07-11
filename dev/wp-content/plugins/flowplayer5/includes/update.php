@@ -5,7 +5,7 @@
  * @package   Flowplayer 5 for WordPress
  * @author    Ulrich Pogson <ulrich@pogson.ch>
  * @license   GPL-2.0+
- * @link      https://flowplayer.org/
+ * @link      http://flowplayer.org/
  * @copyright 2013 Flowplayer Ltd
  */
 
