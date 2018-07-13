@@ -192,7 +192,7 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 	left: -5px;
 }
 
-.videos-module .videos-home:nth-child(3n+4) { margin-right: 0; }
+.videos-module .videos-home:nth-child(3n+3) { margin-right: 0; }
 .videos-module .videos-home { min-height: 230px; margin-bottom: 15px; }
 
 .videos-home .et_pb_image { height: 160px; overflow: hidden; box-shadow: 0 3px 10px 0 rgb(221, 221, 221); margin-bottom: 10px !important; }
@@ -200,7 +200,10 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 .videos-home .et_pb_image img { padding: 5px; width: 100%; height: 100%; }
 
 .videos-home .et_pb_image .et_overlay { opacity: 1 !important; z-index: 3 !important; background: rgba(0, 0, 0, 0); }
-.video-author { color: #3f869d; }
+.video-title a { color: #444; }
+.video-author { color: #3f869d; font-size: 13px; }
+.video-votes { color: #bbb; font-size: 13px; }
+
 .videos-home .et_pb_image .et_overlay:before {
     top: 38%;
     left: 43%;
@@ -245,7 +248,29 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 .s-logo img { height: 100%; }
 .schools-home a { color: #444; }
 
+/*------------------ VIDEOS CSS ------------------*/
 
+.videos-page .video-feed:nth-child(3n+3) { margin-right: 0; }
+.videos-page .video-feed { min-height: 250px; margin-bottom: 15px; }
+
+.video-feed .et_pb_image { height: 180px; overflow: hidden; box-shadow: 0 3px 10px 0 rgb(221, 221, 221); margin-bottom: 10px !important; }
+.video-feed .et_pb_image_wrap { height: 100%; }
+.video-feed .et_pb_image img { padding: 5px; width: 100%; height: 100%; }
+.video-feed .video-title { padding-bottom: 0; }
+
+.video-feed .et_pb_image .et_overlay { opacity: 1 !important; z-index: 3 !important; background: rgba(0, 0, 0, 0); }
+.video-feed .et_pb_image .et_overlay:hover { background: rgba(0, 0, 0, 0.15); cursor: pointer; }
+.video-feed .et_pb_image .et_overlay:before {
+    top: 38%;
+    left: 45%;
+    font-size: 70px;
+    color: #fff;
+}
+
+.loadmore { text-align: center; font-weight: 600; text-decoration: underline; color: #ed7818; margin-top: 20px; }
+
+.fancybox-skin {  padding-top: 0 !important; width: 1106px !important; margin: 0 auto; }
+.fancybox-inner { width: 1106px !important; height: 690px !important }
 /*------------------------------------------------*/
 /*-----------------[CTA Menu Item]----------------*/
 /*-----------------[by GenoQuiroz]----------------*/
@@ -317,7 +342,10 @@ li.get-started:hover {background-color:#c96310;}
 #gform_wrapper_6 .gform_footer { padding-top: 6px; }
 #gform_wrapper_6 ul.gform_fields li.gfield { padding-right: 0; }
 #field_6_1 { text-align: center; }
-
+/*-------------------Video Frame---------------------*/
+.page-template-page-video-frame #main-header, .page-template-page-video-frame #main-footer {
+   /*display: none !important;*/
+}
 /*------------------- RESPONSIVE CSS ----------------*/
 @media only screen and (max-width : 479px) {
 	#gform_wrapper_1 div.gform_footer { margin-top: inherit; }

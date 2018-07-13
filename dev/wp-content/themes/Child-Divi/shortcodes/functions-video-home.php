@@ -8,9 +8,11 @@ if ( $loop->have_posts() && !(is_admin()) ) :
 
 $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
 ?>
-                 
+                
 
-		<div class="et_pb_column et_pb_column_1_3  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough videos-home">				
+		<div class="et_pb_column et_pb_column_1_3  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough videos-home" data-href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php
+        echo get_the_title();
+?>" data-modal-id="modal-video" data-link="<?php the_permalink(); ?>">				
 			<div class="et_pb_module et_pb_image et_pb_image_0 et_always_center_on_mobile et_pb_has_overlay">
 			<?php if ( has_post_thumbnail() ) { ?>
 				<span class="et_pb_image_wrap video-thumbnail">

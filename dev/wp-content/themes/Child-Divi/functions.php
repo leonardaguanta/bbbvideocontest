@@ -16,6 +16,9 @@ function my_scripts_method() {
     );
 	wp_enqueue_style('fancybox-css', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css');
 	wp_enqueue_script( 'fancyboxes-js', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js' );
+	
+	wp_localize_script( 'custom-js', 'ajax_object',
+		array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
 add_action( 'wp_enqueue_scripts', 'my_scripts_method' );
 
@@ -85,8 +88,13 @@ function load_posts_by_ajax_callback() {
 	$my_posts = new WP_Query( $args );
 	if ( $my_posts->have_posts() ) :
 		?>
-		<?php while ( $my_posts->have_posts() ) : $my_posts->the_post() ?>
-	<div class="video-feed et_pb_column et_pb_column_1_3  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough">				
+		<?php while ( $my_posts->have_posts() ) : $my_posts->the_post();
+
+$href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
+?>
+	<div class="video-feed et_pb_column et_pb_column_1_3  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough" data-href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php
+        echo get_the_title();
+?>" data-modal-id="modal-video" data-link="<?php the_permalink(); ?>">				
 				<div class="et_pb_module et_pb_image et_pb_image_0 et_always_center_on_mobile">
 				<?php if ( has_post_thumbnail() ) { ?>
                     <span class="et_pb_image_wrap video-thumbnail"><img src="<?php the_field('fp5-splash-image'); ?>" alt=""></span>
