@@ -246,6 +246,9 @@
 								echo( $primaryNav );
 							endif;
 						?>
+							
+	
+					
 						</nav>
 					<?php endif; ?>
 

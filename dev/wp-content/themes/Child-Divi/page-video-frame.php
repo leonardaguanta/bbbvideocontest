@@ -11,15 +11,22 @@ $videoId = isset($_GET['vid_id']) ? $_GET['vid_id'] : '';
   //       echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>";
       //   echo "<script type='text/javascript' src='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/flowplayer5/frontend/assets/flowplayer/flowplayer.js?ver=4.9.6'></script>";
 
-
+        get_header();
    echo "<link rel='stylesheet' id='flowplayer5-skins-css' href='https://releases.flowplayer.org/5.5.2/commercial/skin/all-skins.css' type='text/css' media='all' />";
         echo "<link rel='stylesheet' id='flowplayer5-logo-origin-css' href='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/css/public-concat.min.css?x75485' type='text/css' media='all' />";
          echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery.js?ver=1.11.3'></script>";
          echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>";
         echo "<script type='text/javascript' src='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/flowplayer/flowplayer.js?x75485'></script>";
+      // echo "<script src='http://bbbvideocontest.platypustest.info/dev/wp-includes/js/zxcvbn.min.js' type='text/javascript'></script><script src='//w.likebtn.com/js/w/widget.js'></script><script src='//w.likebtn.com/js/w/widget.js'></script>";
+echo "<link rel='stylesheet' id='simplevotemestyle-css' href='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/css/simplevoteme.css?ver=4.9.6' type='text/css' media='all'>";
 
+echo '<script type="text/javascript">
+/* <![CDATA[ */
+var gtsimplevotemeajax = {"ajaxurl":"http:\/\/bbbvideocontest.platypustest.info\/dev\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>';
+echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>';
 
-     //   get_header();
   echo '<input value="1" id="popup-video-ni" type="hidden"/>';
         if($videoId){
             echo do_shortcode('[flowplayer id="'. $videoId .'" autoplay="true" preload="auto"]'); 
@@ -34,7 +41,12 @@ $videoId = isset($_GET['vid_id']) ? $_GET['vid_id'] : '';
             $extra_video_info = get_post_meta($videoId);
             $videoName = $extra_video_info['fp5-mp4-video'][0];
             $videoName = basename($videoName, ".mp4");
-
+			$auth = get_post($videoId); // gets author from post
+				$authid  = $auth->post_author; // gets author id for the post
+$user_nicename = get_the_author_meta('user_nicename',$authid);
+			$user_school_id = get_the_author_meta('school',$authid);//gets schoold id of user
+			$school = get_post($user_school_id); // gets school 
+			$school_name = $school->post_title;
             // $ga1 = new Platypus_GA();
             // $analytics = $ga1->getService();
             // $profile = $ga1->getFirstProfileId($analytics);
@@ -49,7 +61,19 @@ $videoId = isset($_GET['vid_id']) ? $_GET['vid_id'] : '';
             // if ( ! add_post_meta( $videoId, '_custom_video_view', $videoViews, true ) ) { 
             //     update_post_meta( $videoId, '_custom_video_view', $videoViews );
             // }
+?><div id="video-details" class="video-details row" style="display: block;">
+	<div class="progress hide" style="width: 100%;"></div>
 
+<div class="col-md-8"><h5 class="video-title"><a href="" ><?php echo get_the_title( $videoId );?></a> by <span class="video-author"><?php echo $user_nicename;?></span></h5><h5 class="video-school"><?php echo $school_name;?></h5></div>
+
+<div class="clear"></div><div class="col-md-12"><div class="video-description"><?php echo get_field( "fp5-video-description", $videoId );?>
+</div></div></div>
+ 
+<?php
+						echo do_shortcode('[simplevoteme postid='. $videoId .']');
+
+			     // echo do_shortcode('[likebtn theme="disk" dislike_enabled="0" i18n_like="Vote" ef_voting="heartbeat"]'); 
+			
         }else{
             echo "<h5>No Video found.</h5>";
         }

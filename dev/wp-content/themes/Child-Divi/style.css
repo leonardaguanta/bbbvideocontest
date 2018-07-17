@@ -346,6 +346,25 @@ li.get-started:hover {background-color:#c96310;}
 .page-template-page-video-frame #main-header, .page-template-page-video-frame #main-footer {
    /*display: none !important;*/
 }
+.page-template-page-video-frame header#main-header {
+    display: none;
+    top: 0 !important;
+}
+.page-template-page-video-frame .et_fixed_nav.et_show_nav #page-container, .page-template-page-video-frame .et_non_fixed_nav.et_transparent_nav.et_show_nav #page-container {
+    padding-top: 0;
+}
+
+/*-----------------Voting----------------------------*/
+span.bad, span.neutro {
+    display: none !important;
+}
+/*---------------LOGIN-------------------*/
+#page-container .lrm-user-modal-container .lrm-switcher li{
+	display:none!important;
+}
+.logged-in .lrm-login {
+    display: none !important;
+}
 /*------------------- RESPONSIVE CSS ----------------*/
 @media only screen and (max-width : 479px) {
 	#gform_wrapper_1 div.gform_footer { margin-top: inherit; }

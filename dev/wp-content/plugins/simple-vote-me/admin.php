@@ -1,17 +1,17 @@
 <?php
 
-add_action( 'admin_init', 'gt_simplevoteme_admin_init' );
-add_action( 'admin_menu', 'gt_simplevoteme_admin_menu' );
+    add_action( 'admin_init', 'gt_simplevoteme_admin_init' );
+    add_action( 'admin_menu', 'gt_simplevoteme_admin_menu' );
 
-//init function
-function gt_simplevoteme_admin_init(){
-	add_action('admin_init', 'gt_simplevoteme_admin_options');
-}
+   //init function
+    function gt_simplevoteme_admin_init(){
+        add_action('admin_init', 'gt_simplevoteme_admin_options');
+    }
     
-//page admin
-function gt_simplevoteme_admin_menu(){
-	if(is_admin()):
-            	$page = add_submenu_page (
+    //page admin
+    function gt_simplevoteme_admin_menu(){
+        if(is_admin()):
+            $page = add_submenu_page (
                                         'options-general.php',
                                         __('Simple Vote Me', 'gtsimplevoteme'),
                                         __('Simple Vote Me', 'gtsimplevoteme'),
@@ -19,44 +19,43 @@ function gt_simplevoteme_admin_menu(){
                                         __FILE__,
                                         'gt_simplevoteme_page_admin','gt_simplevoteme_page_admin');
           
-            	//add CSS only for admin page
-            	add_action ( 'admin_print_styles-' . $page, 'gt_simplevoteme_admin_style');
+            //add CSS only for admin page
+            add_action ( 'admin_print_styles-' . $page, 'gt_simplevoteme_admin_style');
         endif;
-}
+    }
    
-function gt_simplevoteme_admin_style(){
-	wp_enqueue_style( 'simplevotemestyleadmin' );
-}
+   function gt_simplevoteme_admin_style(){
+        wp_enqueue_style( 'simplevotemestyleadmin' );
+   }
    
    
-//page admin
-function gt_simplevoteme_page_admin(){
-	global $blog_id;
+   //page admin
+   function gt_simplevoteme_page_admin(){
+    global $blog_id;
         if( isset( $_POST['submit'] ) ){
-            	update_option( 'gt_simplevoteme_title' , $_POST[ 'gt_simplevoteme_title' ] );
-            	update_option( 'gt_simplevoteme_auto_insert_content' , $_POST[ 'gt_simplevoteme_auto_insert_content' ] );
-            	update_option( 'gt_simplevoteme_auto_insert_home' , $_POST[ 'gt_simplevoteme_auto_insert_home' ] );
-            	update_option( 'gt_simplevoteme_position' , $_POST[ 'gt_simplevoteme_position' ] );
-            	update_option( 'gt_simplevoteme_only_login' , $_POST[ 'gt_simplevoteme_only_login' ] );
-            	update_option( 'gt_simplevoteme_default_css' , $_POST[ 'gt_simplevoteme_default_css' ] );
-            	update_option( 'gt_simplevoteme_custom_css' , $_POST[ 'gt_simplevoteme_custom_css' ] );
-            	update_option( 'gt_simplevoteme_results' , $_POST[ 'gt_simplevoteme_results' ] );
-            	update_option( 'gt_simplevoteme_results_type' , $_POST[ 'gt_simplevoteme_results_type' ] );
-            	update_option( 'gt_simplevoteme_custom_img' , $_POST[ 'gt_simplevoteme_custom_img' ] );
-            	update_option( 'gt_simplevoteme_custom_border_good' , $_POST[ 'gt_simplevoteme_custom_border_good' ] );
-            	update_option( 'gt_simplevoteme_custom_img_good' , $_POST[ 'gt_simplevoteme_custom_img_good' ] );
-            	update_option( 'gt_simplevoteme_custom_border_neutral' , $_POST[ 'gt_simplevoteme_custom_border_neutral' ] );
-            	update_option( 'gt_simplevoteme_custom_img_neutral' , $_POST[ 'gt_simplevoteme_custom_img_neutral' ] );
-            	update_option( 'gt_simplevoteme_custom_border_bad' , $_POST[ 'gt_simplevoteme_custom_border_bad' ] );
-            	update_option( 'gt_simplevoteme_custom_img_bad' , $_POST[ 'gt_simplevoteme_custom_img_bad' ] );
-            	update_option( 'gt_simplevoteme_votes' , $_POST[ 'gt_simplevoteme_votes' ] );
-            	update_option( 'gt_simplevoteme_custom_post_types' , $_POST[ 'gt_simplevoteme_custom_post_types' ]);
+            update_option( 'gt_simplevoteme_title' , $_POST[ 'gt_simplevoteme_title' ] );
+            update_option( 'gt_simplevoteme_auto_insert_content' , $_POST[ 'gt_simplevoteme_auto_insert_content' ] );
+            update_option( 'gt_simplevoteme_auto_insert_home' , $_POST[ 'gt_simplevoteme_auto_insert_home' ] );
+            update_option( 'gt_simplevoteme_position' , $_POST[ 'gt_simplevoteme_position' ] );
+            update_option( 'gt_simplevoteme_only_login' , $_POST[ 'gt_simplevoteme_only_login' ] );
+            update_option( 'gt_simplevoteme_default_css' , $_POST[ 'gt_simplevoteme_default_css' ] );
+            update_option( 'gt_simplevoteme_custom_css' , $_POST[ 'gt_simplevoteme_custom_css' ] );
+            update_option( 'gt_simplevoteme_results' , $_POST[ 'gt_simplevoteme_results' ] );
+            update_option( 'gt_simplevoteme_results_type' , $_POST[ 'gt_simplevoteme_results_type' ] );
+            update_option( 'gt_simplevoteme_custom_img' , $_POST[ 'gt_simplevoteme_custom_img' ] );
+            update_option( 'gt_simplevoteme_custom_border_good' , $_POST[ 'gt_simplevoteme_custom_border_good' ] );
+            update_option( 'gt_simplevoteme_custom_img_good' , $_POST[ 'gt_simplevoteme_custom_img_good' ] );
+            update_option( 'gt_simplevoteme_custom_border_neutral' , $_POST[ 'gt_simplevoteme_custom_border_neutral' ] );
+            update_option( 'gt_simplevoteme_custom_img_neutral' , $_POST[ 'gt_simplevoteme_custom_img_neutral' ] );
+            update_option( 'gt_simplevoteme_custom_border_bad' , $_POST[ 'gt_simplevoteme_custom_border_bad' ] );
+            update_option( 'gt_simplevoteme_custom_img_bad' , $_POST[ 'gt_simplevoteme_custom_img_bad' ] );
+            update_option( 'gt_simplevoteme_votes' , $_POST[ 'gt_simplevoteme_votes' ] );
+            update_option( 'gt_simplevoteme_custom_post_types' , $_POST[ 'gt_simplevoteme_custom_post_types' ]);
 
-            	if($_POST['gt_simplevoteme_reset']) {
-                	gt_simplevoteme_reset(1);
-		}
+            if($_POST['gt_simplevoteme_reset'])
+                gt_simplevoteme_reset(1);
         }
-?>
+    ?>
         <div class="wrap">
             <h2> Simple Vote me </h2>
             
@@ -300,12 +299,11 @@ function gt_simplevoteme_page_admin(){
                   ga('send', 'pageview');
             </script>
         </div>
-<?php
-}
-
+   <?php 
+   }
    
-//page admin options
-function gt_simplevoteme_admin_options(){
+   //page admin options
+   function gt_simplevoteme_admin_options(){
         register_setting( 'gt_simplevoteme_options', 'gt_simplevoteme_title');
         register_setting( 'gt_simplevoteme_options', 'gt_simplevoteme_auto_insert_content');
         register_setting( 'gt_simplevoteme_options', 'gt_simplevoteme_auto_insert_home');
@@ -329,46 +327,48 @@ function gt_simplevoteme_admin_options(){
         register_setting( 'gt_simplevoteme_options', 'gt_simplevoteme_votes');
         register_setting( 'gt_simplevoteme_options', 'gt_simplevoteme_custom_post_types');
     
-}
+   }
     
-function gt_simplevoteme_reset($reset = false){
-	if($reset){
-            	$the_query = new WP_Query( 'meta_key=_simplevotemevotes&amp;orderby=meta_value_num&amp;order=DESC&amp;' );
-            	// The Loop
-            	while ( $the_query->have_posts() ) : $the_query->the_post();
-                	update_post_meta(get_the_ID(), '_simplevotemevotes', "");
-            	endwhile;
-            	wp_reset_postdata();
+    function gt_simplevoteme_reset($reset = false){
+        if($reset){
+            
+            $the_query = new WP_Query( 'meta_key=_simplevotemevotes&amp;orderby=meta_value_num&amp;order=DESC&amp;' );
+            // The Loop
+            while ( $the_query->have_posts() ) : $the_query->the_post();
+                update_post_meta(get_the_ID(), '_simplevotemevotes', "");
+            endwhile;
+            wp_reset_postdata();
         }
-}
- 
+    }
     
     
-/** Show the info in admin panel **/
-function gt_simplevoteme_custom_columns(){
+    
+    
+      /** Show the info in admin panel **/
+    function gt_simplevoteme_custom_columns(){
         $types = get_option('gt_simplevoteme_custom_post_types');
         if(is_array($types)){
-            	foreach($types as $type){
-                	//add cols
-                	add_filter( 'manage_edit-'.$type.'_columns', 'gt_simplevoteme_extra_columns' );
-                	//add content
-                	add_action( 'manage_'.$type.'_posts_custom_column', 'gt_simplevoteme_content_column_row', 10, 2 );
-            	}
+            foreach($types as $type){
+                //add cols
+                add_filter( 'manage_edit-'.$type.'_columns', 'gt_simplevoteme_extra_columns' );
+                //add content
+                add_action( 'manage_'.$type.'_posts_custom_column', 'gt_simplevoteme_content_column_row', 10, 2 );
+            }
         }
-}
+    }
     
-gt_simplevoteme_custom_columns();
+    gt_simplevoteme_custom_columns();
     
-function gt_simplevoteme_extra_columns( $columns ) {
+    function gt_simplevoteme_extra_columns( $columns ) {
         $columns[ 'simplevotemetotal' ] = __( 'Votes' );
         $columns[ 'simplevotemenegative' ] = __( ':(' );
         $columns[ 'simplevotemeneutral' ] = __( ':|' );
         $columns[ 'simplevotemepositive' ] = __( ':)' );
         return $columns;
-}
+    }
 
     
-function gt_simplevoteme_content_column_row( $column ) {
+    function gt_simplevoteme_content_column_row( $column ) {
         global $post;
         $post_id = $post->ID;
         $votes = get_post_meta($post_id, '_simplevotemevotes', true) != '' ? get_post_meta($post_id, '_simplevotemevotes', true) : array('positives' => array(),
@@ -377,14 +377,14 @@ function gt_simplevoteme_content_column_row( $column ) {
                                                                                                                                         );
         $users = array('positives' => array(), 'negatives' => array(), 'neutrals' => array());
         foreach ($votes as $key => $voteType){
-            	foreach ($voteType as $vote){
-                	if($vote != 0){
-                    		$user = get_userdata($vote);
-                    		$users[$key][] = '<a href="'. get_author_posts_url($vote, $user->display_name) .'" target="_blank">'. $user->display_name .'</a>';
-                	} else {
-                    		$users[$key][] =  __('Anonymous');
-			}
-            	}
+            foreach ($voteType as $vote){
+                if($vote != 0){
+                    $user = get_userdata($vote);
+                    $users[$key][] = '<a href="'. get_author_posts_url($vote, $user->display_name) .'" target="_blank">'. $user->display_name .'</a>';
+
+                } else
+                    $users[$key][] =  __('Anonymous');
+            }
         }
         
             switch($column):
@@ -415,39 +415,40 @@ function gt_simplevoteme_content_column_row( $column ) {
                 break;
             endswitch;
 
-}
+    }
 
 
 
 //Meta box for post
 function gt_simplevoteme_metabox_votes($post){
-   	wp_nonce_field(basename(__FILE__), "meta-box-nonce");
-    	print '<ul class="categorychecklist" style="text-transform: capitalize;">';
+     wp_nonce_field(basename(__FILE__), "meta-box-nonce");
+ 
+    ?>
+    <ul class="categorychecklist" style="text-transform: capitalize;">
+        <?php
         $votes = get_post_meta($post->ID, '_simplevotemevotes', true) != '' ? get_post_meta($post->ID, '_simplevotemevotes', true) : array('positives' => array(),'negatives' => array(),'neutrals'  => array());
         
         $users = array('positives' => array(), 'negatives' => array(), 'neutrals' => array());
-        foreach ($votes as $key => $voteType){
-        	foreach ($voteType as $vote){
-                	if($vote != 0){
-                        	$user = get_userdata($vote);
-                        	$users[$key][] = '<a href="'. get_author_posts_url($vote, $user->display_name) .'" target="_blank">'. $user->display_name .'</a>';
+            foreach ($votes as $key => $voteType){
+                foreach ($voteType as $vote){
+                    if($vote != 0){
+                        $user = get_userdata($vote);
+                        $users[$key][] = '<a href="'. get_author_posts_url($vote, $user->display_name) .'" target="_blank">'. $user->display_name .'</a>';
 
-                    	} else {
-                        	$users[$key][] =  __('Anonymous');
-                	}
-            	}
-	}
-        print '<li><span>Totals:</span>';
-	echo sizeof($votes, 1) - 3;
-	print '</li>';
-	foreach($users as $key => $usersCat){
-        	echo "<li><span>$key:</span><ul class='children'>";
-            	foreach ($usersCat as $usr){
-                	echo "<li>$usr</li>";
-            	} 
-            	echo "</ul></li>";
-        }
-?>
+                    } else
+                        $users[$key][] =  __('Anonymous');
+                }
+            }
+        ?>
+        <li><span>Totals:</span><?php echo sizeof($votes, 1) - 3;?></li>
+        <?php foreach($users as $key => $usersCat){
+            echo "<li><span>$key:</span><ul class='children'>";
+            foreach ($usersCat as $usr){
+                echo "<li>$usr</li>";
+            }
+            
+            echo "</ul></li>";
+        }?>
     </ul>
     <style>
         #gt_simplevoteme_votes > .inside ul {
@@ -464,18 +465,17 @@ function gt_simplevoteme_metabox_votes($post){
           margin-bottom: .5em;
         }
     </style>
-<?php
+    <?php
     
 }
  
 function gt_simplevoteme_add_meta_box_votes(){
-    	$types = get_option('gt_simplevoteme_custom_post_types');
-    	if(is_array($types)){
-        	foreach($types as $type){
-    			add_meta_box("gt_simplevoteme_votes", "Votes", "gt_simplevoteme_metabox_votes", $type, "side", "high", null);
-        	}
-     	}
+    $types = get_option('gt_simplevoteme_custom_post_types');
+    if(is_array($types)){
+        foreach($types as $type){
+    add_meta_box("gt_simplevoteme_votes", "Votes", "gt_simplevoteme_metabox_votes", $type, "side", "high", null);
+        }
+     }
 }
-
+ 
 add_action("add_meta_boxes", "gt_simplevoteme_add_meta_box_votes");
-?>

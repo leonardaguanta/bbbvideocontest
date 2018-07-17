@@ -118,4 +118,31 @@ $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
 	wp_die();
 }
 
+
+
+
+
+add_filter( 'wp_nav_menu_items', 'wti_loginout_menu_link', 10, 2 );
+
+function wti_loginout_menu_link( $items, $args ) {
+   if ($args->theme_location == 'primary-menu') {
+      if (is_user_logged_in()) {
+         $items .= '<li class="right get-started"><a href="'. wp_logout_url() .'">'. __("Log Out") .'</a></li>';
+      } else {
+        // $items .= '<li class="right"><a href="'. wp_login_url(get_permalink()) .'">'. __("Log In") .'</a></li>';
+      }
+   }
+   return $items;
+}
+
+
+function admin_default_page() {
+  return '/new-dashboard-url';
+}
+
+add_filter('login_redirect', 'admin_default_page');
+
+
+
+
 ?>
