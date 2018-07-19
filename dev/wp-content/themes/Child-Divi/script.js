@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-
+var pageNumber = 1;
 	  $(".videos-module,.videos-page").on('click','.videos-home,.video-feed',function () {
 	  console.log("clicked");
 		    var $this = this;
@@ -119,5 +119,134 @@ jQuery(document).ready(function($) {
 			});
 			return false;
 		}//end
+	
+
+	
+	function filterVideos(usage, val){
+		var sort = $('#student-video-sort').val();
+		if( usage === "sort" ){
+				sort = val; 
+			}
+pageNumber = 1;
+		$.ajax({
+			
+			
+							type: "GET",
+				dataType: "html",
+				url: '//bbbvideocontest.platypustest.info/dev/show-more-dont-delete/',
+				data: {
+					action: 'get_student_videos',
+					pageNumber: 1,
+					ppp: 6,
+					sort: sort,
+				},
+				beforeSend: function(){
+					$( "#ajax-posts" ).fadeOut('fast').html("");
+					$('.movie-loader').show();
+				},
+							success: function(data){
+					$( "#ajax-posts" ).fadeIn('fast');
+					$('.movie-loader').hide();
+								var $data = $(data);
+													if( $data.length ){
+						$( "#ajax-posts" ).append($data);
+						$( ".loadmore" ).attr("disabled",false);
+					} else {
+						$( ".loadmore" ).attr("disabled",true);
+					}
+								$( '.loadmore' ).show();
+
+					if( $('#ajax-posts').attr('data-page') == pageNumber ){
+						$('.loadmore').fadeOut();
+					}
+					if( parseInt($.trim(data)) < 1 ){
+						$('.loadmore').fadeOut();
+					}
+					if($('#video_max_page').val() == 1 || $('#video_max_page').val() == 0){
+						$('.loadmore').hide();
+					}
+							},
+			
+							error : function(jqXHR, textStatus, errorThrown) {
+					console.log(jqXHR);
+					if(jqXHR.status == "404"){
+						$('.loadmore').hide();
+						$('.movie-loader').hide();
+					}
+				}
+			
+			
+			
+			});
+			return false;
+	}
+	
+	
+			function loadMoreVideos(){
+			console.log("PN"+pageNumber);
+			pageNumber++;
+		var sort = $('#load-more').attr('data-sort');
+		$.ajax({
+			type: "GET",
+				dataType: "html",
+				url: '//bbbvideocontest.platypustest.info/dev/show-more-dont-delete/',
+				data: {
+		
+					pageNumber: pageNumber,
+					sort: sort,
+					action: 'load_more_videos',
+					security: '<?php echo wp_create_nonce("load_more_posts");?>'
+
+				},
+				beforeSend: function(){
+					$('.movie-loader').show();
+				},
+				success: function(data){
+					$('.movie-loader').hide();
+					var $data = $(data);
+					if( $data.length ){
+						$( "#ajax-posts" ).append($data);
+						$( ".load-more" ).attr("disabled",false);
+					} else {
+						$( ".load-more" ).attr("disabled",true);
+					}
+					
+					if(data.trim() == "0"){
+						$('.load-more').hide();
+					}
+					if( $('#ajax-posts').attr('data-page') == pageNumber ){
+						$('.load-more').fadeOut();
+					}
+					//studentVideoPageResize();
+				},
+				error : function(jqXHR, textStatus, errorThrown) {
+					console.log(jqXHR + " :: " + textStatus + " :: " + errorThrown);
+				},
+				complete : function(){
+
+										if( $('#ajax-posts').attr('data-page') == pageNumber ){
+						$('.loadmore').fadeOut();
+											//console.log( $('#ajax-posts').attr('data-page'));
+					}
+					if($('#video_max_page').val() == 1 || $('#video_max_page').val() == 0){
+						$('.loadmore').hide();
+					}
+				}
+		});
+				
+				console.log("PN"+pageNumber);
+				
+			}
+	
+	
+				$('#student-video-sort').on("change",function(){
+			var sortVal = $(this).val();
+			filterVideos('sort', sortVal);
+		});
+	
+			$( ".loadmore" ).on("click",function(){ // When btn is pressed.
+			$( ".loadmore" ).attr("disabled",true); // Disable the button, temp.
+			loadMoreVideos();
+		});
 	
 });

@@ -1,21 +1,67 @@
 <div class="entry-content">
     <?php
+	
+	
+function studentSchools(){
+	global $post;
+        $args = array(
+                'post_type' => 'student_schools',
+                'posts_per_page' => -1,
+                'post_status' => 'publish'
+        );
+	$schools = get_posts($args);
+	$sc = '<ul class="student-video-sort">';
+	$col = 1;
+	foreach ($schools as $key => $school) {
+		$sc .= '<li class="col-md-6"><input type="checkbox" class="school-sort" name="'. $school->ID .'" value="'. $school->ID .'"/>'. $school->post_title .'</li>';
+		$col++;
+	}
+	$sc .= '</ul>';
+	$sc .= '<div class="clear"></div>';
+	$sc .= '<button disabled="disabled" class="button button-filter" id="video-filter">FILTER</button>';
+	return $sc;
+}
+		if( ! get_query_var( 'paged' ) || get_query_var( 'paged' ) == 0 || get_query_var( 'paged' ) == 1 ) {
+		if( isset( $_SESSION['seed'] ) ) {
+			unset( $_SESSION['seed'] );
+		}
+	}
+	$seed = $_SESSION['seed'];
 
 	$args = array(
 		'post_type' => 'flowplayer5',
 		'post_status' => 'publish',
+		//'orderby' => 'rand',
 		'posts_per_page' => 6,
 		'paged' => 1
 	);
 
 	$my_posts = new WP_Query($args);
-	$videoCounter = 1;
+	$videoCounter = 1;?>
+				<div class="row video-filtering">
+					<div class="col-md-8">
+					<h4 class="heading-title"><?php _e('Sort by schools'); ?></h4>
+					<?php //echo studentSchools(); ?>
+				</div>
+					<div class="sort-box">
+						<span><?php _e('Sort by'); ?></span>
+						<select id="student-video-sort" name="student-video-sort">
+							<option value=""></option>
+							<option value="likes"><?php _e('Most Votes'); ?></option>
+							<option value="views"><?php _e('Most Viewed'); ?></option>
+						</select>
+					</div>
+										</div>
+<?php
 	if ($my_posts->have_posts()): ?>
 
-       <div class="my-posts clearfix videos-page">
+	  <div class="my-posts clearfix videos-page" id="ajax-posts" data-page="<?php echo $my_posts->max_num_pages; ?>">
+		
+
             <?php while ($my_posts->have_posts()): $my_posts->the_post(); 
 		   $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
 		   ?>
+		    	<input type="hidden" value="<?php echo $my_posts->max_num_pages; ?>" id="video_max_page"/>
                 <div class="video-feed et_pb_column et_pb_column_1_3  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough" data-href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php
         echo get_the_title();
 ?>" data-modal-id="modal-video" data-link="<?php the_permalink(); ?>">                
@@ -36,7 +82,7 @@
     				<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_0">
                 		<div class="et_pb_text_inner">					
                     		<h3 class="video-title"><a href="<?php the_permalink(); ?>"><?php echo get_the_title();?></a></h3>
-							<span class="video-author"><?php echo the_author_meta('display_name', $postData[0]->post_author);?></span> | <span class="video-votes"> Votes</span>
+							<span class="video-author"><?php echo the_author_meta('display_name', $postData[0]->post_author);?></span> | <span class="video-votes"> 	<?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span>
 						</div>
             		</div> <!-- .et_pb_text -->
     			</div>
@@ -51,12 +97,13 @@
 						</div>
 				<?php } $videoCounter++; ?>
             <?php endwhile; ?>
+	  <div class="loadmore">See more videos</div>
        </div>
     <?php endif; ?>
 
-   <div class="loadmore">See more videos</div>
+ 
 </div>
-
+<!--
 <script type="text/javascript">
 	var ajaxurl = "<?php echo admin_url('admin-ajax.php');?>";
 	var page = 2;
@@ -78,4 +125,4 @@
 			});
 		});
 	});
-</script>
+</script>->

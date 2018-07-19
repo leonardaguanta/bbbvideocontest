@@ -74,8 +74,8 @@ function student_videos() {
 
 
 /*---- Video Load More -----*/
-add_action('wp_ajax_load_posts_by_ajax', 'load_posts_by_ajax_callback');
-add_action('wp_ajax_nopriv_load_posts_by_ajax', 'load_posts_by_ajax_callback');
+//add_action('wp_ajax_load_posts_by_ajax', 'load_posts_by_ajax_callback');
+//add_action('wp_ajax_nopriv_load_posts_by_ajax', 'load_posts_by_ajax_callback');
 function load_posts_by_ajax_callback() {
 	check_ajax_referer('load_more_posts', 'security');
 	$paged = $_POST['page'];
@@ -107,7 +107,7 @@ $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
 				<div class="et_pb_text_inner">
 					<h3 class="video-title"><a href="<?php the_permalink(); ?>"><?php
         echo get_the_title();
-?></a></h3><span class="video-author"><?php echo the_author_meta( 'display_name', $postData[0]->post_author ) ?></span> | <span class="video-votes"> Votes
+?></a></h3><span class="video-author"><?php echo the_author_meta( 'display_name', $postData[0]->post_author ) ?></span> | <span class="video-votes"> 	<?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?>
 				</span></div>
 			</div> <!-- .et_pb_text -->
 	</div>
@@ -136,11 +136,6 @@ function wti_loginout_menu_link( $items, $args ) {
 }
 
 
-function admin_default_page() {
-  return '/new-dashboard-url';
-}
-
-add_filter('login_redirect', 'admin_default_page');
 
 
 

@@ -147,6 +147,11 @@ Author URI: http://www.gonzalotorreras.com
         
         $votemePositive = count($votes['positives']);
         
+ 		if ( ! add_post_meta( $post_ID, '_vid_liked', $votemePositive, true ) ) {
+                update_post_meta( $post_ID, '_vid_liked', $votemePositive );
+            }		
+		
+		
         $votemeNeutral = count($votes['neutrals']);
         
         $votemeNegative = count($votes['negatives']);
@@ -205,7 +210,7 @@ Author URI: http://www.gonzalotorreras.com
                 } else{
                         $votemePercentNegative = "";
                         $votemePercentNeutral = "";
-                        $votemePercentPositive = "";
+                        $votemePercentPositive = "0 votes";
                 }
             } else{
                     $votemePercentNegative = "";

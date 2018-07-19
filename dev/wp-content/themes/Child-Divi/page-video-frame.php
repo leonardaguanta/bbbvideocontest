@@ -47,7 +47,7 @@ $user_nicename = get_the_author_meta('user_nicename',$authid);
 			$user_school_id = get_the_author_meta('school',$authid);//gets schoold id of user
 			$school = get_post($user_school_id); // gets school 
 			$school_name = $school->post_title;
-            // $ga1 = new Platypus_GA();
+           // $ga1 = new Platypus_GA();
             // $analytics = $ga1->getService();
             // $profile = $ga1->getFirstProfileId($analytics);
 
@@ -72,6 +72,12 @@ $user_nicename = get_the_author_meta('user_nicename',$authid);
 <?php
 						echo do_shortcode('[simplevoteme postid='. $videoId .']');
 
+               //   if( ! add_post_meta( $videoId, '_vid_liked', do_shortcode('[simplevoteme_votes postId='.$videoId.']'), true ) ){
+               //      update_post_meta( $videoId, '_vid_liked', do_shortcode('[simplevoteme_votes postId='.$videoId.']') );
+                 // }			
+			
+			
+			
 			     // echo do_shortcode('[likebtn theme="disk" dislike_enabled="0" i18n_like="Vote" ef_voting="heartbeat"]'); 
 			
         }else{

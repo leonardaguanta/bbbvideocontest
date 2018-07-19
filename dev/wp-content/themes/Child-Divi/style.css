@@ -201,8 +201,10 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 
 .videos-home .et_pb_image .et_overlay { opacity: 1 !important; z-index: 3 !important; background: rgba(0, 0, 0, 0); }
 .video-title a { color: #444; }
-.video-author { color: #3f869d; font-size: 13px; }
-.video-votes { color: #bbb; font-size: 13px; }
+.video-author { color: #3f869d; font-size: 13px; float: left; margin-right: 7px; }
+.video-votes { color: #bbb; font-size: 13px; float: left; ; margin-left: 7px; }
+.info-bar { float: left; }
+.video-votes .result { color: #bbb; }
 
 .videos-home .et_pb_image .et_overlay:before {
     top: 38%;
@@ -210,16 +212,20 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
     font-size: 70px;
     color: #fff;
 }
-/* .contact-social.et_pb_social_media_follow li a.icon {
-    width: 40px;
-    height: 40px;
+
+.videos-home .video-votes .good {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    text-align: left;
 }
 
-.contact-social.et_pb_social_media_follow li a.icon::before {
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-} */
+.lrm-form button[type=submit] {
+    background: #ee872c;
+}
+
+
 
 /*---------------- SCHOOLS CSS -----------------*/
 
@@ -270,7 +276,7 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 .loadmore { text-align: center; font-weight: 600; text-decoration: underline; color: #ed7818; margin-top: 20px; }
 
 .fancybox-skin {  padding-top: 0 !important; width: 1106px !important; margin: 0 auto; }
-.fancybox-inner { width: 1106px !important; height: 690px !important }
+.fancybox-inner { width: 1106px !important; height: 815px !important }
 /*------------------------------------------------*/
 /*-----------------[CTA Menu Item]----------------*/
 /*-----------------[by GenoQuiroz]----------------*/
@@ -356,6 +362,9 @@ li.get-started:hover {background-color:#c96310;}
 
 /*-----------------Voting----------------------------*/
 span.bad, span.neutro {
+    display: none !important;
+}
+#page-container .video-votes a {
     display: none !important;
 }
 /*---------------LOGIN-------------------*/

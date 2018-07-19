@@ -24,20 +24,18 @@ $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
 	
 			<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_0">
 				<div class="et_pb_text_inner">
-					<p class="video-title"><a href="<?php the_permalink(); ?>"><?php
-        echo get_the_title();
-?></a></p>
-					<span class="video-author"><?php echo the_author_meta( 'display_name', $postData[0]->post_author ) ?></span> | <span class="video-votes"> Votes</span>
+					<p class="video-title">
+						<a href="<?php the_permalink(); ?>">
+							<?php echo get_the_title(); ?>
+						</a>
+					</p>
+					<span class="video-author"><?php echo the_author_meta( 'display_name', $postData[0]->post_author ) ?></span><span class="info-bar"> | </span><span class="video-votes">
+					<?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span>
 				</div>
 			</div> <!-- .et_pb_text -->
 		</div>
 
-<a class="popvideo" href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php
-        echo get_the_title();
-?>" data-modal-id="modal-video">
-</a>
-
-
+		<a class="popvideo" href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php  echo get_the_title();?>" data-modal-id="modal-video"></a>
 
     <?php endwhile;
 
