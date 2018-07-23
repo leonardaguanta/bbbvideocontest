@@ -117,9 +117,50 @@ $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
 
 	wp_die();
 }
+function save_view_meta(){
+	
+	$video_id = (isset($_POST["video_id"])) ? $_POST["video_id"] : 0;
+	if($video_id) {
+		$extra_video_info = get_post_meta($video_id);
+		$videoName = $extra_video_info['fp5-mp4-video'][0];
+		$videoName = basename($videoName, ".mp4");
+		
+		$ga1 = new Platypus_GA();
+		$analytics = $ga1->getService();
+		$profile = $ga1->getFirstProfileId($analytics);
 
+		$results = $ga1->getVideoWatchCount($analytics, $profile, $videoName);
+		$rows = $results->getRows();
+		$videoViews = $rows[0][1];
+		
+		if(!$videoViews) {
+			$videoViews = "0";
+		}
+	} else {
+		$videoViews ="0";
+	} 
+	
+	if ( ! add_post_meta( $video_id, '_custom_video_view', $videoViews, true ) ) { 
+		update_post_meta( $video_id, '_custom_video_view', $videoViews );
+	}
+	echo $video_id;
+	wp_die();
+	
+}
+add_action( 'wp_ajax_save_view_meta', 'save_view_meta' );
+add_action( 'wp_ajax_nopriv_save_view_meta', 'save_view_meta' ); 
 
+function showVideoWatchCount($atts) {
+	if($atts['postid']) {
+			$views = get_post_meta($atts['postid'], '_custom_video_view', true);
 
+	} else {
+		$views ="0";
+	}
+	return $views;
+}
+
+add_shortcode('show-video-watch-count', 'showVideoWatchCount');
 
 
 add_filter( 'wp_nav_menu_items', 'wti_loginout_menu_link', 10, 2 );

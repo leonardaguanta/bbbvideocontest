@@ -277,6 +277,14 @@ a.custom-link { font-weight: 600; text-decoration: underline; }
 
 .fancybox-skin {  padding-top: 0 !important; width: 1106px !important; margin: 0 auto; }
 .fancybox-inner { width: 1106px !important; height: 815px !important }
+
+.flowplayer5-template-default .video-entry-content { padding-left: 15px; padding-right: 15px; }
+.indVidInfo { width: 75%; float: left; }
+.indVidStats { width: 25%; float: right; }
+.indVidViews, .indVidComment, .indVidVotes { display: inline-block; vertical-align: middle; }
+.indVidVotes .simplevotemeWrapper img { width: 25px; }
+.simplevotemeWrapper span.good { padding: 0; margin: 0 auto; background: none; border: 0; }
+
 /*------------------------------------------------*/
 /*-----------------[CTA Menu Item]----------------*/
 /*-----------------[by GenoQuiroz]----------------*/

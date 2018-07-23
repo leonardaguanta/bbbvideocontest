@@ -1,9 +1,12 @@
 jQuery(document).ready(function($) {
 var pageNumber = 1;
 	  $(".videos-module,.videos-page").on('click','.videos-home,.video-feed',function () {
-	  console.log("clicked");
+	 var timer = new Timer();
+
 		    var $this = this;
 			var $url = $(this).attr('data-href');
+		  var $videoname =$(this).attr('data-video-name');
+		  var $secondsplayed;
 			$url = $url.split("/");
 			$url = $url[4] + "/" + $url[5];
 			var videoId = $(this).attr('data-id');
@@ -12,6 +15,7 @@ var pageNumber = 1;
 			}
 		 	$.fancybox.open([{ href: $($this).attr('data-url') }], 
 			{
+				
 				modal: false,
 				nextEffect: 'none',
 				prevEffect: 'none',
@@ -51,9 +55,52 @@ var pageNumber = 1;
 					// $(document).ready(function(){ $('.fp-ui').trigger('click'); });
 					//loadVideoDetails(videoId);
 					// $.fancybox.update();
+					 timer.start();
+					
+timer.addEventListener('secondsUpdated', function (e) {
+    $secondsplayed = (timer.getTotalTimeValues().seconds.toString());
+});
+					
+		  ga(function(tracker) {
+       var clientId = tracker.get('clientId');
+ });
+	 var clientId = ga.getAll()[0].get('clientId');
+	 ga('create', 'UA-68402304-1', {
+        'clientId': clientId
+    });
+		
+					
+					
+					
+					
+					
+					
+					
 				},
 				afterClose : function(){
 					window.history.back();
+					console.log('closed');
+					timer.stop();
+					console.log($videoname);
+					console.log($secondsplayed);
+					
+						 ga('send', 'event', {
+   'eventCategory': 'Video Played', //required
+   'eventAction': 'mp4', //required
+   'eventLabel': $videoname ,
+   'eventValue':   $secondsplayed,
+   'hitCallback': function() {
+       console.log('Sent!!');
+      //callback function
+    },
+   'hitCallbackFail' : function () {
+      console.log("Unable to send Google Analytics data");
+      //callback function
+   }
+});		
+					
+					
+					
 				}
 			});
 
@@ -248,5 +295,7 @@ pageNumber = 1;
 			$( ".loadmore" ).attr("disabled",true); // Disable the button, temp.
 			loadMoreVideos();
 		});
+
+
 	
 });

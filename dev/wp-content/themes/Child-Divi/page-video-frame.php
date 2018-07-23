@@ -47,38 +47,52 @@ $user_nicename = get_the_author_meta('user_nicename',$authid);
 			$user_school_id = get_the_author_meta('school',$authid);//gets schoold id of user
 			$school = get_post($user_school_id); // gets school 
 			$school_name = $school->post_title;
-           // $ga1 = new Platypus_GA();
-            // $analytics = $ga1->getService();
-            // $profile = $ga1->getFirstProfileId($analytics);
+			  $extra_video_info = get_post_meta($videoId);
+            $videoName = $extra_video_info['fp5-mp4-video'][0];
+            $videoName = basename($videoName, ".mp4");	
+			
+            $ga1 = new Platypus_GA();
+            $analytics = $ga1->getService();
+			 $profile = $ga1->getFirstProfileId($analytics);
 
-            // $results = $ga1->getVideoWatchCount($analytics, $profile, $videoName);
-            // $rows = $results->getRows();
-            // $videoViews = $rows[0][1];
+		
+           
 
-            // if(!$videoViews) {
-            //     $videoViews = "0";
-            // }
-            // if ( ! add_post_meta( $videoId, '_custom_video_view', $videoViews, true ) ) { 
-            //     update_post_meta( $videoId, '_custom_video_view', $videoViews );
-            // }
-?><div id="video-details" class="video-details row" style="display: block;">
+           $results = $ga1->getVideoWatchCount($analytics, $profile, $videoName);
+           $rows = $results->getRows();
+           $videoViews = $rows[0][1];
+
+           if(!$videoViews) {
+               $videoViews = "0";
+            }
+           if ( ! add_post_meta( $videoId, '_custom_video_view', $videoViews, true ) ) { 
+               update_post_meta( $videoId, '_custom_video_view', $videoViews );
+           }
+?>
+
+
+<div id="video-details" class="video-details row" style="display: block;">
 	<div class="progress hide" style="width: 100%;"></div>
 
 <div class="col-md-8"><h5 class="video-title"><a href="" ><?php echo get_the_title( $videoId );?></a> by <span class="video-author"><?php echo $user_nicename;?></span></h5><h5 class="video-school"><?php echo $school_name;?></h5></div>
 
 <div class="clear"></div><div class="col-md-12"><div class="video-description"><?php echo get_field( "fp5-video-description", $videoId );?>
 </div></div></div>
- 
+ <script>
+	
+
+	
+	 
+</script>
+	
+
+
+
 <?php
 						echo do_shortcode('[simplevoteme postid='. $videoId .']');
+						echo get_post_meta($videoId, '_custom_video_view', true);
 
-               //   if( ! add_post_meta( $videoId, '_vid_liked', do_shortcode('[simplevoteme_votes postId='.$videoId.']'), true ) ){
-               //      update_post_meta( $videoId, '_vid_liked', do_shortcode('[simplevoteme_votes postId='.$videoId.']') );
-                 // }			
-			
-			
-			
-			     // echo do_shortcode('[likebtn theme="disk" dislike_enabled="0" i18n_like="Vote" ef_voting="heartbeat"]'); 
+
 			
         }else{
             echo "<h5>No Video found.</h5>";

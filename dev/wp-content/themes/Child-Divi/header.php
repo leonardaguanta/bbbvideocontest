@@ -30,9 +30,20 @@
 	<script src="<?php echo esc_url( $template_directory_uri . '/js/html5.js"' ); ?>" type="text/javascript"></script>
 	<![endif]-->
 
-	<script type="text/javascript">
-		document.documentElement.className = 'js';
-	</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-68402304-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-68402304-1');
+</script>
+
+<script src="http://bbbvideocontest.platypustest.info/dev/wp-content/themes/Child-Divi/lib/easytimer/dist/easytimer.min.js"></script>
+<script>
+    var timerInstance = new Timer();
+</script>
 
 	<?php wp_head(); ?>
 </head>

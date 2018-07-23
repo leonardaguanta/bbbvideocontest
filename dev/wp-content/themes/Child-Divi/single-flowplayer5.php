@@ -68,37 +68,39 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 
 					<div class="entry-content video-entry-content">
 					<?php //echo do_shortcode('[simplevoteme]');?>
-					<h1><?php the_title(); ?></h1>
-					<div id="indVidStats">
-						<p class="indVidAuthor"><?php the_author(); ?></p>
-						<p class="indVidDate"><?php echo get_the_date("F j, Y"); ?></p>
-						<p class="indVidViews">
-							<?php 
-								// echo do_shortcode('[show-video-watch-count postId='.$post->ID.']');
-								//echo get_post_meta($post->ID, '_custom_video_view', true);
-							?></p>
-						<p class="indVidComment">
-							<?php 
-								$comments = wp_count_comments($post->ID); 
-								echo $comments->approved; 
-							?>
-						</p>
-
-						
-						<?php if($hide == 1){ ?>
-							<p class="indVidLikes">
+					
+					<div id="indVidStats-container" class="clearfix">
+						<div class="indVidInfo">
+							<h1><?php the_title(); ?></h1>
+							<p class="indVidAuthor"><?php the_author(); ?></p>
+							<p class="indVidDate"><?php echo get_the_date("F j, Y"); ?></p>
+						</div>
+						<div class="indVidStats" >
+							<p class="indVidViews">
 								<?php 
-									// echo do_shortcode('[simplevoteme_votes postId='.$post->ID.']');
+									// echo do_shortcode('[show-video-watch-count postId='.$post->ID.']');
+									//echo get_post_meta($post->ID, '_custom_video_view', true);
 								?>
 							</p>
-						<?php } ?>
-						<?php echo do_shortcode('[simplevoteme postId='. $post->ID .']'); ?>
+							<p class="indVidView">
+								<?php 
+									echo get_post_meta($post->ID, '_custom_video_view', true);
+								?>
+							</p>
+				
+							<?php if($hide == 1){ ?>
+								<p class="indVidLikes">
+									<?php 
+										// echo do_shortcode('[simplevoteme_votes postId='.$post->ID.']');
+									?>
+								</p>
+							<?php } ?>
+							<div class="indVidVotes">
+								<?php echo do_shortcode('[simplevoteme postId='. $post->ID .']'); ?>
+							</div>
+						</div>
 					</div>
-					<p class="indVidContent"><?php echo get_post_meta(
-						$post->ID,
-						'fp5-video-description',
-						TRUE );
-					 ?></p>
+					<p class="indVidContent"><?php echo get_post_meta( $post->ID, 'fp5-video-description', TRUE ); ?></p>
 					
 					</div> <!-- .entry-content -->
 					<div class="et_post_meta_wrapper">

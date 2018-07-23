@@ -57,13 +57,14 @@ if($sort == 'likes'){
 	$ppp = -1;
 }
 elseif($sort == 'views'){
-    unset($_SESSION['seed']);
-    remove_filter('posts_orderby', 'edit_posts_orderby');
+   // unset($_SESSION['seed']);
+    //remove_filter('posts_orderby', 'edit_posts_orderby');
     $views = array(
         'key'     => '_custom_video_view',
         'compare' => 'IN',
         'type' => 'NUMERIC'
     );
+		$ppp = -1;
 }else{
     if(isset($_SESSION['seed'])){
     //    $views = $_SESSION['seed'];
@@ -72,8 +73,7 @@ elseif($sort == 'views'){
 
 
 $args = array( 'post_type' => 'flowplayer5', 'posts_per_page' => $ppp,'paged' =>  $page, 'post_status' => 'publish','order' => 'DESC', 'orderby' => 'meta_value_num','meta_query' => array(
-        'relation' => 'AND',
-        $likes
+        'relation' => 'AND',$likes,$views
     )
 			 );
 $videos = new WP_Query( $args );
@@ -121,6 +121,7 @@ while( $videos->have_posts() ) : $videos->the_post(); ?>
                 		<div class="et_pb_text_inner">					
                     		<h3 class="video-title"><a href="<?php the_permalink(); ?>"><?php echo get_the_title();?></a></h3>
 							<span class="video-author"><?php echo the_author_meta('display_name', $postData[0]->post_author);?></span> | <span class="video-votes"> 	<?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span>
+							<span class="video-views"> 	<?php echo get_post_meta( get_the_ID(), '_custom_video_view', true);?> Views</span>
 						</div>
             		</div> <!-- .et_pb_text -->
     			</div>

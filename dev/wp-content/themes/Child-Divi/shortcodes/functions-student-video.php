@@ -60,9 +60,12 @@ function studentSchools(){
 
             <?php while ($my_posts->have_posts()): $my_posts->the_post(); 
 		   $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
+		     $extra_video_info = get_post_meta(get_the_ID());
+            $videoName = $extra_video_info['fp5-mp4-video'][0];
+            $videoName = basename($videoName, ".mp4");
 		   ?>
 		    	<input type="hidden" value="<?php echo $my_posts->max_num_pages; ?>" id="video_max_page"/>
-                <div class="video-feed et_pb_column et_pb_column_1_3  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough" data-href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php
+                <div class="video-feed et_pb_column et_pb_column_1_3  et_pb_column_0 et_pb_css_mix_blend_mode_passthrough" data-video-name="<?php echo $videoName;?>" data-href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php
         echo get_the_title();
 ?>" data-modal-id="modal-video" data-link="<?php the_permalink(); ?>">                
                 	<div class="et_pb_module et_pb_image et_pb_image_0 et_always_center_on_mobile et_pb_has_overlay">
@@ -82,7 +85,7 @@ function studentSchools(){
     				<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_0">
                 		<div class="et_pb_text_inner">					
                     		<h3 class="video-title"><a href="<?php the_permalink(); ?>"><?php echo get_the_title();?></a></h3>
-							<span class="video-author"><?php echo the_author_meta('display_name', $postData[0]->post_author);?></span> | <span class="video-votes"> 	<?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span>
+							<span class="video-author"><?php echo the_author_meta('display_name', $postData[0]->post_author);?></span> | <span class="video-votes"> 	<?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span><span class="video-views"> 	<?php echo get_post_meta( get_the_ID(), '_custom_video_view', true);?> Views</span>
 						</div>
             		</div> <!-- .et_pb_text -->
     			</div>
