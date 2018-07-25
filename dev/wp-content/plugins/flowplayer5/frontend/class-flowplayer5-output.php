@@ -25,29 +25,30 @@ if ( ! defined( 'WPINC' ) ) {
 class Flowplayer5_Output {
  
 	public function adzone_id($type){
-		switch(true){
+/*		switch(true){
 			case is_page(47) || is_page(2796):
 				if($type === 'pre'){
-					return 1890;
+					return 344;
 				} else {
-					return 1891;
+					return 344;
 				}
 				break;
 			case is_front_page():
 				if($type === 'pre'){
-					return 1822;
+					return 344;
 				} else {
-					return 1823;
+					return 344;
 				}
 				break;
 			default:
 				if($type === 'pre'){
-				return 1892;
+				return 344;
 				} else {
-				return 1893;
+				return 344;
 				}
 				break;
-		}
+		}*/
+		return 344;
 	}
 	/**
 	 * Create Flowplayer Video HTML Output
@@ -63,21 +64,21 @@ class Flowplayer5_Output {
                  
 
 
-		//print "WORKING???<br><br>";
-		//$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( "1822" );
-		//print_r($adzone_data);
-		//print "<BR>DONE<BR>";
-		//print_r($pro_ads_codex->wpproads_load_adzone_banners( $adzone_data ));
-		//$pro_ads_statistics->save_impression( "1827", "1822", "http://www.shane.com" );
+	//	print "WORKING???<br><br>";
+	//	$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( "344" );
+	//	print_r($adzone_data);
+	//	print "<BR>DONE<BR>";
+	//	print_r($pro_ads_codex->wpproads_load_adzone_banners( $adzone_data ));
+		//$pro_ads_statistics->save_impression( "344", "344", "http://www.shane.com" );
 
-        // $adzone_data = $pro_ads_codex->wpproads_load_adzone_data( "1228" );
-        // $ad = array_rand($adzone_data['linked_banner_ids'],1);
-        // echo '<pre style="background:#fff;">';
+      //  $adzone_data = $pro_ads_codex->wpproads_load_adzone_data( "344" );
+       //  $ad = array_rand($adzone_data['linked_banner_ids'],1);
+       //  echo '<pre style="background:#fff;">';
         // print_r( $adzone_data );
 
 		if ( isset( $atts['playlist'] ) ) {
                         // var_dump('playlist');
-			$playlist_id = $atts['playlist'];
+	/*		$playlist_id = $atts['playlist'];
 			$playlist_options = get_option( 'playlist_' . absint( $playlist_id ) );
 			// Check if old id is being used in the shortcode
 			if ( ! $playlist_options && function_exists( 'wp_get_split_term' ) ) {
@@ -93,15 +94,18 @@ class Flowplayer5_Output {
 			ob_start();
 			require( 'views/display-playlist.php' );
 			$html = ob_get_clean();
-			return $html;
+			return $html;*/
 		} elseif( isset( $atts['pre-post-ad-video'] ) ) {
-                        //var_dump('pre post ad');
-                        $pre_adzone_id = $this->adzone_id('pre');
-                        $post_azone_id = $this->adzone_id();
+                       // var_dump('pre post ad');
+                       $pre_adzone_id =  344;
+                        $post_azone_id = 349;
+                      //  var_dump($post_azone_id);
+                       // print('hekk');
+                       // print_r( $post_azone_id );
 			$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( $pre_adzone_id );
                         $ad = array_rand($adzone_data['linked_banner_ids'],1);
                         $pre_banner_id = $adzone_data['linked_banner_ids'][$ad];
-                        //var_dump($adzone_data);
+                     //   var_dump($adzone_data);
 			if (!$pre_banner_id) {
 				error_log('No pre_banner_id found');
 				return self::single_video_output( $atts );
@@ -111,44 +115,45 @@ class Flowplayer5_Output {
                         $post_custom_id = intval($matches[0]); 
 			$custom_fields  = get_post_custom($post_custom_id);
 			$pre_ad = self::get_custom_fields( $custom_fields, 'fp5-mp4-video', $atts, 'mp4' );
+			//var_dump($pre_ad);
 			$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( $post_adzone_id );
                         $ad = array_rand($adzone_data['linked_banner_ids'],1);
                         $post_banner_id = $adzone_data['linked_banner_ids'][$ad];
-                          
+                          //var_dump(  $ad);
 			if (!$post_banner_id) {
 				error_log('No post_banner_id found');
                                 // var_dump($pre_banner_id);
-				return self::single_video_output( $atts, $pre_ad, $pre_banner_id );
+				//return self::single_video_output( $atts, $pre_ad, $pre_banner_id );
 			}
                         $ad_post = get_post_custom($post_banner_id);
                         preg_match('/\d+/',$ad_post['_banner_html'][0],$matches); 
                         $post_custom_id = intval($matches[0]); 
 			$custom_fields  = get_post_custom($post_custom_id);
 			$post_ad = self::get_custom_fields( $custom_fields, 'fp5-mp4-video', $atts, 'mp4' );
-                        // var_dump($pre_ad);
+                        //var_dump($pre_ad);
                         // var_dump($pre_banner_id);
 			return self::single_video_output( $atts, $pre_ad, $pre_banner_id, $post_ad, $post_banner_id);
 		} elseif( isset( $atts['pre-ad-video'] ) ) {
-                        //var_dump('pre ad video');
+        /*                //var_dump('pre ad video');
 			$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( $pre_adzone_id );
 			$ad = array_rand($adzone_data['linked_banner_ids'],1);
 			$pre_banner_id = $adzone_data['linked_banner_ids'][$ad];
 			$ad_post = get_post_custom($pre_banner_id);
                         $custom_fields  = get_post_custom( $ad_post['_banner_html'][0] );
                         $pre_ad = self::get_custom_fields( $custom_fields, 'fp5-mp4-video', $atts, 'mp4' );
-			return self::single_video_output( $atts, $pre_ad, $pre_banner_id);
+			return self::single_video_output( $atts, $pre_ad, $pre_banner_id);*/
 		} elseif( isset( $atts['post-ad-video'] ) ) {
                         //var_dump('post ad video');
-			$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( $post_adzone_id );
+		/*	$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( $post_adzone_id );
                         $ad = array_rand($adzone_data['linked_banner_ids'],1);
                         $post_banner_id = $adzone_data['linked_banner_ids'][$ad];
                         $ad_post = get_post_custom($post_banner_id);
                         $custom_fields  = get_post_custom( $ad_post['_banner_html'][0] );
                         $post_ad = self::get_custom_fields( $custom_fields, 'fp5-mp4-video', $atts, 'mp4' );
-			return self::single_video_output( $atts, NULL, NULL, $post_ad, $post_banner_id );
+			return self::single_video_output( $atts, NULL, NULL, $post_ad, $post_banner_id );*/
 		} else {
-                       // var_dump('else video');
-			return self::single_video_output( $atts );
+          /*             // var_dump('else video');
+			return self::single_video_output( $atts );*/
 		}
 	}
 
@@ -178,12 +183,14 @@ class Flowplayer5_Output {
 					'banner_id' => $post->ID, 
 					'url' => get_post_meta($player_id,'fp5-mp4-video', true)
 				);
+			//	var_dump($adzone_array );
 			}
 		}
 		
 
 		$rand_key = array_rand($adzone_array,1);
-		$pre_ad = $adzone_array[$rand_key]['url'];
+	//	$pre_ad = $adzone_array[$rand_key]['url'];
+		// var_dump($pre_ad);
 		$current_url = home_url().$_SERVER['REQUEST_URI'];
 		$pre_banner_id = intval($adzone_array[$rand_key]['banner_id']);
 		$pro_ads_statistics->save_impression($pre_banner_id,intval(FP5_WPPAS_ID),$current_url);
@@ -432,25 +439,25 @@ class Flowplayer5_Output {
 		if ( $formats['video/webm'] || $formats['video/mp4'] || $formats['video/ogg'] || $formats['video/flash'] || $formats['application/x-mpegurl'] ) {
 			if($pre_ad && $post_ad) {
 
-                                // var_dump('pre & pas');
+                               //  var_dump('pre & pas');
 				ob_start();
                                 require( 'views/display-pre-post-ad-video.php' );
                                 $html = ob_get_clean();
                                 return $html;
 			} elseif($pre_ad) {
-                                // var_dump('pre');
+                               //  var_dump('pre');
 				ob_start();
                                 require( 'views/display-pre-ad-video.php' );
                                 $html = ob_get_clean();
                                 return $html;
 			} elseif($post_ad) {
-                                // var_dump('post');                       
+                               //  var_dump('post');                       
 				ob_start();
                                 require( 'views/display-post-ad-video.php' );
                                 $html = ob_get_clean();
                                 return $html;
 			} else {
-                                // var_dump('else');
+                               // var_dump('else');
 				ob_start();
 				require( 'views/display-single-video.php' );
 				$html = ob_get_clean();

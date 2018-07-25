@@ -29,7 +29,7 @@ echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.in
 
   echo '<input value="1" id="popup-video-ni" type="hidden"/>';
         if($videoId){
-            echo do_shortcode('[flowplayer id="'. $videoId .'" autoplay="true" preload="auto"]'); 
+            echo do_shortcode('[flowplayer id="'. $videoId .'" pre-post-ad-video=1 autoplay="true" preload="auto"]'); 
             echo "<script>";
                 echo "jQuery(window).load(function(){";
                     echo "setTimeout(function(){";

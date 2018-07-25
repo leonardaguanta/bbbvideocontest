@@ -180,7 +180,7 @@ class Platypus_GA {
 			'ga:' . $profileId,
                 	'90daysAgo',
                         'today',
-			'ga:uniqueEvents',
+			'ga:totalEvents',
                         $qParams
                	);
 	}
