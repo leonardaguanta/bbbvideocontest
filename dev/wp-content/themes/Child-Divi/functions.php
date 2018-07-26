@@ -17,6 +17,21 @@ function my_scripts_method() {
 	wp_enqueue_style('fancybox-css', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css');
 	wp_enqueue_script( 'fancyboxes-js', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js' );
 	
+	wp_enqueue_style('bootstrap', get_stylesheet_directory_uri() . '/vendor/bootstrap/css/bootstrap.min.css');
+	wp_enqueue_style('fa', get_stylesheet_directory_uri() . '/vendor/font-awesome/css/font-awesome.min.css');
+	wp_enqueue_style('sb', get_stylesheet_directory_uri() . '/css/sb-admin.css');
+	//	wp_enqueue_script( 'sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js' );
+
+	//	wp_enqueue_script( 'sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js' );
+	//	wp_enqueue_script( 'sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js' );
+		//wp_enqueue_script( 'sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js' );
+
+	wp_enqueue_script('sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js', '', '1.0.0', true);
+	wp_enqueue_script('sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js', '', '1.0.0', true);
+	wp_enqueue_script('sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js', '', '1.0.0', true);
+	wp_enqueue_script('sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js', '', '1.0.0', true);
+
+	
 	wp_localize_script( 'custom-js', 'ajax_object',
 		array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
@@ -177,8 +192,70 @@ function wti_loginout_menu_link( $items, $args ) {
 }
 
 
+/*-------------------------------------------------*/
+/*--------------Latest Comment Shortcode----------*/
+/*-----------------------------------------------*/
 
+function latestCommentDisplay( $atts ) {
+	global $post;
 
+	if ( isset( $atts['filter']))  {
+                if ( $atts['filter'] == 'blog') {
+                        $args = array(
+                                'status'        => 'hold',
+                                'post_type'     => 'post',
+                                'order'         => 'ASC',
+                        );
+                } elseif ( $atts['filter'] == 'video') {
+                        $args = array(
+				'status'        => 'hold',
+                                'post_type'     => 'flowplayer5',
+                                'order'         => 'ASC',
+                        );
+                } else {
+                        $args = array(
+                                'status'        => 'hold',
+                                'post_type'     => 'post',
+                                'order'         => 'ASC',
+                        );
+                }
+        } else {
+                $args = array(
+                        'status'        => 'hold',
+                        'post_type'     => 'post',
+                        'order'         => 'ASC',
+                );
+        }
+
+	$comments = get_comments( $args );
+	if ( $comments ) {
+		$theComment = '<div class="header-tab-2">LATEST COMMENTS</div>';
+		$theComment .= '<div class="the-comments et_pb_module"><ul>';
+		foreach ( $comments as $comment ) {
+			$theComment .= '<li>';
+			$theComment .= '<h3>' . $comment->post_title . '</h3>';
+			$theComment .= '<p class="comment-author">by: ' . $comment->comment_author . '</p>';
+			$theComment .= '<p><span>"</span>' . $comment->comment_content . '</p>';
+			$theComment .= '<div class="comments-btn">';
+			$theComment .= admin_approve_comment( $comment->comment_ID );
+			$theComment .= admin_reject_comment( $comment->comment_ID );
+			$theComment .= admin_reply_comment( $comment->comment_ID, $comment->comment_post_ID );
+			$theComment .= '</div>';
+			$theComment .= '</li>';
+
+		}
+		$theComment .= '</ul></div>';
+	} else {
+		$theComment = '<div class="header-tab-2">LATEST COMMENTS</div>';
+                $theComment .= '<div class="the-comments et_pb_module">';
+		$theComment .= '<h3>NO COMMENTS</h3>';
+		$theComment .= "</div>";
+	}
+
+	return $theComment;
+}
+
+add_shortcode( 'show-unapprove-comments', 'latestCommentDisplay' );
 
 
 ?>

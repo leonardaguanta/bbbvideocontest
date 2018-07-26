@@ -356,6 +356,16 @@ li.get-started:hover {background-color:#c96310;}
 #gform_wrapper_6 .gform_footer { padding-top: 6px; }
 #gform_wrapper_6 ul.gform_fields li.gfield { padding-right: 0; }
 #field_6_1 { text-align: center; }
+
+
+/*----------------- BBB ADMIN---------------------*/
+.page-template-page-bbb-admin header#main-header, .page-template-page-bbb-admin footer#main-footer {
+    display: none!important;
+}
+
+
+
+
 /*-------------------Video Frame---------------------*/
 .page-template-page-video-frame #main-header, .page-template-page-video-frame #main-footer {
    /*display: none !important;*/
@@ -385,4 +395,15 @@ span.bad, span.neutro {
 /*------------------- RESPONSIVE CSS ----------------*/
 @media only screen and (max-width : 479px) {
 	#gform_wrapper_1 div.gform_footer { margin-top: inherit; }
+}
+
+
+
+
+/*-------------------- BBB Admin--------------------- */
+  @media only screen and (min-width : 992px) {
+           #mainNav .navbar-brand {
+    		width: 70px;
+			   display:none;
+		}
 }
