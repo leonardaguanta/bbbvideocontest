@@ -12,20 +12,20 @@ $videoId = isset($_GET['vid_id']) ? $_GET['vid_id'] : '';
       //   echo "<script type='text/javascript' src='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/flowplayer5/frontend/assets/flowplayer/flowplayer.js?ver=4.9.6'></script>";
 
         get_header();
-   echo "<link rel='stylesheet' id='flowplayer5-skins-css' href='https://releases.flowplayer.org/5.5.2/commercial/skin/all-skins.css' type='text/css' media='all' />";
+        echo "<link rel='stylesheet' id='flowplayer5-skins-css' href='https://releases.flowplayer.org/5.5.2/commercial/skin/all-skins.css' type='text/css' media='all' />";
         echo "<link rel='stylesheet' id='flowplayer5-logo-origin-css' href='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/css/public-concat.min.css?x75485' type='text/css' media='all' />";
-         echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery.js?ver=1.11.3'></script>";
-         echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>";
+        echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery.js?ver=1.11.3'></script>";
+        echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>";
         echo "<script type='text/javascript' src='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/flowplayer/flowplayer.js?x75485'></script>";
       // echo "<script src='http://bbbvideocontest.platypustest.info/dev/wp-includes/js/zxcvbn.min.js' type='text/javascript'></script><script src='//w.likebtn.com/js/w/widget.js'></script><script src='//w.likebtn.com/js/w/widget.js'></script>";
-echo "<link rel='stylesheet' id='simplevotemestyle-css' href='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/css/simplevoteme.css?ver=4.9.6' type='text/css' media='all'>";
+        echo "<link rel='stylesheet' id='simplevotemestyle-css' href='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/css/simplevoteme.css?ver=4.9.6' type='text/css' media='all'>";
 
-echo '<script type="text/javascript">
-/* <![CDATA[ */
-var gtsimplevotemeajax = {"ajaxurl":"http:\/\/bbbvideocontest.platypustest.info\/dev\/wp-admin\/admin-ajax.php"};
-/* ]]> */
-</script>';
-echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>';
+        echo '<script type="text/javascript">
+            /* <![CDATA[ */
+            var gtsimplevotemeajax = {"ajaxurl":"http:\/\/bbbvideocontest.platypustest.info\/dev\/wp-admin\/admin-ajax.php"};
+            /* ]]> */
+            </script>';
+        echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>';
 
   echo '<input value="1" id="popup-video-ni" type="hidden"/>';
         if($videoId){
@@ -42,18 +42,18 @@ echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.in
             $videoName = $extra_video_info['fp5-mp4-video'][0];
             $videoName = basename($videoName, ".mp4");
 			$auth = get_post($videoId); // gets author from post
-				$authid  = $auth->post_author; // gets author id for the post
-$user_nicename = get_the_author_meta('user_nicename',$authid);
+			$authid  = $auth->post_author; // gets author id for the post
+            $user_nicename = get_the_author_meta('user_nicename',$authid);
 			$user_school_id = get_the_author_meta('school',$authid);//gets schoold id of user
 			$school = get_post($user_school_id); // gets school 
 			$school_name = $school->post_title;
-			  $extra_video_info = get_post_meta($videoId);
+			$extra_video_info = get_post_meta($videoId);
             $videoName = $extra_video_info['fp5-mp4-video'][0];
             $videoName = basename($videoName, ".mp4");	
 			
             $ga1 = new Platypus_GA();
             $analytics = $ga1->getService();
-			 $profile = $ga1->getFirstProfileId($analytics);
+			$profile = $ga1->getFirstProfileId($analytics);
 
 		
            

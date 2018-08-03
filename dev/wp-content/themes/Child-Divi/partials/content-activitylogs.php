@@ -26,8 +26,7 @@ global $wpdb;
         
   $output =
         '
-        <div class="header-tab">Activity Log</div>
-            <div class="limitlessContainer">
+            <div class="activity-container">
         
                 <ul class="activityLogList">
         ';
@@ -58,8 +57,11 @@ global $wpdb;
                 $thePostTime = date("d F Y", $time);
             $output .=
             '
-            <img class="listImage" src="http://platypus-dallas.s3.amazonaws.com/wp-content/uploads/2015/09/29201730/listImg.png">
-            <li class="activityLogAction '.$actionClass.' "><span class="timeStamp">'.$thePostTime.'</span><span>'.$loggedUser.' '.$loggedAction.' '.timeSince($time).' ago</span></li>
+
+            <li class="activityLogAction '.$actionClass.' ">
+            <span class="user">'.$loggedUser.'</span>
+            <span class="timeStamp">'.$thePostTime.'</span>
+            <span> '.$loggedAction.' '.timeSince($time).' ago</span></li>
             ';
     }
         }

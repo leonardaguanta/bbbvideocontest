@@ -93,7 +93,7 @@ if (window.jQuery) {
 				} else if (api.video.index == 1) {
 					api.disable(false);
 				}
-				$.ajax({
+				/*$.ajax({
 					type: "POST",
 					dataType: "html",
 					url: ajax_object.ajax_url,
@@ -108,7 +108,7 @@ if (window.jQuery) {
 					success: function(data){
 						
 					}
-				});
+				});*/
 			});
 		}else{
 			$(".flowplayer-video-<?php echo esc_attr( $id ); ?>").flowplayer({

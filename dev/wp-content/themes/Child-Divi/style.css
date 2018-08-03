@@ -359,12 +359,97 @@ li.get-started:hover {background-color:#c96310;}
 
 
 /*----------------- BBB ADMIN---------------------*/
-.page-template-page-bbb-admin header#main-header, .page-template-page-bbb-admin footer#main-footer {
+.page-template-page-bbb-admin header#main-header,
+.page-template-page-bbb-admin-statistics header#main-header,
+.page-template-page-bbb-admin-account-registration header#main-header,
+.page-template-page-bbb-admin footer#main-footer,
+.page-template-page-bbb-admin-statistics footer#main-footer,
+.page-template-page-bbb-admin-account-registration footer#main-footer,
+.page-template-page-bbb-admin-pages header#main-header,
+.page-template-page-bbb-admin-pages footer#main-footer,
+.page-template-page-bbb-admin-videos header#main-header,
+.page-template-page-bbb-admin-videos footer#main-footer{
     display: none!important;
 }
+.activeBtn {
+    background: #efa017 !important;
+    color: #fff !important;
+}
+.sortStatsButton {
+    background-color: #e2e2e2;
+    color: #707070;
+    padding: 5px 30px;
+    margin-right: 10px;
+    box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.24);
+}
+.sortStatsButton:hover {
+    background: #efa017;
+    color: #fff;
+}
 
+.page-template-page-bbb-admin, .page-template-page-bbb-admin #et-main-area .content-wrapper { background: #f2f2f2; }
+.page-template-page-bbb-admin .card { border: 0; box-shadow: 0 0 5px rgba(12, 6, 14, .1) }
+.page-template-page-bbb-admin .container-fluid { padding-right: 50px; padding-left: 50px; margin-top: -35px; }
+.page-template-page-bbb-admin div#page-container { padding-top: 0 !important; }
 
+.logo-row div.card { background: transparent; box-shadow: unset; }
+.logo-row #logo { width: 220px; }
 
+.popvideo-row .videos-page .video-feed { min-height: auto; }
+.popvideo-row .videos-page { padding: 20px 20px 0; }
+.popvideo-row .video-feed .et_pb_image_wrap { width: 100%; }
+.popvideo-row .video-feed .et_pb_image { height: 220px; }
+.popvideo-row .card-header, .popvideo-row .card-footer, .page-template-page-bbb-admin .card-header, .page-template-page-bbb-admin .card-footer { background: #fff; }
+.popvideo-row .card-footer { border: 0; padding: 0 20px 20px; }
+.activity-container, .comment-container { padding: 20px; }
+
+div.card-header{ color: #ed7818; font-weight: bold; }
+.popvideo-card, .graph-card, .activity-card, .comment-card, .rank-card { min-height: 380px; margin-bottom: 30px !important; }
+
+nav#mainNav.navbar-dark .navbar-collapse .navbar-sidenav { background: #00546d; margin-top: 0; }
+nav#mainNav.fixed-top.navbar-dark .sidenav-toggler { background-color: #00546d; padding-bottom: 60px; margin-top: calc(100vh - 112px); }
+nav#mainNav #collapseComponents { background: #004457; }
+@media only screen and ( min-width: 981px ) {
+	ul.navbar-nav.ml-auto { display: none; }
+	#mainNav { background: transparent !important; }
+}
+
+.popvideo-row .video-title a { color: #3F8EA6; }
+.popvideo-row .video-title { padding-bottom: 0; }
+.line, .pie { color: #444; font-weight: normal; }
+.line { margin-right: 30px; }
+
+.rank-video.et_pb_blurb_position_left .et_pb_main_blurb_image { width: 120px; }
+.rank-video .et_pb_module_header, .user-log .et_pb_module_header { font-size: 14px; font-weight: 400;  color: #404040; padding-bottom: 0; line-height: 20px; }
+.rank-video p, .user-log p, p.popvideo-counts, .count-separator, div.popvideo-card .video-views, .popvideo-card .video-author, div.popvideo-card .video-votes small, div.popvideo-card .video-votes { font-size: 12px; color: #B2B2B2; }
+.user-log p { text-align: right; margin-bottom: 8px; }
+.rank-video.et_pb_blurb .et_pb_image_wrap { height: 80px; width: 100%; }
+.rank-video .et_pb_animation_off { height: 100%; }
+.count-separator, div.popvideo-card .video-views { float: left; }
+div.popvideo-card .video-views { margin-left: 7px; }
+div.popvideo-card .video-votes .simplevotemeWrapper span.good { min-width: 55px; text-align: left; }
+
+div.video-rankfeed, div.user-log { padding-bottom: 15px; border-bottom: 1px solid #f1f1f1; margin-bottom: 15px; }
+div.video-rankfeed:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+
+.video-ranks-container { padding: 20px; height: 305px; overflow-y: scroll; }
+.single-flowplayer5 .video-ranks-container { height: 700px; padding-top: 0; }
+.video-ranks-container::-webkit-scrollbar { width: 5px; }
+.video-ranks-container::-webkit-scrollbar-track { background: #f1f1f1; }
+.video-ranks-container::-webkit-scrollbar-thumb { background: #036594; }
+
+div.indVid-section { padding-top: 120px; }
+.indVid-section .indVidAuthor, .indVid-section .indVidDate { margin-bottom: 0; padding-bottom: 0; color: #b2b2b2; }
+.indVid-section .video-votes, .indVid-section .video-votes .simplevotemeWrapper span.result small, div.indVid-section .video-views, .indVid-section .count-separator { color: #b2b2b2; font-size: 15px; }
+.indVid-section .simplevotemeWrapper span.good { min-width: 70px; }
+div.indVid-section .video-views { float: left; margin-left: 7px; }
+div.indVid-section h2 { margin-bottom: 0; }
+.video-counters .et_pb_text_inner { margin-top: 3px; }
+
+.videostats-row .et_pb_column_inner_1 { width: 64.833% !important; margin-right: 5.5% !important; }
+.videostats-row .et_pb_column_inner_2 { width: 29.666% !important; }
+
+/* .video-ranks-container::-webkit-scrollbar-thumb { background: #bbb; } */
 
 /*-------------------Video Frame---------------------*/
 .page-template-page-video-frame #main-header, .page-template-page-video-frame #main-footer {

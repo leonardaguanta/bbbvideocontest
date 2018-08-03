@@ -28,7 +28,7 @@ class Editor {
 			'teeny'         => $teeny,
 		);
 
-		wp_editor( $field->value(), $field->input_id(), $settings );
+		wp_editor( stripslashes( $field->value() ), $field->input_id(), $settings );
 
 	}
 

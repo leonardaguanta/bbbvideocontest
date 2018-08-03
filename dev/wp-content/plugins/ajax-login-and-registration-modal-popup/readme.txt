@@ -96,6 +96,10 @@ Example: `<a href="/wp-login.php" class="lrm-login">Login</a>`
 
 Use this tutorial to add class from text above for your menu element - [https://www.lockedowndesign.com/add-css-classes-to-menu-items-in-wordpress/](https://www.lockedowndesign.com/add-css-classes-to-menu-items-in-wordpress/)
 
+= How can I add log out link/button? =
+
+Please read this post: https://wordpress.org/support/topic/logout-link-8/#post-10180543
+
 = How can I call modal from Javascript? =
 
 Look "Developer hooks" section below.
@@ -155,6 +159,25 @@ If you have login issue with Adminize plugin - go to Adminize plugin settings an
 - With Theme my login (TML) plugin (3 Password fields on the Create Account tab, if enable password field in LRM and TML)
 
 == Changelog ==
+
+= VER 1.27 - 30/07/2018 =
+
+- Integrated auto-updater for PRO version
+
+= VER 1.26 - 26/07/2018 =
+
+- Small admin instructions tweaks
+- Optionally you can disable Browser validation (in Advanced section)
+
+= VER 1.25 - 21/07/2018 =
+
+- Fixed Critical issue if PRO version is installed and version < 1.17
+
+= VER 1.24 - 20/07/2018 =
+
+- Fixed password reset issues with WooCommerce installed
+- Fixed issue with slashed quotes after saving in Emails section
+- Minor fixes
 
 = VER 1.23 - 30/06/2018 =
 

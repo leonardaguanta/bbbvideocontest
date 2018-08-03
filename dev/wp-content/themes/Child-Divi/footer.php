@@ -73,6 +73,25 @@ if( !is_user_logged_in() ) {?>
 	</div> <!-- #page-container -->
 
 	<?php wp_footer(); ?>
+<script>
+	//Sorting Redirect
+	function statsSorting(sortPeriod) {
+	var url = window.location.href.split('?')[0];
+    	var sortedUrl = url + "?" + sortPeriod;
+	window.location.href = sortedUrl;
+	event.preventDefault();
+	}	
+
+	//Visitors Modules Active Button 	
+	jQuery(document).ready(function () {
+		var selectedBtn = "<?php echo $_SESSION['visitorsTimeframe'] ?>";
+		if(selectedBtn.length > 1){
+			jQuery('#visitors'+selectedBtn).addClass('activeBtn');
+		}
+	});
+
+
+</script>
 </body>
 </html>
 

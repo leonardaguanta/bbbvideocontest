@@ -16,11 +16,12 @@ function my_scripts_method() {
     );
 	wp_enqueue_style('fancybox-css', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css');
 	wp_enqueue_script( 'fancyboxes-js', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js' );
-	
+	wp_enqueue_script( 'extra-js', get_stylesheet_directory_uri() . '/js/extra.js', array( 'jquery' ), false, true );
+
 	wp_enqueue_style('bootstrap', get_stylesheet_directory_uri() . '/vendor/bootstrap/css/bootstrap.min.css');
 	wp_enqueue_style('fa', get_stylesheet_directory_uri() . '/vendor/font-awesome/css/font-awesome.min.css');
 	wp_enqueue_style('sb', get_stylesheet_directory_uri() . '/css/sb-admin.css');
-	//	wp_enqueue_script( 'sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js' );
+		wp_enqueue_script( 'sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js' );
 
 	//	wp_enqueue_script( 'sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js' );
 	//	wp_enqueue_script( 'sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js' );
@@ -31,13 +32,16 @@ function my_scripts_method() {
 	wp_enqueue_script('sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js', '', '1.0.0', true);
 	wp_enqueue_script('sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js', '', '1.0.0', true);
 
-	
-	wp_localize_script( 'custom-js', 'ajax_object',
+	wp_localize_script( 'custom-script', 'ajax_object',
 		array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
 add_action( 'wp_enqueue_scripts', 'my_scripts_method' );
 
 
+add_action( 'init', 'init_theme_method' );
+function init_theme_method() {
+	add_thickbox();
+}
 
 /*---------- Video Form Submission--------- */
 
@@ -190,7 +194,32 @@ function wti_loginout_menu_link( $items, $args ) {
    }
    return $items;
 }
+/*-------------------------------------------------*/
+/*--------------BBB Admin Blog Controls-----------*/
+/*-----------------------------------------------*/
 
+
+/* Delete */
+function wp_delete_post_link( $link = 'Delete This', $postId ) {
+	$link = "<a onclick='confirm(\"Are you sure you want to delete?\");' class='sortStatsButton' href='" . wp_nonce_url( get_bloginfo( 'url' ) . "/wp-admin/post.php?action=delete&amp;post=" . $postId, 'delete-post_' . $postId ) . "'>" . $link . "</a>";
+
+	return $link;
+}
+
+/* Edit */
+function wp_edit_post_link( $postId ) {
+	$link = "<a class='sortStatsButton' href='#' onclick='editWindow()'>Edit Content</a>";
+
+	return $link;
+}
+
+
+/* View */
+function wp_view_post_link( $link = 'View', $postId ) {
+	$link = "<a class='sortStatsButton' href='" . get_post_permalink( $postId ) . "' onclick='window.open(\"" . get_post_permalink( $postId ) . "\", \"newwindow\", \"width=1200, height=850\"); return false;'>" . $link . "</a>";
+
+	return $link;
+}
 
 /*-------------------------------------------------*/
 /*--------------Latest Comment Shortcode----------*/
@@ -257,5 +286,45 @@ function latestCommentDisplay( $atts ) {
 
 add_shortcode( 'show-unapprove-comments', 'latestCommentDisplay' );
 
+//function to update post status
+function change_post_status( $post_id, $status ) {
+        $current_post                = get_post( $post_id, 'ARRAY_A' );
+        $current_post['post_status'] = $status;
+        wp_update_post( $current_post, true );
+}
+add_action('wp_ajax_approve_video_ajax', 'approve_video_ajax');
+add_action('wp_ajax_nopriv_approve_video_ajax', 'approve_video_ajax');
+function approve_video_ajax(){
+   if ( isset( $_REQUEST['FE_PUBLISH'] ) && $_REQUEST['FE_PUBLISH'] == 'FE_PUBLISH' ) {
+        if ( isset( $_REQUEST['pid'] ) && ! empty( $_REQUEST['pid'] ) ) {
+                $current_post = get_post( $_REQUEST['pid'], 'ARRAY_A' );
+	 	$current_post_meta = get_post_meta($_REQUEST['pid']);
+		$schoolPost = get_post($current_post_meta['fp5-video-school-id'][0]);
+                $schoolName = $schoolPost->post_title;
+
+                if($current_post['post_type']=='flowplayer5') {
+			$title = $current_post['post_title'];
+		//	$categoryStudentVideo = get_cat_ID('Student Video');
+		//	$catSlugStudentVideo = get_category($categoryStudentVideo);
+        	//	$categorySchool = get_cat_ID("$schoolName");
+			//$catSlugSchool = get_category($categorySchool);
+// "/".$catSlugStudentVideo->slug."/".$catSlugSchool->slug."/$title",
+                        $new_page = array(
+                                'post_content'  => '[flowplayer id="'.$current_post['ID'].'"]',
+				'post_title'	=> "$title",
+				'post_name'	=> "$title",
+				'post_status'	=> 'publish',
+				'ping_status'	=> 'closed',
+				'comment_status'	=> 'open',
+				'post_category'	=> array($categoryStudentVideo,$categorySchool)
+                        );
+			//error_log("NEW POST: ".print_r($new_page,true));
+			//wp_insert_post( $new_page );
+                }
+                change_post_status( (int) $_REQUEST['pid'], 'publish' );
+        }
+   }
+wp_die();
+}
 
 ?>

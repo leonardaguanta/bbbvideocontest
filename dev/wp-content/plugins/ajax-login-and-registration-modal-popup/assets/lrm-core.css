@@ -70,7 +70,7 @@ ul.lrm-switcher li {
     clear: both;
 }
 .lrm-user-modal-container .lrm-switcher li {
-    width: 100%;
+    width: 50%;
     float: left;
     text-align: center;
     margin: 0 !important;
@@ -81,7 +81,6 @@ ul.lrm-switcher li {
 }
 .lrm-user-modal-container .lrm-switcher li:last-child a {
     border-radius: 0 .25em 0 0;
-	display:none;
 }
 .lrm-user-modal-container .lrm-switcher a {
     display: block;
@@ -240,7 +239,7 @@ ul.lrm-switcher li {
 .lrm-form .lrm-integrations input[type="tel"],
 .lrm-form .lrm-integrations input[type="email"],
 .lrm-form .lrm-integrations input[type="number"],
-.lrm-form .lrm-integrations input[type="select"]{
+.lrm-form .lrm-integrations select{
     border: 1px solid #d2d8d8;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -257,7 +256,7 @@ ul.lrm-switcher li {
 .lrm-form .lrm-integrations input[type="tel"]:focus,
 .lrm-form .lrm-integrations input[type="number"]:focus,
 .lrm-form .lrm-integrations input[type="email"]:focus,
-.lrm-form .lrm-integrations input[type="select"]:focus{
+.lrm-form .lrm-integrations select:focus{
     border-color: #343642;
     box-shadow: 0 0 5px rgba(52, 54, 66, 0.1);
     outline: none;
