@@ -71,7 +71,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
               <a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/bbb-admin-videos' ) ); ?>">Pending Videos</a>
             </li>
             <li>
-              <a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/bbb-admin-videos-pending' ) ); ?>">Approved Videos</a>
+              <a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/bbb-admin-videos-approved' ) ); ?>">Approved Videos</a>
             </li>
           </ul>
         </li>

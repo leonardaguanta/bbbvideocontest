@@ -368,7 +368,10 @@ li.get-started:hover {background-color:#c96310;}
 .page-template-page-bbb-admin-pages header#main-header,
 .page-template-page-bbb-admin-pages footer#main-footer,
 .page-template-page-bbb-admin-videos header#main-header,
-.page-template-page-bbb-admin-videos footer#main-footer{
+.page-template-page-bbb-admin-videos footer#main-footer,
+.page-template-page-bbb-admin-videos-approved header#main-header,
+.page-template-page-bbb-admin-videos-approved footer#main-footer
+{
     display: none!important;
 }
 .activeBtn {
