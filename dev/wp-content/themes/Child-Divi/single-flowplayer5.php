@@ -1,4 +1,14 @@
-<?php get_header(); ?>
+<?php
+ echo "<link rel='stylesheet' id='simplevotemestyle-css' href='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/css/simplevoteme.css?ver=4.9.6' type='text/css' media='all'>";
+
+    echo '<script type="text/javascript">
+        /* <![CDATA[ */
+        var gtsimplevotemeajax = {"ajaxurl":"http:\/\/bbbvideocontest.platypustest.info\/dev\/wp-admin\/admin-ajax.php"};
+        /* ]]> */
+        </script>';
+echo '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>';
+    echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>'; 
+get_header(); ?>
 
     <?php while ( have_posts() ) : the_post(); ?>
         <div id="main-content">
@@ -29,7 +39,7 @@
                                     <div class="et_pb_column et_pb_column_1_3 et_pb_column_inner  et_pb_column_inner_2 et-last-child">
                                         <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_right video-counters et_pb_text_2">
                                             <div class="et_pb_text_inner clearfix">
-                                                </span> <span class="video-votes"><?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span> <span class="count-separator">|</span> <span class="video-views"><?php echo get_post_meta( get_the_ID(), '_custom_video_view', true);?> Views</span>
+                                                </span> <span class="video-votes"><?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span> <span class="count-separator"></span> <!--<span class="video-views">--><?php //echo get_post_meta( get_the_ID(), '_custom_video_view', true);?><!-- Views</span> -->
                                             </div>
                                         </div>
                                     </div>

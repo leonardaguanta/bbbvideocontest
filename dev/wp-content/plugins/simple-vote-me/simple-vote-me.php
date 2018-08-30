@@ -203,14 +203,14 @@ Author URI: http://www.gonzalotorreras.com
                     else if($votemeResultsType == 1)//only percentages
                         $votemePercentPositive = $percentPositive;
                     else //all
-                        $votemePercentPositive = "<small> $votemePositive Votes </small>";
+                        $votemePercentPositive = "<small class='value'>$votemePositive</small>";
                           //$votemePercentPositive = "$percentPositive<small> ($votemePositive) </small>";
 
                     
                 } else{
                         $votemePercentNegative = "";
                         $votemePercentNeutral = "";
-                        $votemePercentPositive = "0 votes";
+                        $votemePercentPositive = "0";
                 }
             } else{
                     $votemePercentNegative = "";
@@ -238,10 +238,10 @@ Author URI: http://www.gonzalotorreras.com
         
         $title = get_option('gt_simplevoteme_title');
         
-        $votemelink = "<div class='simplevotemeWrapper $tipo' id='simplevoteme-$post_ID' >$title";
+        $votemelink = "<div class='simplevotemeWrapper $tipo' id='simplevoteme-$post_ID' data-id='$post_ID'>$title";
         $votemelink .= "<span class='bad'>$linkNegativo <span class='result'>$votemePercentNegative</span></span>";
         $votemelink .= "<span class='neutro'>$linkNeutral <span class='result'>$votemePercentNeutral</span></span>";
-        $votemelink .= "<span class='good'>$linkPositivo <span class='result'>$votemePercentPositive</span></span>";
+        $votemelink .= "<span class='good'>$linkPositivo <span class='result'>$votemePercentPositive Votes</span> </span>";
         $votemelink .= "</div>";
         
         $result  = $votemelink;

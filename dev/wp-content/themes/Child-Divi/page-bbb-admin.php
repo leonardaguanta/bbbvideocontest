@@ -11,8 +11,8 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 ?>
 <?php get_template_part( 'partials/content', 'header' ); ?>
 
-          <div class="content-wrapper">
-            <div class="container-fluid">
+          <div class="content-wrapper admin-wrapper">
+            <div class="container-fluid admin-fluid">
               <!-- Breadcrumbs-->
 <!--       <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -21,7 +21,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
         <li class="breadcrumb-item active">Blank Page</li>
       </ol> -->
     <div class="row logo-row">
-        <div class="col-lg-12">
+        <div class="col-lg-2">
             <div class="card mb-3">
                 <a class="" href="<?php echo esc_url( home_url( '/' ) ); ?>">
                     <img src="<?php echo esc_attr( $logo ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" id="logo" data-height-percentage="<?php echo esc_attr( et_get_option( 'logo_height', '54' ) ); ?>" />
@@ -30,23 +30,24 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
         </div>
     </div>
     <div class="row popvideo-row">
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-md-12">
             <!-- Most Popular Video -->
             <div class="card mb-3 popvideo-card">
             <div class="card-header">Most Popular Video</div>
                 <?php get_template_part( 'partials/content', 'popularvideo-admin' ); ?>       
             </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-8 col-md-12">
         <!-- Daily Tren-->
             <div class="card mb-3 graph-card">
             <div class="card-header">
                 <div class="row">
-                    <div class="col-lg-8">
-                        Daily Trend 
-                    </div>
-                    <div class="col-lg-4"> 
-                        <span class="left-elements"><a href="#"class="line">Line Graph</a><a href="#" class="pie">Pie Chart</a></span>
+                    <div class="col-lg-7 col-md-7">Daily Trend</div>
+                    <div class="col-lg-5 col-md-5"> 
+                        <span class="left-elements charts">
+							<a href="#" id="line" class="active">Line Graph</a>
+							<a href="#" id="pie">Pie Chart</a>
+                        </span>
                     </div>             
                 </div>
 
@@ -57,23 +58,23 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
         </div>
 	</div>
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-6">
             <div class="card mb-3 activity-card">
                 <div class="card-header">Activity Log</div>
                 <?php get_template_part( 'partials/content', 'activitylogs-scroll' ); ?>
             </div>
         </div>
 
-        <div class="col-lg-6">
+        <!-- <div class="col-lg-6">
             <div class="card mb-3 comment-card">
                 <div class="card-header">Latest Comments</div>
                     <div class="comment-container">
                         <?php echo do_shortcode('[show-unapprove-comments]')?>
                     </div>
             </div>       
-        </div>
+        </div> -->
 
-        <div class="col-lg-3">
+        <div class="col-lg-6">
             <div class="card mb-3 rank-card">
                 <div class="card-header">VIDEO RANK AS OF TODAY</div>
                 <?php get_template_part( 'partials/content', 'videoranks-scroll' ); ?>
@@ -84,13 +85,6 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 
   <!-- /.container-fluid-->
   <!-- /.content-wrapper-->
-  <footer class="sticky-footer">
-    <div class="container">
-      <div class="text-center">
-        <small>Copyright © Your Website 2018</small>
-      </div>
-    </div>
-  </footer>
   <!-- Scroll to Top Button-->
   <a class="scroll-to-top rounded" href="#page-top">
     <i class="fa fa-angle-up"></i>

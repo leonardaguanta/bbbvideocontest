@@ -37,20 +37,38 @@
 			$day--;
 		}
 	}
-        $output ='
-	
-        <div class="typicalContainer">';
 	if ($posts) {
+            $output .=
+                '
+                <div class=" et_pb_row et_pb_row_1 school-video-row with-scroll">
+		            <div class="et_pb_column et_pb_column_4_4  et_pb_column_2 et_pb_css_mix_blend_mode_passthrough">            
+                ';
 		foreach ($posts as $school) {
-							$output .= 
+			$output .= 
 				'
-				<div class="row-one school-video-entry-row ">
-					<div class="col-one school-video-entry-col1" style="width:100px">'.get_the_post_thumbnail( $school->ID ).'</div>
-					<div class="col-two school-video-entry-col2">'.get_the_title($school->ID).' has <span class="yellow"> '.$school->count.' video entries</span></div>
+				<div class="et_pb_blurb et_pb_module et_pb_bg_layout_light et_pb_text_align_left school-video-entry et_pb_blurb_0 et_pb_blurb_position_left">
+					<div class="et_pb_blurb_content">
+                        <div class="et_pb_main_blurb_image">
+                            <span class="et_pb_image_wrap">
+                                <img src="'.get_field('school_logo', $school->ID ).'" alt="'.$school->post_title.'" class="et-waypoint et_pb_animation_off">
+                            </span>
+                        </div>
+
+                        <div class="et_pb_blurb_container">
+                            <h4 class="et_pb_module_header">'.$school->post_title.'</h4>
+                            <div class="et_pb_blurb_description">
+                                <p>'.$school->count.' Video Entries</p>
+                            </div>
+					    </div>
+					</div>
 				</div>
 				';
-		}
-       		$output .= '</div>';
+        }
+            $output .=
+                '
+                    </div>
+                </div>
+                ';
 	}
        echo $output;
 

@@ -10,6 +10,9 @@
 			this.emailValidation();
 			this.adminDeleteUser();
 			this.deleteUserGroupPrompt();
+			this.adminDeletePending();
+			this.adminDeleteAccepted();
+			 this.viewStat();
                         this.deleteVideoPrompt();
                         this.rejectVideoPrompt();
                         this.approvedVideoPrompt();
@@ -248,16 +251,93 @@ if(lenContainer <= 1){
 				clearTimeout( funcTimer );
 			} );
 		},
+		adminDeletePending : function(){
+
+			$('.toReject a').on('click',function(e){
+				e.preventDefault();
+			        var current_el = $(this);
+				var href = $(this).attr('href');
+		
+				var x = confirm('Are you sure you want to reject this video?');
+if(x){
+	console.log('yes');		
+	      location.href = href;
+
+}	
+			});	
+
+		},
+		viewStat: function(){
+		
+						$('.studentVid-stats').on('click',function(e){
+			//	e.preventDefault();
+			 //       var current_el = $(this);
+				var id = $(this).attr('data-target');
+				//			$('#modal-'+id ).modal('show');
+
+				$('#modal-'+id ).modal('show');	
+	 $.ajax({
+type: 'POST',
+        url: ajax_object.ajax_url,
+        data: {
+            'id':id,
+            'action': 'viewstat' //this is the name of the AJAX method called in WordPress
+        }, success: function (result) {
+			$('#modal-'+id+' .loading-stat').remove();
+			$('#modal-'+id+' .likes').html(result['votes']);
+			
+			$('#modal-'+id+' .dataview').html(result['dataView']);
+			$('#modal-'+id+' .average-duration.').html(result['avgDuration']);
+          // console.log(result);
+        },
+        error: function () {
+            alert("error");
+        }	
+				  });													
+			});	
+		},
+		adminDeleteAccepted : function(){
+
+			$('.approved-pending').on('click',function(e){
+				e.preventDefault();
+			        var current_el = $(this).find('a');
+				console.log(current_el.attr('data-target'))
+				var id = current_el.attr('data-target');
+				var nonce = current_el.attr('data-nonce');
+		
+				var x = confirm('Are you sure you want to deactivate this video?');
+if(x){
+	console.log( id);		
+	 $.ajax({
+type: 'POST',
+        url: ajax_object.ajax_url,
+        data: {
+            'id':id,
+            'action': 'admin_deactivate_video' //this is the name of the AJAX method called in WordPress
+        }, success: function (result) {
+
+           console.log(result);
+        },
+        error: function () {
+            alert("error");
+        }	
+				  });
+					location.reload();
+				//$('#confirm.admin-confirm-delete-user').remove();
+}	
+			});	
+
+		},
 		adminDeleteUser : function(){
 
 			$('.bbbAdminDeleteUser').on('click',function(e){
 				e.preventDefault();
 			        var current_el = $(this);
-			
-				
-				confirm('Are you sure you want to delete this user?',function(respond){
+		
+				var x = confirm('Are you sure you want to delete this user?');
+if(x){
 				  $.ajax({
-				    url: et_custom.ajaxurl,
+				    url: ajax_object.ajax_url,
 				    type : 'GET',
 				    dataType : 'json',
 				    data : {
@@ -269,6 +349,7 @@ if(lenContainer <= 1){
 					current_el.addClass('ajax-preloader');
 				    },
 				    success :function(respond){
+						console.log(respond);
 				      if (respond.result){
 					current_el.closest('.student-basic-info').remove();
 				      }	
@@ -281,7 +362,15 @@ if(lenContainer <= 1){
 				   }	
 				  });
 				$('#confirm.admin-confirm-delete-user').remove();
-				});
+                         
+}else{
+
+}
+				
+				
+				
+				
+			
 
 				
 			});	

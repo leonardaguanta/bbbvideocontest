@@ -1,6 +1,12 @@
 <?php
 
-$args = array( 'post_type' => 'flowplayer5',  'post_status' => 'publish','order'=>'ASC','posts_per_page' => 6);
+$args = array( 'post_type' => 'flowplayer5',  'post_status' => 'publish','order'=>'DESC','posts_per_page' => 6,
+			        'meta_query' => array(
+        array(
+          'key' => 'video-user-role',
+          'value' => 'student',
+        ))
+			 );
 $loop = new WP_Query( $args );
 
 if ( $loop->have_posts() && !(is_admin()) ) :

@@ -1,5 +1,7 @@
 <?php
 
+require get_stylesheet_directory() . '/lib/wp_bootstrap_pagination.php';
+
 /*----HIDE LABEL OPTIONS on Gravity Forms ----*/
 add_filter( 'gform_enable_field_label_visibility_settings', '__return_true' );
 
@@ -9,28 +11,59 @@ function theme_enqueue_styles() {
     wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
 
 }
+add_filter( 'edit_post_link', function( $link, $post_id, $text )
+{
+    // Add the target attribute 
+    if( false === strpos( $link, 'target=' ) )
+        $link = str_replace( '<a ', '<a target="_blank" ', $link );
+
+    return $link;
+}, 10, 3 );
+
+
 
 function my_scripts_method() {
-    wp_enqueue_script('custom-script',get_stylesheet_directory_uri() . '/script.js',
-					  array( 'jquery' )
-    );
-	wp_enqueue_style('fancybox-css', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css');
-	wp_enqueue_script( 'fancyboxes-js', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js' );
-	wp_enqueue_script( 'extra-js', get_stylesheet_directory_uri() . '/js/extra.js', array( 'jquery' ), false, true );
-
-	wp_enqueue_style('bootstrap', get_stylesheet_directory_uri() . '/vendor/bootstrap/css/bootstrap.min.css');
+	 if ( 
+		 is_page_template( 'page-bbb-admin.php' ) || 
+		 is_page_template( 'page-bbb-admin-account-registration.php' ) ||
+		 is_page_template( 'page-bbb-admin-pages.php' ) ||
+		 is_page_template( 'page-bbb-admin-videos-approved2.php' ) ||
+		 is_page_template( 'page-bbb-admin-videos-approved.php' ) ||
+		 is_page_template( 'page-bbb-admin-sponsors.php' ) ||
+		 is_page_template( 'page-student-home-video.php' ) ||
+		 is_page_template( 'page-student-home-video2.php' ) ||
+		 is_page_template( 'page-bbb-admin-videos.php' ) ||
+		 is_page_template( 'page-bbb-admin-statistics.php' ) ||
+		 is_page_template( 'page-student-home.php' ) ||
+		 is_page_template( 'page-bbb-admin-client-student.php' ) ||
+		 is_page_template( 'page-student-edit-profile.php' )		||
+		 is_page_template( 'page-admin-edit-profile.php' )		
+		)  {
+  wp_enqueue_style('bootstrap', get_stylesheet_directory_uri() . '/vendor/bootstrap/css/bootstrap.min.css');
 	wp_enqueue_style('fa', get_stylesheet_directory_uri() . '/vendor/font-awesome/css/font-awesome.min.css');
 	wp_enqueue_style('sb', get_stylesheet_directory_uri() . '/css/sb-admin.css');
 		wp_enqueue_script( 'sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js' );
-
-	//	wp_enqueue_script( 'sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js' );
-	//	wp_enqueue_script( 'sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js' );
-		//wp_enqueue_script( 'sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js' );
 
 	wp_enqueue_script('sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js', '', '1.0.0', true);
 	wp_enqueue_script('sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js', '', '1.0.0', true);
 	wp_enqueue_script('sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js', '', '1.0.0', true);
 	wp_enqueue_script('sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js', '', '1.0.0', true);
+
+  }
+	
+	
+    wp_enqueue_script('custom-script',get_stylesheet_directory_uri() . '/script.js',
+					  array( 'jquery', 'slick-js' )
+    );
+//	wp_enqueue_style('fancybox-css', '//cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.css');
+	//wp_enqueue_script('fancyboxes-js', '//cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.js');
+		wp_enqueue_style('fancybox-css', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css');
+	wp_enqueue_script( 'fancyboxes-js', '//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js' );
+	wp_enqueue_script( 'extra-js', get_stylesheet_directory_uri() . '/js/extra.js', array( 'jquery' ), false, true );
+
+
+	wp_enqueue_style( 'slick-css', '//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css' );
+	wp_enqueue_script( 'slick-js', '//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js', array(), false, true );
 
 	wp_localize_script( 'custom-script', 'ajax_object',
 		array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
@@ -49,7 +82,56 @@ add_action( 'gform_after_submission_5', 'set_splash_img', 10, 2 );
 function set_splash_img( $entry, $form ){
 	$postId = $entry["post_id"];
 	$feat_image = wp_get_attachment_url( get_post_thumbnail_id( $postId ) );
-	update_post_meta( $postId, 'fp5-splash-image', $feat_image, get_post_meta( $post_id, 'fp5-splash-image', true ) );
+	update_post_meta( $postId, 'fp5-splash-image', $feat_image, get_post_meta( $postId, 'fp5-splash-image', true ) );
+	$inputvideo = get_post_meta( $postId, 'fp5-mp4-video', true );
+	//var_dump($inputvideo);
+	$output_path= "/var/www/www.bbbvideocontest.org/dev/wp-content/themes/Child-Divi/compressed/";
+	//$dirid = uniqid();
+	//$file = basename($inputvideo);  
+	//$output = $output_path.$dirid.$file;
+//	var_dump($file);
+//	var_dump($output);
+	
+$dirid = uniqid();
+$file = basename($inputvideo);  
+$uniquedir = $dirid.$file;
+
+
+$output_path = "/var/www/www.bbbvideocontest.org/dev/wp-content/uploads/compressed/".$uniquedir;
+$video_url = get_home_url().'/wp-content/uploads/compressed/'.$uniquedir;
+	
+	
+	
+	$compress = shell_exec("ffmpeg -i $inputvideo -vcodec h264 -acodec mp3 $output_path 2>&1 &");
+	
+	
+	// echo $compress;
+	update_post_meta( $postId, 'fp5-mp4-video', $video_url, get_post_meta( $postId, 'fp5-mp4-video', true ) );
+	
+	//$upload_dir = wp_upload_dir();
+//echo $upload_dir['path'];
+	//	var_dump($upload_dir['path']);
+	 
+	//$b = shell_exec("ffmpeg -i http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/gravity_forms/5-5d56ef895adebe8f7baf7de030995dec/2018/08/StudentVideoContest2018_Generic8.mp4 -vcodec h264 -acodec mp3 /var/www/www.bbbvideocontest.org/dev/wp-content/themes/Child-Divi/output7.mp4 2>&1 & ");
+   //  echo $b;
+	
+		
+	//$b = shell_exec("ffmpeg -i http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/gravity_forms/5-5d56ef895adebe8f7baf7de030995dec/08/2018/25034.MP4 -vcodec h264 -acodec mp3 /var/www/www.bbbvideocontest.org/dev/wp-content/themes/Child-Divi/compressed/25034.MP4 2>&1 & ");
+    // echo $b;
+	
+	//$string = "ffmpeg -i $inputvideo -vcodec h264 -acodec mp3 '".$output." 2>&1 & '";
+	//var_dump($string);
+//	$compress = shell_exec("ffmpeg -i '".$file."' -vcodec h264 -acodec mp3 '".$output." 2>&1 & '");
+	//var_dump($compress);
+	//shell_exec("ffmpeg -i $inputvideo -vcodec h264 -acodec mp3 output3.mp4");
+	//shell_exec("ffmpeg -i http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/gravity_forms/5-5d56ef895adebe8f7baf7de030995dec/2018/08/StudentVideoContest2018_Generic8.mp4 -vcodec h264 -acodec mp3 /home/leonarda/output5.mp4");
+	//var_dump($test);
+//ffmpeg -i test.mp4 -vcodec h264 -acodec mp3 output2.mp4
+
+if( ! add_post_meta( $postId, 'video-user-role', 'student', true ) ){
+                     update_post_meta( $postId, 'video-user-role', 'student');
+                  }
+	
 }
 
 
@@ -326,5 +408,557 @@ function approve_video_ajax(){
    }
 wp_die();
 }
+
+
+function videoStatsDisplay_student($postVideo) {
+	$comments = wp_count_comments( $postVideo->ID );
+
+	$extra_video_info = get_post_meta($postVideo->ID);
+	$videoName = $extra_video_info['fp5-mp4-video'][0];
+	$videoName = basename($videoName, ".mp4");
+	
+	$ga = new Platypus_GA();
+	$analytics = $ga->getService();
+	$profile = $ga->getFirstProfileId($analytics);
+	
+	try {
+		$day = 6;
+		$dataView='';
+		$lowestValue = array();
+		$highestValue = array();
+		while($day>=0) {
+			$date = date('Y-m-d', strtotime("-$day days"));
+			$dayOfTheWeek = date('l', strtotime("-$day days"));
+			if($dayOfTheWeek=='Thursday') {
+				$dayString = "TH";
+			} else {
+				$dayString = substr($dayOfTheWeek,0,1);
+			}
+			$results = $ga->getVideoWatchCountPerDate($analytics, $profile, $videoName, $date, $date);
+				$rows = $results->getRows();
+				$videoViews = $rows[0][1];
+				if(!$videoViews) {
+					$videoViews = "0";
+				}
+			$day--;
+			if(empty($lowestValue)) {
+				$lowestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+			} elseif($lowestValue['view']>=$videoViews) {
+				$lowestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+			}
+
+			if(empty($highestValue)) {
+				$highestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+			} elseif($highestValue['view']<=$videoViews) {
+				$highestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+			}
+			$dataView .= "[\"$dayString\", $videoViews],";
+		}
+		$dataView = rtrim($dataView, ",");
+
+		// New vs Returning
+		$results = $ga->getVideoNewVsReturningCount($analytics, $profile, str_replace(home_url(), '', get_permalink( $postVideo->ID )));
+			$rows = $results->getRows();
+		if($rows[0][0]=='New Visitor') {
+					$newVisitorData = $rows[0][1];
+			} elseif($rows[0][0]=='Returning Visitor') {
+					$returnVisitorData = $rows[0][1];
+			}
+			if($rows[1][0]=='New Visitor') {
+					$newVisitorData = $rows[1][1];
+			} elseif($rows[1][0]=='Returning Visitor') {
+					$returnVisitorData = $rows[1][1];
+			}
+		if(!$newVisitorData) {
+			$newVisitorData = 0;
+		}
+		if(!$returnVisitorData) {
+					$returnVisitorData = 0;
+			}
+
+		// Average View Duration
+		$results = $ga->getVideoWatchAvgDuration($analytics, $profile, $videoName);
+		$rows = $results->getRows();
+		$avgDuration = $rows[0][1];
+		$output = '
+				<div class="modal fade student-videoModal bd-example-modal-lg" id="ApprovedVideoStatPopup_'.$postVideo->ID.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">                                               
+                            <div class="modal-body">
+					<div class="main-container">
+							<div class="row-one student-video-row">
+									<div class="col-one">
+											<div class="vid-chart">
+						<div id="chart_div_'.$postVideo->ID.'" style="width: 244px; height: 158px;"></div>
+													<script>
+													google.setOnLoadCallback(drawChart);
+													function drawChart() {
+									var data = google.visualization.arrayToDataTable([
+																		["days", "Views" ],
+										'.$dataView.'
+																]);
+									var options = {
+																	hAxis: {titleTextStyle: {color: "#333"}},
+																	vAxis: {viewWindow:{min:0}},
+										chartArea:{ left: "10%", top: "5%", width: "87%", height: "85%" },
+										height: 158,
+										width: 244,
+																	legend: {position: "none"}
+															};
+															var chart = new google.visualization.AreaChart(document.getElementById("chart_div_'.$postVideo->ID.'"));
+															chart.draw(data, options);
+													}
+										</script>
+												</div>
+												<div class="vid-stats">
+													<p><span class="yellow">HIGHEST:<br>
+													</span>'.$highestValue['view'].' views('.$highestValue['day'].')</p>
+													<p><span class="yellow">LOWEST:<br>
+													</span>'.$lowestValue['view'].' views('.$lowestValue['day'].')</p>
+												</div>
+										</div>
+										<div class="col-two">
+											<table class="custom-table-video">
+													<tbody>
+															<tr>
+																<td class="likes">'.do_shortcode('[simplevoteme postId='.$postVideo->ID.']').'</td>
+																
+															</tr>
+															<tr>
+																<td class="views">'. get_post_meta($postVideo->ID, '_custom_video_view', true) /*do_shortcode('[show-video-watch-count postId='.$postVideo->ID.']')*/ .' total views</td>
+																
+															</tr>
+													</tbody>
+												</table>
+										</div>
+						</div>
+								<div class="row-one student-video-row">
+									<div class="col-one">
+												<div class="col-one pie-col-one">
+													<div class="piechart" id="piechart_'.$postVideo->ID.'">
+													</div>
+							<script type="text/javascript">
+									google.load("visualization", "1", {packages:["corechart"]});
+									google.setOnLoadCallback(drawChart);
+									function drawChart() {
+										var data = google.visualization.arrayToDataTable([
+											["Type", "Views"],
+											["New Views",   '.$newVisitorData.'],
+											["Returning Views", '.$returnVisitorData.']
+										]);
+
+										var options = {
+											title: "New Vs. Returning",
+										width: 320
+										};
+										var chart = new google.visualization.PieChart(document.getElementById("piechart_'.$postVideo->ID.'"));
+										chart.draw(data, options);
+									}
+								</script>
+												</div>
+												<!-- <div class="col-two pie-col-two">
+													<div class="view-duration">Avg. View Duration<br>
+															<span class="yellow">00:07:16</span><br>
+															<span class="video-view-graph"><a href="#"><img class="aligncenter size-full wp-image-1232" src="http://platypus-dallas.s3.amazonaws.com/wp-content/uploads/2015/07/28223252/video-view-graph.png" height="26" width="111"></a></span>
+													</div>
+													<div class="new-views">% News Views<br>
+															<span class="yellow">00:07:16</span><br>
+															<span class="video-view-graph"><a href="#"><img class="aligncenter size-full wp-image-1232" src="http://platypus-dallas.s3.amazonaws.com/wp-content/uploads/2015/07/28223252/video-view-graph.png" alt="video-view-graph" height="26" width="111"></a></span>
+													</div>
+												</div> -->
+
+										</div>
+										<div class="col-two">
+												<div class="col-one dest-col-one">
+													<p class="share-title">VIEW DURATION</p>
+							<p> Average Views</p>
+							<!-- <p>Less than 10 seconds</p>
+							<p>0 - 10 Seconds</p>
+							<p>0 - 60 Seconds</p>
+							<p>60 - 600 Seconds</p>
+							<p>600 - 1801+ Seconds</p>-->
+												</div>
+												<div class="col-two dest-col-two">	
+							<p>'.number_format($avgDuration,2).'</p>
+							<!-- <p>4</p><p>5</p><p>24</p><p>61</p><p>12</p> -->
+												</div>
+										</div>
+							</div>
+						</div>
+						</div>
+						</div>
+						</div>
+				</div>';
+		return $output;
+    } catch (\Exception $e) { // <<<<<<<<<<< You must use the backslash
+      	return "<h5 style='margin-top: 10px; text-align: center; font-weight: bold; color: red;'>Google_Service_Exception - Quota Error: has exceeded the daily request limit.</h5>";
+    }
+
+
+	
+}
+
+add_action('gform_pre_submission_10', 'bbb_admin_send_email_pending');
+function bbb_admin_send_email_pending($form){
+	$to = sanitize_email($_REQUEST['input_1']);
+	$subject = sanitize_text_field($_REQUEST['input_2']);
+    $message = sanitize_text_field($_REQUEST['input_3']);
+
+wp_mail( $to, $subject, $message );
+}
+
+add_action('gform_pre_submission_9', 'bbb_admin_send_email');
+function bbb_admin_send_email($form){
+		$to = sanitize_email($_REQUEST['input_1']);
+	$subject = sanitize_text_field($_REQUEST['input_2']);
+       	$message = sanitize_text_field($_REQUEST['input_3']);
+
+wp_mail( $to, $subject, $message );
+}
+
+add_action('gform_after_submission_9', function($entry){
+
+	//GFAPI::delete_entry( $entry['id'] );
+}); 
+
+add_action('wp_ajax_admin_delete_user','admin_delete_user');
+add_action('wp_ajax_nopriv_admin_delete_user','admin_delete_user');
+function admin_delete_user(){
+  $user_id = intval($_REQUEST['id']);
+  check_ajax_referer('bbb-admin-delete-'.$user_id, 'nonce');
+
+  $delete_respond = wp_delete_user($user_id);
+
+  echo json_encode(array( 'result' => $delete_respond));
+  die();
+
+}
+add_action('wp_ajax_admin_deactivate_video','admin_deactivate_video');
+add_action('wp_ajax_nopriv_admin_deactivate_video','admin_deactivate_video');
+function admin_deactivate_video(){
+	 $post_id = intval($_POST['id'] );
+
+	// Update post 37
+  $my_post = array(
+      'ID'           => $post_id,
+      'post_status'   =>  'pending',
+  );
+ 
+// Update the post into the database
+  wp_update_post( $my_post );
+if (is_wp_error( $post_id )) {
+    $errors = $post_id->get_error_messages();
+ $response['result'] =  $errors;
+}	
+	
+        $response['id'] = $post_id;
+	    wp_send_json( $response );
+
+ // die();
+
+}
+add_action('wp_ajax_viewstat','viewstat');
+add_action('wp_ajax_nopriv_viewstat','viewstat');
+function viewstat(){
+ $post_id = intval($_POST['id'] );
+	
+ $comments = wp_count_comments( $post_id);
+
+  $extra_video_info = get_post_meta($post_id);
+  $videoName = $extra_video_info['fp5-mp4-video'][0];
+  $videoName = basename($videoName, ".mp4");
+  
+  $ga = new Platypus_GA();
+  $analytics = $ga->getService();
+  $profile = $ga->getFirstProfileId($analytics);
+  
+ 
+    $day = 6;
+    $dataView='';
+    $lowestValue = array();
+    $highestValue = array();
+    while($day>=0) {
+      $date = date('Y-m-d', strtotime("-$day days"));
+      $dayOfTheWeek = date('l', strtotime("-$day days"));
+      if($dayOfTheWeek=='Thursday') {
+        $dayString = "TH";
+      } else {
+        $dayString = substr($dayOfTheWeek,0,1);
+      }
+      $results = $ga->getVideoWatchCountPerDate($analytics, $profile, $videoName, $date, $date);
+        $rows = $results->getRows();
+        $videoViews = $rows[0][1];
+        if(!$videoViews) {
+          $videoViews = "0";
+        }
+      $day--;
+      if(empty($lowestValue)) {
+        $lowestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+      } elseif($lowestValue['view']>=$videoViews) {
+        $lowestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+      }
+
+      if(empty($highestValue)) {
+        $highestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+      } elseif($highestValue['view']<=$videoViews) {
+        $highestValue = array('day' => $dayOfTheWeek, 'view' => $videoViews);
+      }
+      $dataView .= "[\"$dayString\", $videoViews],";
+    }
+    $dataView = rtrim($dataView, ",");
+
+    // New vs Returning
+    $results = $ga->getVideoNewVsReturningCount($analytics, $profile, str_replace(home_url(), '', get_permalink( $post_id )));
+      $rows = $results->getRows();
+    if($rows[0][0]=='New Visitor') {
+          $newVisitorData = $rows[0][1];
+      } elseif($rows[0][0]=='Returning Visitor') {
+          $returnVisitorData = $rows[0][1];
+      }
+      if($rows[1][0]=='New Visitor') {
+          $newVisitorData = $rows[1][1];
+      } elseif($rows[1][0]=='Returning Visitor') {
+          $returnVisitorData = $rows[1][1];
+      }
+    if(!$newVisitorData) {
+      $newVisitorData = 0;
+    }
+    if(!$returnVisitorData) {
+          $returnVisitorData = 0;
+      }
+
+    // Average View Duration
+    $results = $ga->getVideoWatchAvgDuration($analytics, $profile, $videoName);
+    $rows = $results->getRows();
+    $avgDuration = $rows[0][1];	
+	
+	$dataViewOutput = '									<div class="col-one">
+											<div class="vid-chart">
+						<div id="chart_div_'.$post_id.'" style="width: 244px; height: 158px;"></div>
+													<script>
+													google.setOnLoadCallback(drawChart);
+													function drawChart() {
+									var data = google.visualization.arrayToDataTable([
+																		["days", "Views" ],
+										'.$dataView.'
+																]);
+									var options = {
+																	hAxis: {titleTextStyle: {color: "#333"}},
+																	vAxis: {viewWindow:{min:0}},
+										chartArea:{ left: "10%", top: "5%", width: "87%", height: "85%" },
+										height: 158,
+										width: 244,
+																	legend: {position: "none"}
+															};
+															var chart = new google.visualization.AreaChart(document.getElementById("chart_div_'.$post_id .'"));
+															chart.draw(data, options);
+													}
+										</script>
+												</div>
+												<div class="vid-stats">
+													<p><span class="yellow">HIGHEST:<br>
+													</span>'.$highestValue['view'].' views('.$highestValue['day'].')</p>
+													<p><span class="yellow">LOWEST:<br>
+													</span>'.$lowestValue['view'].' views('.$lowestValue['day'].')</p>
+												</div>
+										</div>';
+	
+	  $response['avgDuration'] =  $avgDuration;
+	  $response['dataView'] =  $dataViewOutput;
+	  $response['highestValue'] =  $highestValue;
+	  $response['lowestValue'] =  $lowestValue;
+	  $response['newVisitorData'] =  $newVisitorData;
+	  $response['returnVisitorData'] =  $returnVisitorData;
+	  $response['votes'] =  do_shortcode('[simplevoteme postId=$post_id]');
+	
+	    wp_send_json( $response );
+	
+	
+	
+	
+	
+}
+
+class CSVExport
+{
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        if (isset($_GET['download_report'])) {
+            $csv = $this->generate_csv();
+           // $csv = $this->download_report();
+          header("Pragma: public");
+            header("Expires: 0");
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+          header("Cache-Control: private", false);
+            header("Content-Type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=\"BBB Video Contest Student Info-". date('Y-m-d') .".csv\";");
+            header("Content-Transfer-Encoding: binary");
+            
+           echo $csv;
+           exit;
+        }
+        
+        // Add extra menu items for admins
+        add_action('admin_menu', array(
+            $this,
+            'admin_menu'
+        ));
+        
+        // Create end-points
+        add_filter('query_vars', array(
+            $this,
+            'query_vars'
+        ));
+        add_action('parse_request', array(
+            $this,
+            'parse_request'
+        ));
+    }
+    
+    /**
+     * Add extra menu items for admins
+     */
+    public function admin_menu()
+    {
+        // add_menu_page('Download Report', 'Download Report', 'manage_options', 'download_report', array(
+        //     $this,
+        //     'download_report'
+        // ));
+    }
+    
+    /**
+     * Allow for custom query variables
+     */
+    public function query_vars($query_vars)
+    {
+        $query_vars[] = 'download_report';
+        return $query_vars;
+    }
+    
+    /**
+     * Parse the request
+     */
+    public function parse_request(&$wp)
+    {
+        if (array_key_exists('download_report', $wp->query_vars)) {
+            $this->download_report();
+            exit;
+        }
+    }
+    
+    /**
+     * Download report
+     */
+    public function download_report()
+    {
+      //  echo '<div class="wrap">';
+      //  echo '<div id="icon-tools" class="icon32"></div>';
+  //      echo '<h2>Download Report</h2>';
+        //$url = site_url();
+        
+        echo '<p>Export the Subscribers</p>';
+
+		$blogusers = get_users( 'orderby=nicename&role=subscriber' );
+		// $output = "Primary Email,School,Location,Students,User Registered \n";
+		$output = "Name, Student Email, Location, School, Primary Email, Date Registered \n";
+		
+		$student_list = "";
+		foreach ( $blogusers as $user ) {
+				$location = $user->student_location;
+				$primary_email = $user->user_email;
+				$reg_date = $user->user_registered;
+				$members = get_user_meta( $user->ID, 'student' , true );
+                        			$someArray = json_decode($members, true);
+			 $user_school_id = get_the_author_meta('school',$user->ID);
+                                                        $school = get_post($user_school_id)->post_title;
+
+			 foreach ($someArray as $key => $value) {
+                              $student_list .=  $value["Name"] . " " . $value["Email"] . "\n";
+                                    }
+		
+							$output .= "$primary_email,$school,$student_list,$reg_date";
+
+		}
+		echo $output;
+    }
+    
+    /**
+     * Converting data to CSV
+     */
+    public function generate_csv()
+    {	
+		/*
+		$blogusers = get_users( 'orderby=nicename&role=subscriber' );
+		$output = "Primary Email,School,Location,Students,User Registered \n";
+		$student_list = "";
+		foreach ( $blogusers as $user ) {
+			$location = $user->student_location;
+			$school = $user->student_school;
+			$primary_email = $user->user_email;
+			$reg_date = $user->user_registered;
+			$students = maybe_unserialize( $user->students );
+			foreach ($students as $student) {
+				$student_list .=  $student[25][0] . ' ' . $student[25][1] . ' (' . $student[24][0] . ')' . "\n";
+			}
+			$output .= "$primary_email,$school,$location,\"$student_list\",$reg_date \n";
+		}
+        
+        return $output;
+		*/
+
+$blogusers = get_users( 'orderby=nicename&role=subscriber' );
+		// $output = "Primary Email,School,Location,Students,User Registered \n";
+		//$output = "Name,Email,Primary Email, School,  Date Registered \n";
+		$output = "Name,Email,Primary Email, Schools\n";
+		$student_list = "";
+		foreach ( $blogusers as $user ) {
+				$location = $user->student_location;
+				$primary_email = $user->user_email;
+				$reg_date = $user->user_registered;
+				$members = get_user_meta( $user->ID, 'student' , true );
+                        			$someArray = json_decode($members, true);
+			 $user_school_id = get_the_author_meta('school',$user->ID);
+                                                    
+
+			
+			//if ( $user_school_id != null ) 
+			$school = get_post($user_school_id)->post_title;
+			
+				//$school = 'NA';
+
+				
+		//	echo $school;
+			 foreach ($someArray as $key => $value) {
+                            //  $student_list .=  $value["Name"] . ", " . $value["Email"] . "\n";
+                             $student_list .=  $value["Name"] . ", " . $value["Email"] . ", " . $primary_email . ", "  . $school ."\n";
+                                    }
+		
+						//	$output .= "$primary_email,$school,$student_list,$reg_date";
+$output  .=  "$student_list";
+		}
+		echo $output;
+    }
+}
+
+// Instantiate a singleton of this plugin
+$csvExport = new CSVExport();
+
+
+
+function get_archives_link_mod ( $link_html ) {
+    preg_match ("/value='(.+?)'/", $link_html, $url);
+    preg_match("/value='(.+?)'>(.*?)</", $link_html, $output_array);
+
+	$link_html = '<option value="'. trim($output_array[2]) .'">'. $output_array[2] .'</option>';
+    return $link_html;
+}
+
+
+
+
+
 
 ?>

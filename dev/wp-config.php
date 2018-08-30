@@ -38,6 +38,8 @@ define('DB_CHARSET', 'utf8');
 /** The Database Collate type. Don't change this if in doubt. */
 define('DB_COLLATE', '');
 
+ //Added by WP-Cache Manager
+define('MARKETNAME_DIR',"/dev");
 /**#@+
  * Authentication Unique Keys and Salts.
  *

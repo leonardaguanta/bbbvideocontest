@@ -68,8 +68,15 @@ class LRM_AJAX
             do_action('lrm/login_successful', $user_signon);
 
             $message = LRM_Settings::get()->setting('general/registration/reload_after_login') ? LRM_Settings::get()->setting('messages/login/success') : LRM_Settings::get()->setting('messages/login/success_no_reload');
-
-            wp_send_json_success(array('logged_in' => true,'message'=>$message));
+  //  $user = wp_get_current_user();
+   // $role = ( array ) $user->roles;
+ //  $admin = false;
+ if( current_user_can('editor') || current_user_can('administrator') ){
+wp_send_json_success(array('logged_in' => true,'message'=>$message,'admin' => true )); }
+else{
+wp_send_json_success(array('logged_in' => true,'message'=>$message,'admin' => false )); }			
+			
+            
         }
     }
 

@@ -1,5 +1,9 @@
 <?php
-
+    $likes = array(
+        'key'     => '_vid_liked',
+        'compare' => 'IN',
+        'type' => 'NUMERIC'
+    );
     $args = array( 
         'post_type' => 'flowplayer5',
         'posts_per_page'=>-1 ,
@@ -24,7 +28,8 @@
             $videoName = basename($videoName, ".mp4");
         ?>
             <input type="hidden" value="<?php echo $videos->max_num_pages; ?>" id="video_max_page"/>
-            <div class="video-rankfeed">                                
+            <div class="video-rankfeed video-feed" data-href="<?php the_permalink(); ?>" data-id="<?php get_the_ID(); ?>" data-url="<?php echo $href; ?>" title="<?php echo get_the_title();
+?>" data-modal-id="modal-video" data-link="<?php the_permalink(); ?>">                               
                 <div class="et_pb_blurb et_pb_module et_pb_bg_layout_light et_pb_text_align_left rank-video et_pb_blurb_0 et_pb_blurb_position_left">
                     <div class="et_pb_blurb_content">
                         <?php if (has_post_thumbnail()) { ?>

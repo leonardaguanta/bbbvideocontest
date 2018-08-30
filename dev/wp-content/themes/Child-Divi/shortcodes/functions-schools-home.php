@@ -1,6 +1,9 @@
 <?php
 
-$args = array( 'post_type' => 'student_schools',  'post_status' => 'publish','order'=>'ASC' );
+$args = array( 'post_type' => 'student_schools',  'post_status' => 'publish','order'=>'ASC' ,'meta_query'=>(array(
+          'key' => 'video-user-role',
+          'value' => 'student',
+        )));
 $loop = new WP_Query( $args );
 
 if ( $loop->have_posts() && !(is_admin()) ) :

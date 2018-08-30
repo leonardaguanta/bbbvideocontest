@@ -209,7 +209,7 @@ var LRM = LRM ? LRM : {};
 							$form.find(".lrm-form-message").html(response.data.message);
 
 							if (!response.success) {
-								$form.find(".lrm-form-message").addClass("lrm-is-error");
+								//$form.find(".lrm-form-message").addClass("lrm-is-error");
 							}
 
 							$(".lrm-user-modal").animate({scrollTop: 80}, 400);
@@ -224,11 +224,42 @@ var LRM = LRM ? LRM : {};
 					// If user Logged in After Login or Registration
 					// If Email Verify after Registration enabled - we skip this
 					if (response.success && response.data.logged_in) {
+						//console.log(response.data.logged_in);
+						
 						LRM.is_user_logged_in = true;
 						$(document).trigger('lrm_user_logged_in', [response, $form]);
 
 						if (LRM.reload_after_login) {
-							window.location.reload();
+
+
+$.ajax({
+	type: 'POST',
+				dataType: 'json',
+				url: LRM.ajax_url,
+				data: $form.serialize(),
+				success: function (response)  {
+
+							
+							 //response.data.role;
+							 console.log(response.data.admin);
+							 if(response.data.admin == true){
+								 console.log('admin');
+								window.location="/dev/bbb-admin-dashboard";
+							 }else{
+								 console.log('student');
+								 window.location="/dev/student-home";
+							 }
+							
+							//console.log('hello');
+							//window.location.reload();
+                }
+            });
+
+
+
+
+
+
 						}
 					}
 

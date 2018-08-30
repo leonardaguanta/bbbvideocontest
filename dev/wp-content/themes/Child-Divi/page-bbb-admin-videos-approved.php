@@ -1,55 +1,42 @@
 <?php /* Template Name: BBB Admin Videos Approved */ ?>
 
 <?php get_header(); 
-add_filter('show_admin_bar', '__return_false');
-   echo "<link rel='stylesheet' id='flowplayer5-skins-css' href='https://releases.flowplayer.org/5.5.2/commercial/skin/all-skins.css' type='text/css' media='all' />";
-        echo "<link rel='stylesheet' id='flowplayer5-logo-origin-css' href='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/css/public-concat.min.css?x75485' type='text/css' media='all' />";
-        echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery.js?ver=1.11.3'></script>";
-        echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>";
-        echo "<script type='text/javascript' src='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/flowplayer/flowplayer.js?x75485'></script>";
-      // echo "<script src='http://bbbvideocontest.platypustest.info/dev/wp-includes/js/zxcvbn.min.js' type='text/javascript'></script><script src='//w.likebtn.com/js/w/widget.js'></script><script src='//w.likebtn.com/js/w/widget.js'></script>";
-        echo "<link rel='stylesheet' id='simplevotemestyle-css' href='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/css/simplevoteme.css?ver=4.9.6' type='text/css' media='all'>";
+    add_filter('show_admin_bar', '__return_false');
+    echo "<link rel='stylesheet' id='flowplayer5-skins-css' href='https://releases.flowplayer.org/5.5.2/commercial/skin/all-skins.css' type='text/css' media='all' />";
+    echo "<link rel='stylesheet' id='flowplayer5-logo-origin-css' href='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/css/public-concat.min.css?x75485' type='text/css' media='all' />";
+    echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery.js?ver=1.11.3'></script>";
+    echo "<script type='text/javascript' src='http://www.bbbvideocontest.org/dallas/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>";
+    echo "<script type='text/javascript' src='https://d3vzs1kv29k6gk.cloudfront.net/dallas/wp-content/plugins/flowplayer5/frontend/assets/flowplayer/flowplayer.js?x75485'></script>";
+    // echo "<script src='http://bbbvideocontest.platypustest.info/dev/wp-includes/js/zxcvbn.min.js' type='text/javascript'></script><script src='//w.likebtn.com/js/w/widget.js'></script><script src='//w.likebtn.com/js/w/widget.js'></script>";
+    echo "<link rel='stylesheet' id='simplevotemestyle-css' href='http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/css/simplevoteme.css?ver=4.9.6' type='text/css' media='all'>";
 
-        echo '<script type="text/javascript">
-            /* <![CDATA[ */
-            var gtsimplevotemeajax = {"ajaxurl":"http:\/\/bbbvideocontest.platypustest.info\/dev\/wp-admin\/admin-ajax.php"};
-            /* ]]> */
-            </script>';
-        echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>';
+    echo '<script type="text/javascript">
+        /* <![CDATA[ */
+        var gtsimplevotemeajax = {"ajaxurl":"http:\/\/bbbvideocontest.platypustest.info\/dev\/wp-admin\/admin-ajax.php"};
+        /* ]]> */
+        </script>';
+    echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>';
 ?>
 <?php
-$logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
-? $user_logo
-: $template_directory_uri . '/images/logo.png';
-
+    $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo ? $user_logo : $template_directory_uri . '/images/logo.png';
 ?>
 <?php get_template_part( 'partials/content', 'header' ); ?>
 
-          <div class="content-wrapper">
-            <div class="container-fluid">
-              <!-- Breadcrumbs-->
-<!--       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <a href="index.html">Dashboard</a>
-        </li>
-        <li class="breadcrumb-item active">Blank Page</li>
-      </ol> -->
-      <div class="row">
-       <div class="col-lg-12">
-        <div class="card mb-3">
-          <a  class="" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-            <img src="<?php echo esc_attr( $logo ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" id="logo" data-height-percentage="<?php echo esc_attr( et_get_option( 'logo_height', '54' ) ); ?>" />
-          </a>
-          <a> Visit Site </a>
-
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card mb-3">
-          <div class="card-header">
-          Approved Videos</div>
+    <div class="content-wrapper admin-wrapper">
+        <div class="container-fluid admin-fluid">
+            <div class="row logo">
+                <div class="col-lg-2">
+                    <div class="card mb-3">
+                        <a class="" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+                            <img src="<?php echo esc_attr( $logo ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" id="logo" data-height-percentage="<?php echo esc_attr( et_get_option( 'logo_height', '54' ) ); ?>" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header">Approved Videos</div>
 
 			
 <?php
@@ -65,15 +52,15 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
         $posts = get_posts($args);
         if ($posts) {
                 $theVideo = '<div class="approved-vid-container">';
-      foreach($posts as $postVideo) {
-$extra_video_info = get_post_meta($postVideo->ID);
-                  $theVideo .= '      <div class="main-container2 no-border">
+            foreach($posts as $postVideo) {
+                $extra_video_info = get_post_meta($postVideo->ID);
+                $theVideo .= '      <div class="main-container2 no-border">
                                     <div class="row-one">
 
                                         <div class="main-video">';
 
-                   $theVideo .= do_shortcode('[flowplayer id="'.$postVideo->ID.'" pre-post-ad-video=1 autoplay="false" preload="auto]');
-$theVideo .= '          </div>
+                $theVideo .= do_shortcode('[flowplayer id="'.$postVideo->ID.'" pre-post-ad-video=1 autoplay="false" preload="auto]');
+                $theVideo .= '          </div>
 
                                     <div class="main-video-info">';
                   $theVideo .= '              <h3>' .$postVideo->post_title. '</h3>';
@@ -127,7 +114,7 @@ $theVideo .= '          </div>
                                         </div>
                                 </div>
         </div>';
-
+        var_dump(videoStatsDisplay($postVideo));
           $theVideo .= videoStatsDisplay($postVideo);
             $theVideo .= '</div>';
               }

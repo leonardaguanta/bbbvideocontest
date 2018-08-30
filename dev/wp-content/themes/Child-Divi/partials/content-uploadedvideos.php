@@ -50,28 +50,30 @@
 
         $output =
         '
-        <div class="header-tab-3 clearfix">UPLOADED VIDEOS<p class="header-tab-3-total" style="float: right;">Total Videos Uploaded: '. $totalUploadedVids .'</p> </div>
+        <div class="header-tab-3 clearfix"><p class="header-tab-3-total">Total Videos Uploaded: '. $totalUploadedVids .'</p> </div>
         <div class="typicalContainer style="overflow: visible !important;">
-	<script>
-	   google.setOnLoadCallback(drawChartUploads);
-                                function drawChartUploads() {
-                                        var dataNVR = google.visualization.arrayToDataTable([
-                                                ["Type", "Views"],
-                                                ["Approved Videos",  '.$approvedUploadedVideos.'],
-                                                ["Rejected Videos", '.$rejectedUploadedVideos.'],
-						["Pending Approval", '.$pendingUploadedVideos.']
-                                         ]);
-                                        var optionsNVR = {
-                                                title: "Uploaded Videos",
-                                                width: 400
-                                        };
-                                        var chartNVR = new google.visualization.PieChart(document.getElementById("uploadStats"));
-                                        chartNVR.draw(dataNVR, optionsNVR);
-                                }
-
-        </script>
-	<div id="uploadStats" style="width: 400px; height: 250px; padding: 20px;"></div>
-	<a href="" id="uploadedvideosday" class="sortStatsButton " onclick="statsSorting(\'uploadedVideosTimeFrame=day\')">Day</a><a href="" id="uploadedvideosweek" class="sortStatsButton" onclick="statsSorting(\'uploadedVideosTimeFrame=week\')">Week</a><a href="" id="uploadedvideosdmonth" class="sortStatsButton" onclick="statsSorting(\'uploadedVideosTimeFrame=month\')">Month</a>
+            <script>
+                google.setOnLoadCallback(drawChartUploads);
+                    function drawChartUploads() {
+                        var dataNVR = google.visualization.arrayToDataTable([
+                            ["Type", "Views"],
+                            ["Approved Videos",  '.$approvedUploadedVideos.'],
+                            ["Rejected Videos", '.$rejectedUploadedVideos.'],
+                            ["Pending Approval", '.$pendingUploadedVideos.']
+                        ]);
+                        var optionsNVR = {
+                            title: "",
+                                width: 400,
+								height:185
+                        };
+                        var chartNVR = new google.visualization.PieChart(document.getElementById("uploadStats"));
+                        chartNVR.draw(dataNVR, optionsNVR);
+                    }
+            </script>
+            <div id="uploadStats" style="text-align: center;"></div>
+            <div class="videoViews-container">
+                <a href="" id="uploadedvideosday" class="sortStatsButton " onclick="statsSorting(\'uploadedVideosTimeFrame=day\')">Day</a><a href="" id="uploadedvideosweek" class="sortStatsButton" onclick="statsSorting(\'uploadedVideosTimeFrame=week\')">Week</a><a href="" id="uploadedvideosmonth" class="sortStatsButton" onclick="statsSorting(\'uploadedVideosTimeFrame=month\')">Month</a>
+            </div>
         </div>
         ';
         
