@@ -165,7 +165,7 @@ jQuery(document).ready(function($) {
 				// maxWidth : 800,
 				maxHeight : 600,
 				fitToView : true,
-				width : '90%',
+				width : '80%',
 				height : '80%',
 				autoSize : false,
 				closeClick : false,
@@ -214,7 +214,7 @@ jQuery(document).ready(function($) {
   	console.log("Unable to send Google Analytics data");
       //callback function
   }
-});		
+});	
 					
 					
 					

@@ -40,23 +40,23 @@ if ( ! is_page_template( 'page-template-blank.php' ) ) : ?>
             <div>
                 <?php
                 if( current_user_can('administrator') ) {?>
-                <p id="copyright"><a href="/privacy-policy">Privacy Policy</a>&nbsp;|&nbsp;<a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/' ) ); ?>">BBB Admin Dashboard</a></p>
+                <p id="copyright"><a href="/dev/privacy-policy/">Privacy Policy</a>&nbsp;|&nbsp;<a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/' ) ); ?>">BBB Admin Dashboard</a></p>
                 <?php
             }?>
             
             <?php
             if( current_user_can('editor') ) {?>
-            <p id="copyright"><a href="/privacy-policy">Privacy Policy</a>&nbsp;|&nbsp;<a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/' ) ); ?>">BBB Admin Dashboard</a></p>
+            <p id="copyright"><a href="/dev/privacy-policy/">Privacy Policy</a>&nbsp;|&nbsp;<a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/' ) ); ?>">BBB Admin Dashboard</a></p>
             <?php
         }?>
         <?php
         if( current_user_can('subscriber') ) {?>
-        <p id="copyright"><a href="/privacy-policy">Privacy Policy</a>&nbsp;|&nbsp;<a href="<?php echo esc_url( home_url( '/student-home/' ) ); ?>">Dashboard</a></p>
+        <p id="copyright"><a href="/dev/privacy-policy/">Privacy Policy</a>&nbsp;|&nbsp;<a href="<?php echo esc_url( home_url( '/student-home/' ) ); ?>">Dashboard</a></p>
         <?php
     }?>                         
     <?php
     if( !is_user_logged_in() ) {?>
-    <p id="copyright"><a href="/privacy-policy">Privacy Policy</a>&nbsp;|&nbsp;<a href="#" class="lrm-login">BBB Admin</a></p>
+    <p id="copyright"><a href="/dev/privacy-policy/">Privacy Policy</a>&nbsp;|&nbsp;<a href="#" class="lrm-login">BBB Admin</a></p>
     <?php
 }?>
 

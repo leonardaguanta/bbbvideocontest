@@ -28,8 +28,8 @@ Template name: VideoFrame
     echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>'; ?>
 
 <script type="text/javascript">
-flowplayer.conf.embed = false;
-flowplayer.conf.fullscreen = true;
+//flowplayer.conf.embed = false;
+//flowplayer.conf.fullscreen = true;
 </script>
 
     <div class="et_pb_section pop-videosSection et_pb_section_3 et_section_regular">

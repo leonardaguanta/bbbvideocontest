@@ -563,6 +563,30 @@ li.get-started:hover {background-color:#c96310;}
 
 
 /*------------------- FORM CSS -----------------*/
+div#gform_wrapper_7 {
+    padding: 30px;
+}
+li#field_7_11.gfield_error {
+    margin-top: 0;
+}
+#gform_wrapper_4 .gfield.gfield_error {
+    max-width: calc(100% - 0px)!important;
+}
+#gform_wrapper_1.gform_wrapper.gform_validation_error .gform_body ul li.gfield.gfield_error:not(.gf_left_half):not(.gf_right_half) {
+    max-width: 100%!important;
+    margin: 0!important;
+    width: 100%;
+}
+#gform_wrapper_1.gform_wrapper.gform_validation_error .top_label li.gfield.gfield_error.gf_right_half {
+    max-width: calc(50% - 5px);
+    padding-left: 5px;
+    margin-left: 5px!important;
+}
+#gform_wrapper_1.gform_wrapper.gform_validation_error .top_label li.gfield.gfield_error.gf_left_half {
+    max-width: calc(50% - 5px);
+    padding-right: 5px;
+    margin-right: 5px!important;
+}
 #gform_wrapper_1 div.gform_footer { text-align: right; margin-top: -95px; }
 #gform_wrapper_1 input:not([type=radio]):not([type=checkbox]):not([type=submit]):not([type=button]):not([type=image]):not([type=file]), #input_1_4 {
     padding: 8px;
@@ -830,7 +854,6 @@ div#approvalReminder {
 }
 
 /*-------------- ADMIN REGISTRATION FORM ---------------*/
-#gform_wrapper_7 ul.gform_fields li.gfield { padding-right: 0; }
 #gform_wrapper_7 input:not([type=radio]):not([type=checkbox]):not([type=submit]):not([type=button]):not([type=image]):not([type=file]) {
     padding: 7px 0;
     border: 0;
@@ -852,7 +875,7 @@ div#approvalReminder {
     margin-right: 20px;
     height: 300px;
 }
-#field_7_6, #field_7_7, #field_7_9, #field_7_10 { width: 47%; padding: 0 20px; float: left; margin-top: 0; }
+#field_7_6, #field_7_7, #field_7_9, #field_7_10 ,#field_7_12{ width: 47%; padding: 20px 20px 0px; float: left; margin-top: 0; }
 #input_7_7_1_container, #input_7_7_2_container { width: 100%; padding-right: 0; padding-left: 0; }
 #input_7_7_1_container label, #input_7_7_2_container label { display: none; }
 
