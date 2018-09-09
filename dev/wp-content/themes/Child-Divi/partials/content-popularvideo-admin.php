@@ -49,9 +49,14 @@
                 <div class="et_pb_text_inner">                  
                     <h3 class="video-title"><a href="<?php the_permalink(); ?>"><?php echo get_the_title();?></a></h3>
 
-                    <!-- <p class="popvideo-counts"><?php echo the_author_meta('display_name', $postData[0]->post_author);?> <span class="count-separator">|</span> <span class="video-votes"><?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']'); ?></span> <span class="count-separator">|</span> <span class="video-views"><?php echo get_post_meta( get_the_ID(), '_custom_video_view', true);?> Views</span></p> -->
+                    <!-- <p class="popvideo-counts"><?php echo the_author_meta('display_name', $postData[0]->post_author);?> <span class="count-separator">|</span> <span class="video-votes"><?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']'); ?></span> </p> -->
                     
-                    <span class="video-author"><?php echo the_author_meta('display_name', $postData[0]->post_author);?></span> <span class="count-separator">|</span> <span class="video-votes"><?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span> <span class="count-separator">|</span> <span class="video-views"><?php echo get_post_meta( get_the_ID(), '_custom_video_view', true);?> Views</span>                
+                    <span class="video-author"><?php echo the_author_meta('nickname', $postData[0]->post_author);?></span> <span class="video-votes"><?php 
+										   $status = get_option( 'voting_status' );
+										   if ( $status == 'ON'){
+											   echo do_shortcode('[simplevoteme postid='. get_the_ID() .']');
+										   }; 
+						?></span>               
                 </div>
             </div>
         </div>

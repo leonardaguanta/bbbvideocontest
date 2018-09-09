@@ -1,19 +1,107 @@
 jQuery(document).ready(function($) {
 	
+	$('.checkbox.voting').click(function() {
+	console.log($('#toggle-event').prop('checked'))
+	//	var disable = $('#toggle-event').prop('checked');
+		if ($('#toggle-event').prop('checked') == false){ disable = 'ON' }
+		else{ disable = 'OFF';}
+
+		
+		
+		$.ajax({
+         type: 'POST',
+         url: ajax_object.ajax_url,
+         data: {
+            'value':disable,
+            'action': 'voting_status' //this is the name of the AJAX method called in WordPress
+        }, success: function (result) {
+			$('.voting-status').css("display", "block");
+			$('#voting-stat').html(result['status']);
+        	console.log(result);
+        },
+        error: function () {
+        	alert("error");
+        }	
+    });
+
+    })
+	
+                			$.ajax({
+                				url: ajax_object.ajax_url,
+                				type : 'GET',
+                				dataType : 'json',
+                				data : {
+                					action : 'get_voting_status',
+         
+                				},
+                				beforeSend : function(){
+                				
+                				},
+                				success :function(respond){
+                					console.log(respond);
+									if(respond == 'OFF'){
+										$('#toggle-event').bootstrapToggle('off')
+									}else{
+										$('#toggle-event').bootstrapToggle('on')
+									}
+                				
+                				},
+                				error : function(e){
+                					console.log(e);
+                				},
+                				complete : function(){
+                				
+                				}	
+                			});
+	
+	/*--- BBB Student Scroll TOp----*/
+	  $('#backtotop').css('opacity', 0);
+    
+    $('.studentVideo-section.content').scroll(function() {
+      //  var total = $(this)[0].scrollHeight - $(this).height();
+       // var opacity = $(this).scrollTop() / total;
+      // console.log($(this)[0].scrollHeight );
+      var scroll = $(this).scrollTop();
+		console.log(scroll );
+       if (scroll >= 500){
+		$('#backtotop').css('opacity', 1);
+	   }
+		else{
+			$('#backtotop').css('opacity', 0);
+		}
+        });
+
+    $('#backtotop').click(function() {
+        $('.studentVideo-section.content').animate({
+            scrollTop: 0
+        }, 800);
+    });
+	
+	/*-------- BBB Admin Pages Active Link ------*/
+
+	$(' #mainNav ul li a').each(function () {
+		if (window.location.href == $(this).attr('href')) {
+			$(this).addClass('active');
+		}
+	});
+	
 	/*-------- List Field Placeholder --------*/
-	$('#field_7_11 .gfield_list_group').each((i, el) => {
+	/*$('#field_7_11 .gfield_list_group').each((i, el) => {
 		$(el).find('.gfield_list_cell').each((x, element) => {
 			let $this = $(element),
 			$tr = $('tr', $this.parent().parent().prev());
 			$('input', $this).attr('placeholder', $('th:eq(' + x + ')', $tr).text());
 		});
-	});
+	});*/
 
 	/*-------- Admin Videos Load on Click ---------*/
 
 	//$('.studentVid-stats').attr('data-target', '#modal--' + $('.approved-videoData').attr('video-id'));
 	$('.studentVid-stats').attr('data-target', $('.approved-videoData').attr('video-id'));
 	$('.approved-videoData').click(function () {
+		$('.slick-list').find('.approved-videoData').removeClass('selected');
+				      $(this).addClass('selected');
+
 		//	$('.studentVid-stats').attr('data-target', '#modal-' + $(this).attr('video-id'));
 			$('.studentVid-stats').attr('data-target', $(this).attr('video-id'));
 
@@ -54,22 +142,34 @@ jQuery(document).ready(function($) {
           var container = el.parents('.main-container2');
           var lenContainer = jQuery('.pending-vid-container').find('.main-container2').length;
   console.log(ajax_object.ajax_url +'?' + data + '&action=approve_video_ajax');
-          if (window.confirm("Do you want to approve this video?")) { 
 
-            console.log(ajax_object.ajax_url +'?' + data + '&action=approve_video_ajax');
-            jQuery.post(ajax_object.ajax_url + '?' + data + '&action=approve_video_ajax',function(e){
-              console.log(e);
-          });
+    mscConfirm("Do you want to approve this video?",function(){
 
-            container.remove();
-                         if(lenContainer <= 1){
+
+         jQuery.post(ajax_object.ajax_url + '?' + data + '&action=approve_video_ajax',function(e){
+           
+        mscAlert("Video Approved",function(){
+            location.reload();
+        });
+if(lenContainer <= 1){
                 jQuery('.pending-vid-container').append('<div class="vid-upload-btn"><h2>No pending video entries yet</h2></div>');
             }
-            location.reload();
-        }
+
+        container.remove();
+          });
+
+
+              
+});
+
+
+       
         
         
     }); 
+
+
+ 
 	});
 
 	var videoID = $('.approved-videoData').first().attr('video-id');
@@ -93,7 +193,7 @@ jQuery(document).ready(function($) {
 	$('.approvedvideopop').each(function (index, value){
 		$(this).appendTo('#pops');
 	});
-
+				      
 	
 	$('.video-paginationCol > .et_pb_text_inner').slick({
 		infinite: true,
@@ -105,6 +205,8 @@ jQuery(document).ready(function($) {
 			return '<a>'+(i+1)+'</a>';
 		}
 	});
+	
+$('div#slick-slide00').addClass('selected');
       jQuery( ".approve" ).on("click",function(){ // When btn is pressed.
         console.log('text1');
 		         jQuery("form.approve-video-prompt").submit();
@@ -118,36 +220,57 @@ jQuery(document).ready(function($) {
           var container = el.parents('.main-container2');
           var lenContainer = jQuery('.pending-vid-container').find('.main-container2').length;
   console.log(ajax_object.ajax_url +'?' + data + '&action=approve_video_ajax');
-          if (window.confirm("Do you want to approve this video?")) { 
 
-            console.log(ajax_object.ajax_url +'?' + data + '&action=approve_video_ajax');
-            jQuery.post(ajax_object.ajax_url + '?' + data + '&action=approve_video_ajax',function(e){
-              console.log(e);
-          });
+    mscConfirm("Do you want to approve this video?",function(){
 
-            container.remove();
-                         if(lenContainer <= 1){
+
+         jQuery.post(ajax_object.ajax_url + '?' + data + '&action=approve_video_ajax',function(e){
+           
+        mscAlert("Video Approved",function(){
+            location.reload();
+        });
+if(lenContainer <= 1){
                 jQuery('.pending-vid-container').append('<div class="vid-upload-btn"><h2>No pending video entries yet</h2></div>');
             }
-            location.reload();
-        }
+
+        container.remove();
+          });
+
+
+              
+});
+
+
+       
         
         
-    });  
+    }); 
+
+
+ 
 	var pageNumber = 1;
 	$(".videos-module,.videos-page").on('click','.videos-home,.video-feed',function () {
-		var timer = new Timer();
+			var timer = new Timer();
 
 		var $this = this;
 		var $url = $(this).attr('data-href');
 		var $videoname =$(this).attr('data-video-name');
+		
 		var $secondsplayed;
 		$url = $url.split("/");
 		$url = $url[4] + "/" + $url[5];
 		var videoId = $(this).attr('data-id');
-		if( $url ){
+		
+		if($(window).width() < 968){
+			console.log('mobile');
+			window.location.href = $(this).attr('data-href');
+		}else{
+					if( $url ){
 			window.history.pushState("popup_url", "", "/dev/" + $url);
+						
 		}
+				
+
 		$.fancybox.open([{ href: $($this).attr('data-url') }], 
 		{ 
 			
@@ -163,10 +286,10 @@ jQuery(document).ready(function($) {
 			preload   : true,
 			autoCenter : true,
 				// maxWidth : 800,
-				maxHeight : 600,
-				fitToView : true,
-				width : '80%',
-				height : '80%',
+				//maxHeight : 400,
+				fitToView : false,
+				//width : '60%',
+				//height : '80%',
 				autoSize : false,
 				closeClick : false,
 				openEffect : 'none',
@@ -183,19 +306,32 @@ jQuery(document).ready(function($) {
 					timer.addEventListener('secondsUpdated', function (e) {
 						$secondsplayed = (timer.getTotalTimeValues().seconds.toString());
 					});
-					
-					ga(function(tracker) {
+			//	ga('create', 'UA-68402304-1', 'auto');
+
+				
+					/*ga(function(tracker) {
 						var clientId = tracker.get('clientId');
 					});
 					var clientId = ga.getAll()[0].get('clientId');
 					ga('create', 'UA-68402304-1', {
 						'clientId': clientId
-					});
-					
+					});*/
+					//ga('create', 'UA-68402304-1', 'auto');
+					//
+
+
+        ga('create', 'UA-68402304-1', 'bbbvideocontest.platypustest.info');
+        ga('send', 'pageview');
+        var clientId = '';
+        ga(function (tracker) {
+            clientId = tracker.get('clientId');
+        });
 
 				},
 				afterClose : function(){
+					
 					window.history.back();
+					
 					console.log('closed');
 					timer.stop();
 					console.log($videoname);
@@ -220,6 +356,9 @@ jQuery(document).ready(function($) {
 					
 				}
 			});
+		}
+		
+
 
 		return false; 
 		});//end
@@ -331,7 +470,7 @@ jQuery(document).ready(function($) {
 					if( parseInt($.trim(data)) < 1 ){
 						$('.loadmore').fadeOut();
 					}
-					if($('#video_max_page').val() == 1 || $('#video_max_page').val() == 0){
+					if($('.video_max_page').val() == 1 || $('.video_max_page').val() == 0){
 						$('.loadmore').hide();
 					}
 				},
@@ -397,7 +536,7 @@ jQuery(document).ready(function($) {
 						$('.loadmore').fadeOut();
 											//console.log( $('#ajax-posts').attr('data-page'));
 										}
-										if($('#video_max_page').val() == 1 || $('#video_max_page').val() == 0){
+										if($('.video_max_page').val() == 1 || $('.video_max_page').val() == 0){
 											$('.loadmore').hide();
 										}
 									}
@@ -422,3 +561,4 @@ jQuery(document).ready(function($) {
 			loadMoreVideos();
 		});
 		});
+		

@@ -23,7 +23,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-8">
                 <div class="card mb-8">
                     <div class="card-header">Edit Profile</div>
                     <div class="et_pb_section et_pb_section_1 et_section_regular">

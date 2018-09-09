@@ -29,6 +29,13 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
             </div>
         </div>
     </div>
+
+<div class="voting-status alert alert-success" style="display:none">
+  <strong>Updated Voting Status! - </strong><span id="voting-stat"></span> 
+</div>
+		<div class="row ">
+
+    </div>
     <div class="row popvideo-row">
         <div class="col-lg-4 col-md-12">
             <!-- Most Popular Video -->
@@ -40,45 +47,37 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
         <div class="col-lg-8 col-md-12">
         <!-- Daily Tren-->
             <div class="card mb-3 graph-card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-lg-7 col-md-7">Daily Trend</div>
-                    <div class="col-lg-5 col-md-5"> 
-                        <span class="left-elements charts">
-							<a href="#" id="line" class="active">Line Graph</a>
-							<a href="#" id="pie">Pie Chart</a>
-                        </span>
-                    </div>             
-                </div>
-
-            </div>
+            <div class="card-header">Daily Trend</div>
                 <?php get_template_part( 'partials/content', 'charts' ); ?>
             </div>
             </div>
         </div>
 	</div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-5">
             <div class="card mb-3 activity-card">
                 <div class="card-header">Activity Log</div>
                 <?php get_template_part( 'partials/content', 'activitylogs-scroll' ); ?>
             </div>
         </div>
 
-        <!-- <div class="col-lg-6">
-            <div class="card mb-3 comment-card">
-                <div class="card-header">Latest Comments</div>
-                    <div class="comment-container">
-                        <?php echo do_shortcode('[show-unapprove-comments]')?>
-                    </div>
-            </div>       
-        </div> -->
-
-        <div class="col-lg-6">
+        <div class="col-lg-5">
             <div class="card mb-3 rank-card">
-                <div class="card-header">VIDEO RANK AS OF TODAY</div>
+                <div class="card-header">Video Rank as of Today</div>
                 <?php get_template_part( 'partials/content', 'videoranks-scroll' ); ?>
             </div>
+        </div>
+		        <div class="col-lg-2">
+            <div class="card mb-3 vote-card">
+                         <div class="card-header">Voting Switch</div>
+				<div class="checkbox voting">
+  <label>
+    <input type="checkbox" id="toggle-event" data-toggle="toggle">
+ 
+  </label>
+</div>
+				
+			</div>
         </div>
     </div>
 </div>

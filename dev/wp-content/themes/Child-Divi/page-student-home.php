@@ -29,6 +29,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                     <?php 
                         $authid = get_current_user_id( ); 
                         $user_nicename = get_the_author_meta('user_nicename',$authid);
+                        $user_nickname = get_the_author_meta('nickname',$authid);
                         $user_school_id = get_the_author_meta('school',$authid);//gets schoold id of user
                         $school = get_post($user_school_id); // gets school 
                         $school_name = $school->post_title;
@@ -37,15 +38,25 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                     ?>
                     <div class=" et_pb_row et_pb_row_1 school-admin-row">
                         <div class="et_pb_column et_pb_column_4_4  et_pb_column_2 et_pb_css_mix_blend_mode_passthrough">
-                            <div class="username">Username/Groupname: <?php echo $user_nicename;?></div>
-                            <div class="school">School: <?php echo $school_name;?></div>
-                            <div class="members">Members:
+							<div class="group-info">
+							<div class="username"><div class="heading">Group Name</div>
+								<span><?php echo $user_nickname;?></span>
+								</div></br>
+                            <div class="school"><div class="heading">School</div>
+																<span> <?php echo $school_name;?></span>
+
+								</div></br>
+                            <div class="members"><div class="heading">Group Members</div>
+																<span></span>
+
                                 <?php
                                     foreach ($someArray as $key => $value) {
-                                        echo $value["Name"] . " - " . $value["Email"] . "<br>";
+                                        echo "<span>".$value["Name"] . " - " . $value["Email"] . "</span><br>";
                                     }
                                 ?>
+								</br>
                             </div>
+								</div>
                         </div>
                     </div>
                 </div>

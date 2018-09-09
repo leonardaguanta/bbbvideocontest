@@ -84,7 +84,7 @@ $ga = new Platypus_GA();
                     </table>
 
                     <div class="videoViews-container">
-                        <a href="" id="visitorsday" class="sortStatsButton " onclick="statsSorting(\'visitorsTimeFrame=day\')">Day</a><a href="" id="visitorsweek" class="sortStatsButton" onclick="statsSorting(\'visitorsTimeFrame=week\')">Week</a><a href="" id="visitorsmonth" class="sortStatsButton" onclick="statsSorting(\'visitorsTimeFrame=month\')">Month</a>
+                        <a href="" id="visitorsday" class="sortStatsButton " onclick="statsSorting(\'visitorsTimeFrame=day\')">Day</a><a href="" id="visitorsweek" class="sortStatsButton" onclick="statsSorting(\'visitorsTimeFrame=week\')">Week</a><a href="" id="visitorsmonth" class="sortStatsButton" onclick="statsSorting(\'month&visitorsTimeFrame=month\')">Month</a>
                     </div>
                 </div>
                 ';

@@ -56,10 +56,11 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
             <span class="nav-link-text">Edit Profile</span>
           </a>
         </li>
+		  
        <li class="nav-item">
           <a class="nav-link text-center" id="sidenavToggler">
-            <i class="fa fa-fw fa-angle-left"></i>
-            <span class="nav-link-text">Collapse Menu</span>
+             <!-- <i class="fa fa-fw fa-angle-left"></i>
+          <span class="nav-link-text">Collapse Menu</span>-->
           </a>
         </li>
       </ul>

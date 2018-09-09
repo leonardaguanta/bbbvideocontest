@@ -23,14 +23,19 @@ $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
         echo get_the_title();
 ?>" data-modal-id="modal-video" data-link="<?php the_permalink(); ?>">				
 			<div class="et_pb_module et_pb_image et_pb_image_0 et_always_center_on_mobile et_pb_has_overlay">
-			<?php if ( has_post_thumbnail() ) { ?>
+			<?php if ( get_field('fp5-splash-image') ) { ?>
 				<span class="et_pb_image_wrap video-thumbnail">
-					<img src="<?php the_field('fp5-splash-image'); ?>" alt="">
+					<img src="<?php the_field('fp5-splash-image'); ?>" alt="<?php echo get_the_title(); ?>">
+					<span class="et_overlay et_pb_inline_icon" data-icon="E"></span>
+				</span>
+			<?php } else { ?>
+				<span class="et_pb_image_wrap video-thumbnail sdfghj">
+					<img src="/dev/wp-content/uploads/2018/09/school-default.png" alt="<?php echo get_the_title(); ?>">
 					<span class="et_overlay et_pb_inline_icon" data-icon="E"></span>
 				</span>
 			<?php } ?>
 			</div>
-	
+
 			<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_0">
 				<div class="et_pb_text_inner">
 					<p class="video-title">
@@ -38,8 +43,13 @@ $href = home_url( '/video-frame/?vid_id=' . get_the_ID() );
 							<?php echo get_the_title(); ?>
 						</a>
 					</p>
-					<span class="video-author"><?php echo the_author_meta( 'display_name', $postData[0]->post_author ) ?></span><span class="info-bar"> | </span><span class="video-votes">
-					<?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span>
+					<span class="video-author"><?php echo the_author_meta( 'nickname', $postData[0]->post_author ) ?></span><span class="info-bar">  </span><div class="video-votes">
+					<?php 
+										   $status = get_option( 'voting_status' );
+										   if ( $status == 'ON'){
+											   echo do_shortcode('[simplevoteme postid='. get_the_ID() .']');
+										   }; 
+						?></div>
 				</div>
 			</div> <!-- .et_pb_text -->
 		</div>

@@ -93,34 +93,38 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 
                                         <!-- STUDENT INFO MODAL -->
                                         <div class="modal fade student-infoModal2 bd-example-modal-lg" id="bbbAdminViewProfile<?php echo $user->ID; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">                                               
+                                            <div class="modal-dialog " role="document">
+                                                <div class="modal-content">  
+													      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+      </div>
                                                     <div class="modal-body">
-                                                        <p>School Name: <span class="studentInfo-school"><?php echo $school->post_title; ?></span></p>
-                                                        <p>User/Group Name: <span class="studentInfo-user"><?php echo $username; ?></span></p>
-                                                        <p>Members: <span class="studentInfo-members"><?php
+                                                        <p><span class="label">School Name: </span> <span class="studentInfo-school"><?php echo $school->post_title; ?></span></p>
+                                                        <p><span class="label">User/Group Name: </span><span class="studentInfo-user"><?php echo $username; ?></span></p>
+                                                        <p><span class="label">Members: </span> <br><span class="studentInfo-members"><?php
                                     foreach ($someArray as $key => $value) {
                                         echo $value["Name"] . " - " . $value["Email"] . "<br>";
                                     }
                                 ?></span></p>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close Window</button>
-                                                    </div>
+     
                                                 </div>
                                             </div>
                                         </div>
                                         
                                         <!-- MESSAGE STUDENT MODAL -->
                                         <div class="modal fade student-messageModal2 bd-example-modal-lg" id="bbbAdminSendEmail<?php echo $user->ID; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">                                               
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">  
+																										      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+      </div>
                                                     <div class="modal-body">
                                                         <?php echo do_shortcode('[gravityform id="9" title="false" field_values="email='.$user_info->user_email.'"]')?>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>

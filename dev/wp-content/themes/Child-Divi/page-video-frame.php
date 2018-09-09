@@ -28,8 +28,17 @@ Template name: VideoFrame
     echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>'; ?>
 
 <script type="text/javascript">
-//flowplayer.conf.embed = false;
-//flowplayer.conf.fullscreen = true;
+	
+			
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)
+      [0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	
+	
+flowplayer.conf.embed = false;
+flowplayer.conf.fullscreen = true;
 </script>
 
     <div class="et_pb_section pop-videosSection et_pb_section_3 et_section_regular">
@@ -54,7 +63,7 @@ Template name: VideoFrame
                             $videoName = basename($videoName, ".mp4");
                             $auth = get_post($videoId); // gets author from post
                             $authid  = $auth->post_author; // gets author id for the post
-                            $user_nicename = get_the_author_meta('user_nicename',$authid);
+                            $user_nickname = get_the_author_meta('nickname',$authid);
                             $user_school_id = get_the_author_meta('school',$authid);//gets schoold id of user
                             $school = get_post($user_school_id); // gets school 
                             $school_name = $school->post_title;
@@ -89,15 +98,23 @@ Template name: VideoFrame
                 <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_5">
                     <div class="et_pb_text_inner">
                         <h3 class="pop-videoTitle"><span class="pop-vidTitle"><?php echo get_the_title( $videoId );?></span> by 
-							<span class="pop-videoAuthor"><?php echo $user_nicename;?></span></h3>
+							<span class="pop-videoAuthor"><?php echo $user_nickname;?></span></h3>
                         <p class="school-video "><?php echo $school_name; ?></p>
+						
+
                     </div>
                 </div>
             </div>
             <div class="et_pb_column et_pb_column_1_3  et_pb_column_8 et_pb_css_mix_blend_mode_passthrough et-last-child">
                 <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_6">
                     <div class="et_pb_text_inner">
-                        <?php echo do_shortcode('[simplevoteme postid='. $videoId .']'); ?>
+						<?php 
+										   $status = get_option( 'voting_status' );
+										   if ( $status == 'ON'){
+											   echo do_shortcode('[simplevoteme postid='. $videoId .']');
+										   }; 
+						?>
+                        
                     </div>
                 </div>
             </div>

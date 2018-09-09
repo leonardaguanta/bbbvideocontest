@@ -27,8 +27,13 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
             <div class="row">
                 <div class="col-lg-10">
                     <div class="card mb-3">
-                        <div class="card-header">Our Video</div>
-                        
+                       
+                        <div class="card-header">Our Video
+<div class="ads-btns">
+                                <a href="#" data-toggle="modal" class="campaign-btn" data-target="#studentProfileVideo">Upload Video</a>
+                                
+                                     </div>
+</div>
                             <?php 
                             global $current_user, $post;
                             get_currentuserinfo();
@@ -43,8 +48,8 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 
                             if ( count( $video_posts ) > 0 ) { ?>
 
-                                <div class="header-tab studentVideo-headerTab"><a class="dallas-btn" href="#" data-toggle="modal" data-target="#studentProfileVideo<?php echo $user->ID; ?>"><span class="newVid-btn">UPLOAD VIDEO</span></a></div>
-                                <div class="et_pb_section studentVideo-section et_pb_section_5 et_section_regular with-scroll">
+
+                                <div class="et_pb_section studentVideo-section content et_pb_section_5 et_section_regular with-scroll">
 
                                 <?php if($_REQUEST['submission'] == 'new' ) { ?>
                                     <script>
@@ -92,12 +97,11 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                                             <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left studentVideo-details et_pb_text_14">
                                                 <div class="et_pb_text_inner">
                                                     <h2><?php echo $postVideo->post_title; ?></h2>
-                                                    <p><span class="details-title">Owner:</span> <?php echo $author; ?></p>
                                                     <p><span class="details-title">Date Published:</span> <?php echo get_the_date("F j, Y", $postVideo->ID); ?></p>
                                                     <?php
                                                         if($postVideo->post_status == 'pending') {
                                                             $videoStatus = "Pending Approval";
-                                                            $videoStatusDescription = '<p class="status">YOUR VIDEO IS PENDING APPROVAL</p>';
+                                                            $videoStatusDescription = '<p class="status">Your Video is Pending for Approval</p>';
                                                             $submitIconDescr = "";
                                                             $social = ''; 
                                                         } elseif($postVideo->post_status == 'trash') {
@@ -136,8 +140,11 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 
                                         <!-- VIDEO MODAL -->
                                         <div class="modal fade student-videoModal bd-example-modal-lg" id="studentProfileVideo<?php echo $user->ID; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">                                               
+                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                <div class="modal-content">   
+													      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
                                                     <div class="modal-body">
                                                         <?php echo do_shortcode("[gravityform id=5 ajax='true' title=false description=false]"); ?>
                                                         <p class="vidUpload-note">Do not close page - once video upload is complete you will be redirected automatically</p>
@@ -147,12 +154,16 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                                         </div>
                                     </div>
 
-                                <?php  echo videoStatsDisplay_student($postVideo); } ?>
+                                <?php  //echo videoStatsDisplay_student($postVideo);
+								} 
+									?>
                                 </div>
+						    <div id="scroll"><div id="backtotop">⌃</div></div>
                             <?php } else { ?>
-                                 <div class="header-tab studentVideo-headerTab"><a class="dallas-btn" href="#" data-toggle="modal" data-target="#studentProfileVideo<?php echo $user->ID; ?>"><span class="newVid-btn">UPLOAD VIDEO</span></a></div>
+                                 <div class="header-tab studentVideo-headerTab">
+
                                                                          <!-- VIDEO MODAL -->
-                                        <div class="modal fade student-videoModal bd-example-modal-lg" id="studentProfileVideo<?php echo $user->ID; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal fade student-videoModal bd-example-modal-lg" id="studentProfileVideo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content">                                               
                                                     <div class="modal-body">

@@ -12,25 +12,27 @@ if ( $loop->have_posts() && !(is_admin()) ) :
 					<div class="school-logo">
 						<?php if( get_field('school_logo') ): ?>
 							<img src="<?php the_field('school_logo'); ?>" alt="<?php echo get_the_title(); ?>">
+						<?php else: ?>
+							<img src="<?php echo home_url(); ?>/wp-content/uploads/2018/09/school-default.png" alt="<?php echo get_the_title(); ?>">
 						<?php endif; ?>
 					</div>
 					<div class="school-name">
-						<h3><?php echo get_the_title(); ?></h3>
+						<h4><?php echo get_the_title(); ?></h4>
 					</div>
 				</div>
 			</div> <!-- .et_pb_text -->			
 			<div class="et_pb_module et_pb_image et_pb_image_1 et_always_center_on_mobile schools-image">							
 				<span class="et_pb_image_wrap">
-				<?php if ( has_post_thumbnail() ) { ?>
-
-						<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail(); ?></a>
-
-				<?php } ?>
+				<?php if ( has_post_thumbnail() ) : ?>
+					<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail(); ?></a>
+				<?php else: ?>
+					<a href="<?php the_permalink(); ?>"><img src="<?php echo home_url(); ?>/wp-content/uploads/2018/09/school-default.png" alt="<?php echo get_the_title(); ?>"></a>
+				<?php endif; ?>
 				</span>
 			</div>				
 			<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_1">					
 				<div class="et_pb_text_inner">
-					<p><?php echo the_excerpt(); ?></p>
+					<?php the_excerpt(); ?>
 				</div>
 			</div> <!-- .et_pb_text -->
 			

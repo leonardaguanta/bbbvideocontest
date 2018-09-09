@@ -23,7 +23,7 @@
                                         <h3>BBB Serving North Central Texas | Dallas</h3>
                                         <p class="contact-address">1601 Elm Street, Suite 1600, Dallas, TX 75201.</p>
                                         <p>Email: <a href="mailto:marketing@dallas.bbb.org" class="custom-link">marketing@dallas.bbb.org</a>
-                                            <br>Phone: 1 (214) 220-2000
+                                            <br>Phone: <a href="tel:1.214.220.2000" class="custom-link">1 (214) 220-2000</a>
                                             <br>9:00 AM – 3:00 PM Monday – Friday</p>
                                     </div>
                                 </div>
@@ -39,16 +39,16 @@
                                 </div>
                                 <ul class="et_pb_social_media_follow et_pb_module et_pb_bg_layout_dark contact-social et_pb_social_media_follow_0 clearfix et_pb_text_align_center">
                                     <li class="et_pb_social_icon et_pb_social_network_link et-social-facebook et_pb_social_media_follow_network_0">
-                                        <a href="#" class="icon et_pb_with_border" title="Facebook" target="_blank"><span class="et_pb_social_media_follow_network_name">Facebook</span></a>
+                                        <a href="<?php echo esc_url( et_get_option( 'divi_facebook_url', '#' ) ); ?>" class="icon et_pb_with_border" title="Facebook" target="_blank"><span class="et_pb_social_media_follow_network_name">Facebook</span></a>
                                     </li>
                                     <li class="et_pb_social_icon et_pb_social_network_link et-social-instagram et_pb_social_media_follow_network_1">
-                                        <a href="#" class="icon et_pb_with_border" title="Instagram" target="_blank"><span class="et_pb_social_media_follow_network_name">Instagram</span></a>
+                                        <a href="<?php echo esc_url( et_get_option( 'divi_rss_url', '#' ) ); ?>" class="icon et_pb_with_border" title="Instagram" target="_blank"><span class="et_pb_social_media_follow_network_name">Instagram</span></a>
                                     </li>
                                     <li class="et_pb_social_icon et_pb_social_network_link et-social-linkedin et_pb_social_media_follow_network_2">
-                                        <a href="#" class="icon et_pb_with_border" title="LinkedIn" target="_blank"><span class="et_pb_social_media_follow_network_name">LinkedIn</span></a>
+                                        <a href="<?php echo esc_url( et_get_option( 'divi_google_url', '#' ) ); ?>" class="icon et_pb_with_border" title="LinkedIn" target="_blank"><span class="et_pb_social_media_follow_network_name">LinkedIn</span></a>
                                     </li>
                                     <li class="et_pb_social_icon et_pb_social_network_link et-social-twitter et_pb_social_media_follow_network_3">
-                                        <a href="#" class="icon et_pb_with_border" title="Twitter" target="_blank"><span class="et_pb_social_media_follow_network_name">Twitter</span></a>
+                                        <a href="<?php echo esc_url( et_get_option( 'divi_twitter_url', '#' ) ); ?>" class="icon et_pb_with_border" title="Twitter" target="_blank"><span class="et_pb_social_media_follow_network_name">Twitter</span></a>
                                     </li>
                                 </ul>
                             </div>

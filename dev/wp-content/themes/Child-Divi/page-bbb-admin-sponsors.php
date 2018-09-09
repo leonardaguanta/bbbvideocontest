@@ -26,7 +26,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                 <div class="col-lg-10">
                     <div class="card mb-3">
                         <div class="card-header sponsor-header">
-                            <h3 class="ad-header">Ad Management - Campaigns</h3>
+                            Ad Management - Campaigns
                             <div class="ads-btns">
                                 <a href="<?php echo admin_url('post-new.php?post_type=campaigns'); ?>" target="_blank" class="campaign-btn" style="position:static;">New Campaign</a>
                                 <a href="<?php echo admin_url('post-new.php?post_type=advertisers'); ?>" target="_blank" class="advertiser-btn" style="position:static;">New Advertiser</a>
@@ -120,41 +120,6 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                         </tr>
                     </thead>';
 
-//   <tr>
-//   <th style="width: 145px;"></th>
-//   <th style="width: 145px;"></th>
-//   <th style="width: 50px;"></th>
-//   <th style="width: 145px;"></th>
-//   <th style="width: 145px;">Impressions/Views</th>
-//   <th>Clicks</th>
-//   <th>CTR</th>
-//   <th style="width: 145px;"></th>
-//   <th style="width: 145px;"></th>
-//   </tr>
-//   <tr>
-//   <td style="width: 145px;"></td>
-//   <td style="width: 145px;"></td>
-//   <td style="width: 50px;"></td>
-//   <td style="width: 145px;"><b>TOTAL:</b></td>
-//   <td style="width: 145px;">'.$cAllTotalImpressions.'</td>
-//   <td>'.$cAllTotalClicks.'</td>
-//   <td>'.$cAllTotalCTR.'</td>
-//   <td style="width: 140px;"></td>
-//   <td style="width: 140px;"></td>
-//   </tr>
-//   </table>
-//   <table style="margin-top:20px;" class="campaignTable">
-//   <tr class="campaignHeader">
-//   <th>Campaign</th>
-//   <th>Advertiser</th>
-//   <th>Ads</th>
-//   <th>Campaign Status</th>
-//   <th>Impressions/Views</th>
-//   <th>Clicks</th>
-//   <th>CTR</th>
-//   <th colspan="2"></th>
-//   </tr>
-//   ';
   foreach ($campaigns as $campaign) {
     $cAllTotalImpressions = $cAllTotalImpressions + $cTotalImpressions;
     $cTotalImpressions = 0;
@@ -198,7 +163,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                                                     <th>Status</th>
                                                     <th>Impressions/Views</th>
                                                     <th>Clicks</th>
-                                                    <th><a href='#' onclick='window.location.reload(true);'>Refresh to view any changes</a></th>
+                                                   
                                             </tr>";
                                             foreach ($cLinkedBannersRequest as $banner) {
                                                     $class2 = ($i2%2 == 0)? 'greyRow': 'whiteRow';
@@ -243,9 +208,9 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                     <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
                         <div class='modal-content'>                                               
                             <div class='modal-body'>
-                                <a style='float: right; margin: 15px; padding: 10px; background: #5B9DD9; color: #fff;' target='_blank'  href='/wp-admin/post-new.php?post_type=banners'>New Ad</a>
+                                <a class='new-ad' target='_blank'  href='/wp-admin/post-new.php?post_type=banners'>New Ad</a>
                                 <h2>$campaign->post_title</h2><br>
-                                <div style='float: right; margin-right: 15px;'> <a  href='#' onclick='window.location.reload(true);'>Refresh</a><span> to view any changes</span></div><br><br>
+                                <div style='float: right; margin-right: 15px;'></div><br><br>
                                 <table class='table modal-table'>
                                     <tr>
                                         <th>Ad Title</th>
@@ -272,7 +237,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                                         <td><span>".$bStatus['name']."</span></td>
                                         <td><span>$banner_impressions</span></td>
                                         <td><span>$banner_clicks</span></td>
-                                        <td><a href='/wp-admin/post.php?post=".$banner->ID."&action=edit'  target='_blank'>Edit Ads</a></td>
+                                        <td><a href='".MARKETNAME_DIR."/wp-admin/post.php?post=".$banner->ID."&action=edit'  target='_blank'>Edit Ads</a></td>
                                     </tr>";
                                     }
                                 

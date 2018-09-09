@@ -15,7 +15,9 @@ if ( $loop->have_posts() && !(is_admin()) ) :
 					<div class="s-logo">
 						<a href="<?php echo get_the_permalink(); ?>">
 							<?php if( get_field('school_logo') ): ?>							
-								<img src="<?php the_field('school_logo'); ?>" alt="<?php echo get_the_title(); ?>">							
+								<img src="<?php the_field('school_logo'); ?>" alt="<?php echo get_the_title(); ?>">
+							<?php else: ?>
+								<img src="<?php echo home_url(); ?>/wp-content/uploads/2018/09/school-default.png" alt="<?php echo get_the_title(); ?>">						
 							<?php endif; ?>
 						</a>
 					</div>

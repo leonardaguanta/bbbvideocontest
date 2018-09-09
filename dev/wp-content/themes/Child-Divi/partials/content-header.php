@@ -44,7 +44,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
               <a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/' ) ); ?>">Home Page</a>
             </li>
             <li>
-              <a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/statistics' ) ); ?>">Statistics</a>
+              <a href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/statistics/?uploadedVideosTimeFrame=day&visitorsTimeFrame=day' ) ); ?>">Statistics</a>
             </li>
 
             <li>
@@ -56,7 +56,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Link">
           <a class="nav-link" href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/schools-admin' ) ); ?>">
-            <i class="fa fa-fw fa-file"></i>
+            <i class="fa fa-fw fa-graduation-cap"></i>
             <span class="nav-link-text">Schools</span>
           </a>
         </li>
@@ -89,12 +89,12 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
             <span class="nav-link-text">Client/Student Info</span>
           </a>
         </li>
-       <li class="nav-item">
+       <!--<li class="nav-item">
           <a class="nav-link text-center" id="sidenavToggler">
             <i class="fa fa-fw fa-angle-left"></i>
             <span class="nav-link-text">Collapse Menu</span>
           </a>
-        </li>
+        </li>-->
       </ul>
       <ul class="navbar-nav sidenav-toggler">
            <li class="nav-item">
@@ -145,7 +145,7 @@ if ( $user ) :
                 </li>
 		   
               <li class="nav-item">
-                <a class="nav-link" >
+                 <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
                   <i class="fa fa-fw fa-sign-out" href="<?php echo wp_logout_url(); ?>"></i>Logout</a>
 
               </ul>

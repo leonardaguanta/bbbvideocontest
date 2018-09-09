@@ -1,0 +1,183 @@
+/*----------- QA FIXES CSS -----------*/
+
+@media only screen and (min-width : 981px) {
+    .single-student_schools #main-footer, .page-id-64 #main-footer {
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+    }
+}
+
+@media only screen and (max-width : 980px) {
+    #copyright, #createdby { float: none; text-align: center; }
+}
+
+
+#mobile_menu li.current-menu-item > a { border-bottom: 2px solid #ED8B00; font-weight: bold; }
+
+.videos-home .et_pb_image_wrap  { cursor: pointer; }
+.popvideo-row h3.video-title a { color: #036594; }
+.popvideo-row .video-title { font-size: 16px; }
+div.et_pb_blurb.user-log .et_pb_main_blurb_image { width: 140px; }
+.video-votes span.result { color: #b2b2b2; }
+#top-menu li a { font-weight: normal; }
+#top-menu li a:hover { color: #ED8B00; opacity: 1 !important;}
+html body.page h3 { font-size: 22px; padding-bottom: 15px; line-height: 28px; }
+.button-filter { margin-bottom: 30px; }
+#video-filter { transition: all .5s; }
+#video-filter:hover { box-shadow: 0px 5px 10px 0px rgba(237,139,0,1); }
+body.page-template-default footer#main-footer, .single-student_schools footer#main-footer  { padding: 20px 0 !important; }
+
+html .page .schools-container h4 { font-size: 17px; padding-bottom: 15px; line-height: 23px; }
+html body.page-template-default p { font-size: 16px; line-height: 22px; }
+
+.schools-home p { font-size: 13px !important; line-height: 17px !important; }
+
+.info-bar { color: #b2b2b2; }
+.video-votes .simplevotemeWrapper span.result small { font-size: 12px; }
+div.video-votes .simplevotemeWrapper > span { min-width: 80px; }
+
+.new-ad { float: right; margin: 15px; padding: 10px; background: #5B9DD9; color: #fff !important; border-radius: .25rem; }
+
+a.et_pb_button {
+    background: #ee872c;
+    border-color: #ee872c;
+    font-size: 20px;
+    font-family: 'Verdana',Helvetica,Arial,Lucida,sans-serif!important;
+    background-color: #ee872c;
+    font-weight: bold;
+}
+
+.participate-module p {
+    padding: 20px 0;
+    border-top: 4px solid;
+    border-bottom: 4px solid;
+    line-height: 35px !important;
+    font-size: 23px !important;
+    font-weight: 600;
+}
+
+#mobile_menu li  a:hover { color: #ED8B00; }
+div.lrm-user-modal-container {
+    position: absolute;
+    margin: auto;
+    height: 400px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/*------------- ADMIN CSS -----------*/
+
+.chart-container .upper-stat { margin-left: 20px; margin-top: 20px; }
+#nvrGraph { margin-left: -65px; margin-top: 30px; }
+.user-log p.user { line-height: 15px; }
+
+div.msc-content {
+    position: absolute;
+    z-index: 9999999;
+    margin: auto;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    vertical-align: middle;
+    max-height: 200px;
+}
+div.msc-confirm { z-index: 9999; }
+
+
+@media only screen and ( min-width: 480px ) and ( max-width: 767px ) {
+    .col-sm-5.for-mobile-sm { margin-left: -100px; }
+}
+
+@media only screen and (max-width : 767px) {
+    .chart-container #big { height: auto !important; margin-left: 20px;}
+    .chart-container .right-panel { margin-left: 35px; }
+    .chart-container .right-panel div.small-chart { margin-left: -30px; }
+
+    .graph-card .card-header > .row .col-md-7, .graph-card .card-header > .row .col-md-5 { padding: 0 1.25rem !important;  } 
+    div.card-header { text-align: center; }
+
+    div.admin-fluid.container-fluid { padding-right: 20px; padding-left: 20px; }
+    div.row { margin-left: 0; margin-right: 0; }
+    #nvrGraph, #viewTrend { margin-left: 0; }
+    .popvideo-card, .graph-card, .activity-card, .comment-card, .rank-card { max-height: 100% !important; }
+    div.ad-header, div.ads-btns { float: none; display: block; }
+    p#copyright, p#createdby { float: none; text-align: center; margin-bottom: 0; line-height: 25px; }
+
+    div.card.mb-3.vote-card { min-height: 100%; max-height: 100%; }
+    .checkbox.voting { text-align: center; }
+    div.videostats-row span.good { margin-top: 0 !important; }
+
+    div.rank-video .et_pb_blurb_description p, div.rank-video .et_pb_blurb_description span.video-votes { display: block; } 
+    span.rank-divider { display: none; }
+    div.rank-video .et_pb_blurb_description p { margin-bottom: 0; }
+
+    li#field_7_6, li#field_7_7, li#field_7_9, li#field_7_10, li#field_7_12 { 
+        padding: 20px 10px 0 !important; 
+        width: 100%;
+        float: none;
+    }
+    #gform_wrapper_7 .top_label .gfield_label { margin-bottom: 0; }
+	#gform_wrapper_7 li.gfield .ginput_container { margin-top: 0 !important; }
+	
+	div.school-admin-row.et_pb_row div.school-admin {
+		padding: 35px 0 !important;
+		margin: 0 !important;
+		border-bottom: 1px solid #f2f2f2;
+	}
+	
+	div.school-admin-row.et_pb_row .et_pb_column > div.school-admin:nth-child(2) { padding-top: 0 !important; }
+	div.school-admin-row.et_pb_row .et_pb_column >  div.school-admin:last-child { border-bottom: 0 !important; }
+}
+
+@media only screen and (max-width : 479px) {
+    .campaign-btn { margin-right: 0 !important; }
+    table.adSummaryTable { text-align: center; }
+
+}
+
+/*------ FORM FIXES ------*/
+
+div.gform_wrapper label.gfield_label { color: #036594 !important; }
+
+#field_7_6 .gfield_description { font-size: 14px; color: #404040; }
+div.gform_wrapper div.validation_error {
+    color: #fff;
+    border-color: #ff4040 !important;
+    background: #ff4040 !important;
+}
+
+.gfield_description.validation_message {
+    color: #ff0000!important;
+	padding-top: 10px !important;
+}
+.gform_wrapper li.gfield.gfield_error, .gform_wrapper li.gfield.gfield_error.gfield_contains_required.gfield_creditcard_warning {
+    background: none !important;
+    border: none !important;
+}
+.gform_wrapper li.gfield.gfield_creditcard_warning {
+    border: none !important;
+    background: none !important;
+}
+.gform_wrapper li.gfield.gfield_error table.gfield_list thead th {
+    color: #ff0000 !important;
+}
+.gform_wrapper li.gfield.gfield_creditcard_warning div.gfield_creditcard_warning_message span {
+    border: none !important;
+}
+.gform_wrapper li.gfield.gfield_creditcard_warning div.gfield_creditcard_warning_message {
+    color: #ff0000 !important;
+}
+li#field_4_11 {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#field_5_1 .gfield_description, #extensions_message_5_5, p.vidUpload-note { font-size: 14px; }
+#gform_wrapper_6.gform_validation_error .gform_body ul li.gfield.gfield_error:not(.gf_left_half):not(.gf_right_half) { max-width: 100% !important; }
+#gform_wrapper_6 .gfield_error .gfield_label { display: none; }
+#gform_wrapper_6 li.gfield.gfield_error.gfield_contains_required div.ginput_container { margin-top: 0; }

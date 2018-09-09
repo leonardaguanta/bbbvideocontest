@@ -10,7 +10,12 @@ echo '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min
     echo '<script type="text/javascript" src="http://bbbvideocontest.platypustest.info/dev/wp-content/plugins/simple-vote-me/js/simple-vote-me.js?ver=4.9.6"></script>'; 
 get_header(); ?>
 
-    <?php while ( have_posts() ) : the_post(); ?>
+    <?php while ( have_posts() ) : the_post(); 
+							$user_id = get_the_author_meta('ID');
+							$user_school_id = get_the_author_meta('school',$user_id);//gets schoold id of user
+                            $school = get_post($user_school_id); // gets school 
+                          	$school_name = $school->post_title;
+?>
         <div id="main-content">
             <article id="post-370" class="post-370 page type-page status-publish hentry">
                 <div class="entry-content">
@@ -30,8 +35,12 @@ get_header(); ?>
                                     <div class="et_pb_column et_pb_column_1_3 et_pb_column_inner  et_pb_column_inner_1">
                                         <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left video-details et_pb_text_1">
                                             <div class="et_pb_text_inner">
-                                                <h2><?php the_title(); ?></h2>
-                                                <p class="indVidAuthor"><?php the_author(); ?></p>
+												<h3 class="pop-videoTitle"><span class="pop-vidTitle"><?php the_title(); ?></span> by 
+							<span class="pop-videoAuthor"><?php the_author_nickname(); ?></span></h3>
+                        <p class="school-video "><?php 
+							
+							
+							echo $school_name; ?></p>
                                                 <p class="indVidDate"><?php echo get_the_date("F j, Y"); ?></p>
                                             </div>
                                         </div>
@@ -39,7 +48,16 @@ get_header(); ?>
                                     <div class="et_pb_column et_pb_column_1_3 et_pb_column_inner  et_pb_column_inner_2 et-last-child">
                                         <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_right video-counters et_pb_text_2">
                                             <div class="et_pb_text_inner clearfix">
-                                                </span> <span class="video-votes"><?php echo do_shortcode('[simplevoteme postid='.  get_the_ID().']');?></span> <span class="count-separator"></span> <!--<span class="video-views">--><?php //echo get_post_meta( get_the_ID(), '_custom_video_view', true);?><!-- Views</span> -->
+                                                </span> <span class="video-votes">
+											<?php 
+										   $status = get_option( 'voting_status' );
+										   if ( $status == 'ON'){
+											   echo do_shortcode('[simplevoteme postid='. get_the_ID() .']');
+										   }; 
+						?>
+								
+											
+											</span> <span class="count-separator"></span> <!--<span class="video-views">--><?php //echo get_post_meta( get_the_ID(), '_custom_video_view', true);?><!-- Views</span> -->
                                             </div>
                                         </div>
                                     </div>

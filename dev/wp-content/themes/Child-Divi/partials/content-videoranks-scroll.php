@@ -41,7 +41,18 @@
                         <div class="et_pb_blurb_container">
                             <h4 class="et_pb_module_header"><?php the_title(); ?></h4>
                             <div class="et_pb_blurb_description">
-                                <p><?php echo the_author_meta('display_name', $postData[0]->post_author);?></p>
+                                <p><?php echo the_author_meta('nickname', $postData[0]->post_author);?></p>
+                               <?php 
+										   $status = get_option( 'voting_status' );
+										   if ( $status == 'ON' || user_can( wp_get_current_user(), 'administrator' ) ){
+											   ?>
+								 <span class="rank-divider"> | </span>
+                                <span class="video-votes">
+											<?php
+											   echo do_shortcode('[simplevoteme postid='. $videoId .']');?>
+								</span><?php
+										   }; 
+						?>
                             </div>
                         </div>
                     </div>

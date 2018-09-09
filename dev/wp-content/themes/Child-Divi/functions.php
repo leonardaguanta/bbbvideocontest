@@ -8,7 +8,8 @@ add_filter( 'gform_enable_field_label_visibility_settings', '__return_true' );
 
 add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
 function theme_enqueue_styles() {
-    wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
+	wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
+	wp_enqueue_style( 'fixes-style', get_stylesheet_directory_uri() . '/style-fixes.css' );
 
 }
 add_filter( 'edit_post_link', function( $link, $post_id, $text )
@@ -48,6 +49,11 @@ function my_scripts_method() {
 	wp_enqueue_script('sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js', '', '1.0.0', true);
 	wp_enqueue_script('sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js', '', '1.0.0', true);
 	wp_enqueue_script('sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js', '', '1.0.0', true);
+		 
+		wp_enqueue_script('msc-js', get_stylesheet_directory_uri() . '/js/msc-script.js', '', '1.0.0', true);	 
+		 	wp_enqueue_style('msc-css', get_stylesheet_directory_uri() . '/css/msc-style.css');
+
+		 
 
   }
 	
@@ -102,8 +108,11 @@ $video_url = get_home_url().'/wp-content/uploads/compressed/'.$uniquedir;
 	
 	
 	
-	$compress = shell_exec("ffmpeg -i $inputvideo -vcodec h264 -acodec mp3 $output_path 2>&1 &");
+	//$compress = shell_exec("ffmpeg -i $inputvideo -vcodec h264 -acodec mp3 $output_path 2>&1 &"); //orig
+	$compress = shell_exec("ffmpeg -i $inputvideo -vcodec h264 -acodec copy $output_path 2>&1 &"); 
 	
+	
+
 	
 	// echo $compress;
 	update_post_meta( $postId, 'fp5-mp4-video', $video_url, get_post_meta( $postId, 'fp5-mp4-video', true ) );
@@ -283,7 +292,7 @@ function wti_loginout_menu_link( $items, $args ) {
 
 /* Delete */
 function wp_delete_post_link( $link = 'Delete This', $postId ) {
-	$link = "<a onclick='confirm(\"Are you sure you want to delete?\");' class='sortStatsButton' href='" . wp_nonce_url( get_bloginfo( 'url' ) . "/wp-admin/post.php?action=delete&amp;post=" . $postId, 'delete-post_' . $postId ) . "'>" . $link . "</a>";
+	$link = "<a onclick='confirm(\"Are you sure you want to delete?\");' class='sortStatsButton delete-class' href='" . wp_nonce_url( get_bloginfo( 'url' ) . "/wp-admin/post.php?action=delete&amp;post=" . $postId, 'delete-post_' . $postId ) . "'>" . $link . "</a>";
 
 	return $link;
 }
@@ -620,7 +629,25 @@ add_action('gform_after_submission_9', function($entry){
 
 	//GFAPI::delete_entry( $entry['id'] );
 }); 
+add_action('wp_ajax_admin_delete_school','admin_delete_school');
+add_action('wp_ajax_nopriv_admin_delete_school','admin_delete_school');
+function admin_delete_school(){
+  $school_id = intval($_REQUEST['id']);
+ // check_ajax_referer('bbb-admin-delete-'.$school_id, 'nonce');
 
+  $delete_respond = wp_trash_post($school_id);
+
+  echo json_encode(array( 'result' => $delete_respond));
+  die();
+
+}
+/* Delete */
+function wp_delete_school_link( $link = 'Delete This', $postId ) {
+	$nonce = wp_create_nonce('bbb-admin-delete-'.$postId);
+	$link = "<a class='sortStatsButton delete-school delete-class' data-id='".$postId."' data-nonce='".$nonce."'>Delete</a>";
+
+	return $link;
+}
 add_action('wp_ajax_admin_delete_user','admin_delete_user');
 add_action('wp_ajax_nopriv_admin_delete_user','admin_delete_user');
 function admin_delete_user(){
@@ -732,29 +759,8 @@ function viewstat(){
     $rows = $results->getRows();
     $avgDuration = $rows[0][1];	
 	
-	$dataViewOutput = '									<div class="col-one">
-											<div class="vid-chart">
-						<div id="chart_div_'.$post_id.'" style="width: 244px; height: 158px;"></div>
-													<script>
-													google.setOnLoadCallback(drawChart);
-													function drawChart() {
-									var data = google.visualization.arrayToDataTable([
-																		["days", "Views" ],
-										'.$dataView.'
-																]);
-									var options = {
-																	hAxis: {titleTextStyle: {color: "#333"}},
-																	vAxis: {viewWindow:{min:0}},
-										chartArea:{ left: "10%", top: "5%", width: "87%", height: "85%" },
-										height: 158,
-										width: 244,
-																	legend: {position: "none"}
-															};
-															var chart = new google.visualization.AreaChart(document.getElementById("chart_div_'.$post_id .'"));
-															chart.draw(data, options);
-													}
-										</script>
-												</div>
+	$highlow = '<div class="col-one">
+
 												<div class="vid-stats">
 													<p><span class="yellow">HIGHEST:<br>
 													</span>'.$highestValue['view'].' views('.$highestValue['day'].')</p>
@@ -762,14 +768,15 @@ function viewstat(){
 													</span>'.$lowestValue['view'].' views('.$lowestValue['day'].')</p>
 												</div>
 										</div>';
-	
+		//$highlow = 'WAT';
 	  $response['avgDuration'] =  $avgDuration;
-	  $response['dataView'] =  $dataViewOutput;
+	  $response['highlow'] =  $highlow;
 	  $response['highestValue'] =  $highestValue;
 	  $response['lowestValue'] =  $lowestValue;
 	  $response['newVisitorData'] =  $newVisitorData;
 	  $response['returnVisitorData'] =  $returnVisitorData;
-	  $response['votes'] =  do_shortcode('[simplevoteme postId=$post_id]');
+	  $response['dataView'] = $dataView;
+	  $response['votes'] =  do_shortcode('[simplevoteme postId='.$post_id.']');
 	
 	    wp_send_json( $response );
 	
@@ -854,35 +861,7 @@ class CSVExport
      */
     public function download_report()
     {
-      //  echo '<div class="wrap">';
-      //  echo '<div id="icon-tools" class="icon32"></div>';
-  //      echo '<h2>Download Report</h2>';
-        //$url = site_url();
-        
-        echo '<p>Export the Subscribers</p>';
 
-		$blogusers = get_users( 'orderby=nicename&role=subscriber' );
-		// $output = "Primary Email,School,Location,Students,User Registered \n";
-		$output = "Name, Student Email, Location, School, Primary Email, Date Registered \n";
-		
-		$student_list = "";
-		foreach ( $blogusers as $user ) {
-				$location = $user->student_location;
-				$primary_email = $user->user_email;
-				$reg_date = $user->user_registered;
-				$members = get_user_meta( $user->ID, 'student' , true );
-                        			$someArray = json_decode($members, true);
-			 $user_school_id = get_the_author_meta('school',$user->ID);
-                                                        $school = get_post($user_school_id)->post_title;
-
-			 foreach ($someArray as $key => $value) {
-                              $student_list .=  $value["Name"] . " " . $value["Email"] . "\n";
-                                    }
-		
-							$output .= "$primary_email,$school,$student_list,$reg_date";
-
-		}
-		echo $output;
     }
     
     /**
@@ -909,36 +888,31 @@ class CSVExport
         return $output;
 		*/
 
+
+
 $blogusers = get_users( 'orderby=nicename&role=subscriber' );
-		// $output = "Primary Email,School,Location,Students,User Registered \n";
-		//$output = "Name,Email,Primary Email, School,  Date Registered \n";
-		$output = "Name,Email,Primary Email, Schools\n";
-		$student_list = "";
-		foreach ( $blogusers as $user ) {
-				$location = $user->student_location;
-				$primary_email = $user->user_email;
-				$reg_date = $user->user_registered;
-				$members = get_user_meta( $user->ID, 'student' , true );
-                        			$someArray = json_decode($members, true);
-			 $user_school_id = get_the_author_meta('school',$user->ID);
-                                                    
 
-			
-			//if ( $user_school_id != null ) 
-			$school = get_post($user_school_id)->post_title;
-			
-				//$school = 'NA';
+$output = "Name, Email ,Groupname, Primary Email, School\n";
+$student_list = "";
+foreach ( $blogusers as $user ) {
+	$primary_email = $user->user_email;
+	 $user_meta = get_user_meta($user->ID);
+	$groupname = $user_meta['nickname'][0];
+	$members = get_user_meta( $user->ID, 'student' , true );
+	$someArray = json_decode($members, true);
+	$user_school_id = get_the_author_meta('school',$user->ID);
 
-				
+	$school = get_post($user_school_id)->post_title;
+
+
+
 		//	echo $school;
-			 foreach ($someArray as $key => $value) {
-                            //  $student_list .=  $value["Name"] . ", " . $value["Email"] . "\n";
-                             $student_list .=  $value["Name"] . ", " . $value["Email"] . ", " . $primary_email . ", "  . $school ."\n";
-                                    }
-		
-						//	$output .= "$primary_email,$school,$student_list,$reg_date";
-$output  .=  "$student_list";
-		}
+	foreach ($someArray as $key => $value) {
+		$student_list .=  $value["Name"] . ", " . $value["Email"] . ", " . $groupname . ", ". $primary_email . ", "  . $school ."\n";
+	}
+
+	$output  .=  "$student_list";
+}
 		echo $output;
     }
 }
@@ -954,6 +928,39 @@ function get_archives_link_mod ( $link_html ) {
 
 	$link_html = '<option value="'. trim($output_array[2]) .'">'. $output_array[2] .'</option>';
     return $link_html;
+}
+add_action('wp_ajax_voting_status','voting_status');
+add_action('wp_ajax_nopriv_voting_status','voting_status');
+function voting_status () {
+	
+ 
+	$option_name = 'voting_status' ;
+	$new_value = $_POST['value'];
+
+if ( get_option( $option_name ) !== false ) {
+
+    // The option already exists, so we just update it.
+    update_option( $option_name, $new_value );
+	   $response['status'] = $new_value;
+	    wp_send_json( $response );
+
+	
+} else {
+
+    // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+    $deprecated = null;
+    $autoload = 'no';
+    add_option( $option_name, $new_value, $deprecated, $autoload );
+	   $response['status'] = $new_value;
+	    wp_send_json( $response );
+}
+
+}
+
+add_action('wp_ajax_get_voting_status','get_voting_status');
+add_action('wp_ajax_nopriv_get_voting_status','get_voting_status');
+function get_voting_status () {
+	wp_send_json( get_option( 'voting_status' ) );
 }
 
 

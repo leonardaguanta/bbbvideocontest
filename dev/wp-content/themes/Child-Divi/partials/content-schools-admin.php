@@ -10,7 +10,8 @@ $mySchools = new WP_Query($args); ?>
 <?php if ( $mySchools->have_posts() ) : ?>
     <div class=" et_pb_row et_pb_row_1 school-admin-row with-scroll">
 		<div class="et_pb_column et_pb_column_4_4  et_pb_column_2 et_pb_css_mix_blend_mode_passthrough">
-            <div class="header-tab"><a href="<?php echo admin_url('post-new.php?post_type=student_schools'); ?>" target="_blank" style="top:5px;">Add School</a></div>
+            <div class="header-tab">
+				</div>
            <!-- <div class="header-tab"><a class="dallas-btn thickbox" href="#TB_inline?height=680&amp;width=650&amp;inlineId=NewSchoolPopup" style="top:5px;">Add School</a></div>-->
 			                         
 
@@ -19,7 +20,11 @@ $mySchools = new WP_Query($args); ?>
                     <div class="et_pb_blurb_content">
                         <div class="et_pb_main_blurb_image">
                             <span class="et_pb_image_wrap">
-                                <img src="<?php the_field('school_logo'); ?>" alt="<?php the_title(); ?>" class="et-waypoint et_pb_animation_off">
+                                <?php if( get_field('school_logo') ) : ?>
+                                    <img src="<?php the_field('school_logo'); ?>" alt="<?php the_title(); ?>" class="et-waypoint et_pb_animation_off">
+                                <?php else: ?>
+                                    <img src="<?php echo home_url(); ?>/wp-content/uploads/2018/09/school-default.png" alt="<?php the_title(); ?>" class="et-waypoint et_pb_animation_off">
+                                <?php endif; ?>
                             </span>
                         </div>
                         <div class="et_pb_blurb_container">
@@ -36,7 +41,7 @@ $mySchools = new WP_Query($args); ?>
 									<!--<a class="thickbox edit-school-btn" href="#TB_inline?height=680&amp;width=650&amp;inlineId=NewVideoPopup--><?php //the_ID(); ?><!--">Edit</a> -->
 									 <?php edit_post_link('Edit'); ?>
 									
-									<span class="edit-divider">|</span> <?php echo wp_delete_post_link('Delete',get_the_ID()); ?>
+									<span class="edit-divider">|</span> <?php echo wp_delete_school_link('Delete',get_the_ID()); ?>
                                 </div>
 
                                 <div id="NewVideoPopup<?php the_ID(); ?>" style="display: none;">

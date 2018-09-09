@@ -49,8 +49,15 @@
 				<div class="et_pb_blurb et_pb_module et_pb_bg_layout_light et_pb_text_align_left school-video-entry et_pb_blurb_0 et_pb_blurb_position_left">
 					<div class="et_pb_blurb_content">
                         <div class="et_pb_main_blurb_image">
-                            <span class="et_pb_image_wrap">
-                                <img src="'.get_field('school_logo', $school->ID ).'" alt="'.$school->post_title.'" class="et-waypoint et_pb_animation_off">
+							<span class="et_pb_image_wrap">';
+							
+							if( get_field('school_logo', $school->ID ) ) {
+								$output .= '<img src="'.get_field('school_logo', $school->ID ).'" alt="'.$school->post_title.'" class="et-waypoint et_pb_animation_off">';
+							} else {
+								$output .= '<img src="'.home_url().'/wp-content/uploads/2018/09/school-default.png" alt="'.$school->post_title.'" class="et-waypoint et_pb_animation_off">';
+							}
+			
+			$output .= '                               
                             </span>
                         </div>
 

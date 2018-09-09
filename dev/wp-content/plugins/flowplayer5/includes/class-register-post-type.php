@@ -87,6 +87,7 @@ class Flowplayer5_Post_Type {
 
 		$supports = array(
 			'title',
+			//'thumbnail',
 			'author',
 			'comments',
                         'custom-fields'

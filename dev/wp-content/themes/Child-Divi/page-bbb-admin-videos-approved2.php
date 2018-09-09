@@ -19,8 +19,17 @@
 ?>
 <?php
     $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo ? $user_logo : $template_directory_uri . '/images/logo.png';
-?>
+                                            global $post;
+                                            $args = array(
+                                                'post_type' => 'flowplayer5',
+                                                'posts_per_page' => -1,
+                                                'public' => true,
+                                                'post_status' => 'publish, draft'
+                                            );
 
+                                            $approvedVid = new WP_Query( $args );
+                                        $approvedVidModals = new WP_Query( $args );
+                                        ?>
 <?php get_template_part( 'partials/content', 'header' ); ?>
 
     <div class="content-wrapper admin-wrapper">
@@ -33,8 +42,12 @@
                         </a>
                     </div>
                 </div>
+<div class="col-lg-8"><div class="card mb-3"><h2 style="padding-top: 55px;">APPROVED VIDEOS</h2></div>
+
+                </div>
             </div>
             <div class="row">
+                    <?php if( $approvedVid->have_posts() ) : ?>
                 <div class="col-lg-8">
                     <div class="et_pb_section approve-videosRow et_pb_section_2 et_section_regular">
                         <div class=" et_pb_row et_pb_row_2 active-videoRow">
@@ -51,7 +64,7 @@
                                 <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_2">
                                     <div class="et_pb_text_inner">
                                         <div class="submitted-videoStatus">
-                                            <p></span> <span class="view-stats"> <a class="studentVid-stats" href="#" data-toggle="modal" data-target="">View Stats</a></span><span class="approved-divider">|</span> <span class="approved-pending"><a href="">Deactivate</a></span> <span class="approved-divider">|</span> <span class="approved-remove"><a href="">Remove</a></span>
+                                            <p></span> <span class="view-stats"> <a class="studentVid-stats" href="#" data-toggle="modal" data-target="">View Stats</a></span><span class="approved-divider">|</span> <span class="approved-pending"><a href="">Deactivate</a></span><!-- <span class="approved-divider">|</span> <span class="approved-remove"><a href="">Remove</a></span>-->
                                             </p>
                                            
                                         </div>
@@ -63,36 +76,30 @@
                             <div class="et_pb_column et_pb_column_1_2  et_pb_column_5 et_pb_css_mix_blend_mode_passthrough et-last-child">
                                 <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_center video-paginationCol et_pb_text_3">
                                     <div class="et_pb_text_inner">
-                                        <?php 
-                                            global $post;
-                                            $args = array(
-                                                'post_type' => 'flowplayer5',
-                                                'posts_per_page' => -1,
-                                                'public' => true,
-                                                'post_status' => 'publish, draft'
-                                            );
-
-                                            $approvedVid = new WP_Query( $args );
-										$approvedVidModals = new WP_Query( $args );
-                                        ?>
+                                       
                                         
-                                        <?php if( $approvedVid->have_posts() ) : ?>
+                                    
                                             <?php while( $approvedVid->have_posts() ) : $approvedVid->the_post(); ?>
                                                 <?php $extra_video_info = get_post_meta(get_the_ID);
                                                 $post_id = get_the_ID(); 
-
+  $user_data = get_user_by('id',get_the_author_meta('ID'));
+			 								$user_nickname = get_the_author_meta('nickname',get_the_author_meta('ID'));
                                                 ?>
 
-                                                <div class="approved-videoData" video-url="<?php echo get_post_meta(get_the_ID(), 'fp5-mp4-video', TRUE); ?>" video-id="<?php the_ID(); ?>" video-title="<?php the_title(); ?>" video-author="<?php the_author(); ?>" video-pending="<?php echo $post_id;?>" data-nonce="<?php echo wp_create_nonce('bbb-admin-pending-'.$post_id); ?>" video-delete="<?php echo get_delete_post_link($post_id); ?>">
+                                                <div class="approved-videoData" video-url="<?php echo get_post_meta(get_the_ID(), 'fp5-mp4-video', TRUE); ?>" video-id="<?php the_ID(); ?>" video-title="<?php the_title(); ?>" video-author="<?php echo $user_nickname; ?>" video-pending="<?php echo $post_id;?>" data-nonce="<?php echo wp_create_nonce('bbb-admin-pending-'.$post_id); ?>" video-delete="<?php echo get_delete_post_link($post_id); ?>">
                                                     <span class="approvedPlay" data-icon="E"></span>
-                                                    <img src="<?php echo get_post_meta(get_the_ID(), 'fp5-splash-image', TRUE); ?>" alt="<?php the_title(); ?>"/>
-                                                    
+
+                                                    <?php if ( get_post_meta(get_the_ID(), 'fp5-splash-image', TRUE) ): ?>
+                                                        <img src="<?php echo get_post_meta(get_the_ID(), 'fp5-splash-image', TRUE); ?>" alt="<?php echo get_the_title(); ?>"/>
+                                                    <?php else: ?>
+                                                        <img src="<?php echo home_url(); ?>/wp-content/uploads/2018/09/school-default.png" alt="<?php echo get_the_title(); ?>">
+                                                    <?php endif; ?>                                              
                                                 </div>
                                                 
                                                 
                                             <?php endwhile; ?>
                                             <?php wp_reset_postdata(); ?>
-                                        <?php endif; ?>
+                                       
                                     </div>
                                     <div id="pops"></div>
                                 </div>
@@ -100,6 +107,13 @@
                         </div>
                     </div>
                 </div>
+                  <?php else:?>
+                           
+                <div class="card col-lg-8 no-pending" style="padding: 15px;">
+                               <p >No approved video entries.</p> 
+                
+            </div>
+                 <?php endif; ?>
             </div>
 			
 <?php
@@ -112,6 +126,7 @@
 <?php echo videoStatsDisplay($post_id); ?>
 <?php endwhile; ?>
                                             <?php wp_reset_postdata(); ?>
+
                                         <?php endif; ?>
 <?php
 function videoStatsDisplay($approvedVid) {
@@ -126,7 +141,8 @@ function videoStatsDisplay($approvedVid) {
         </div>
         <div class="modal-body">
 		<div class="loading-stat">Loading Stats.. Please Wait</div>
-<div class="dataview"></div>
+		<div id="chart_div_'.$approvedVid.'" style="width: 244px; height: 158px;"></div>
+<div class="highlow"></div>
 <div class="likes"></div>
 
 </div>

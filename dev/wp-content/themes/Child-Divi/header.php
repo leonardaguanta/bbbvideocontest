@@ -14,6 +14,11 @@
 <head>
 		
 		<script type="text/javascript">
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
     var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
 </script>
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
@@ -46,6 +51,9 @@
 </script>
 
 	<?php wp_head(); ?>
+	
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 </head>
 <body <?php body_class(); ?>>
 <?php

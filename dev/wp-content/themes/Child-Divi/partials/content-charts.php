@@ -97,7 +97,8 @@ function drawChartNVR() {
   ["Returning Views", '.$returnVisitorData.']
   ]);
   var optionsNVR = {
-    title: "New Vs. Returning"
+    title: "New Vs. Returning",
+	legend:"bottom"
 
   };
   var chartNVR = new google.visualization.PieChart(document.getElementById("nvrGraph"));
@@ -185,25 +186,22 @@ jQuery( "span.left-elements.charts a" ).click(function() {
 
     <div class="chart-container">
         <div class="row">
-            <div class="col-lg-7 col-md-7">
-                <div class="left-panel">
-                    <div id="viewTrend" style="width: 100%; height: 300px; padding: 0px;"></div>
-                    <div id="big"  style="width: 100%; height: 300px; padding: 0px;"></div>
+            <div class="col-lg-3 col-md-3">
+                <div class="upper-stat">
+                    <span class="title">Highest:<br><em style="color: #404040;font-size: 12px;font-weight: 500;font-style: normal;"> '.$highestValue[day].' '.$highestValue[view].' Views</em></span>
+                    <br/>
+                    <span class="title">Lowest:<br><em style="color: #404040;font-size: 12px;font-weight: 500;font-style: normal;"> '.$lowestValue[day].' '.$lowestValue[view].' Views</em></span>
                 </div>
             </div>
-            <div class="col-lg-5 col-md-5">
-
-                <div class="right-panel">
-                    <div class="upper-stat">
-                        <span class="title">Highest:<br><em style="color: #707070; font-size:11px;"> '.$highestValue[day].' '.$highestValue[view].' Views</em></span>
-                        <br/>
-                        <span class="title">Lowest:<br><em style="color: #707070; font-size:11px;"> '.$lowestValue[day].' '.$lowestValue[view].' Views</em></span>
-                    </div>
-                    <div class="small-chart">
-                        <div id="nvrGraph" style="width: 300px; height: 190px; padding: 10px;"></div>
-                        <div id="small" style="width: 300px;"></div>
-                    </div>
+            <div class="col-lg-3 col-md-3">
+                <div class="small-chart">
+                    <div id="nvrGraph" style="width:300px;padding: 10px;"></div>
+                    <div id="small" style="width: 300px;"></div>
                 </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div id="viewTrend" style="width: 100%; height: 300px; padding: 0px;"></div>
+                <div id="big"  style="width: 100%; height: 300px; padding: 0px;"></div>
             </div>
         </div>
     ';

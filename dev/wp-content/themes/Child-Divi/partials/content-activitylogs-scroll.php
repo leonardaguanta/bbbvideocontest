@@ -1,4 +1,3 @@
-
 <?php
 
 global $wpdb;
@@ -31,14 +30,16 @@ global $wpdb;
                 <div class="activityLogList">
         ';
         foreach ($rows as $row) {
-    if ( ($row->action == "flowplayer5 deleted") || ($row->action == "insert comment") || ($row->action == "flowplayer5 updated")) {
+   // if ( ($row->action == "flowplayer5 deleted") || ($row->action == "insert comment") || ($row->action == "flowplayer5 updated")) {
+     if (($row->action == "added attachment") && ($row->user_role = "Subscriber")) {
+
             $loggedUser = $row->user_name;
       $loggedTime = $row->modified_date;
       $loggedAction = $row->action;
       if ($loggedAction == "flowplayer5 deleted") {
         $loggedAction = "deleted a video";
       }
-      if ($loggedAction == "flowplayer5 updated") {
+      if ($loggedAction == "added attachment") {
                           $loggedAction = "uploaded a video";
                   }
       if ($loggedAction == "insert comment") {

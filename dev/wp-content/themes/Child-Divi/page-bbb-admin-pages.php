@@ -32,13 +32,16 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
     <div class="row">
         <div class="col-lg-6">
             <div class="card mb-3">
-                <div class="card-header">Schools</div>
+                <div class="card-header">Schools 				<div class="ads-btns">
+                                <a href="<?php echo admin_url('post-new.php?post_type=student_schools'); ?>"  class="campaign-btn" target="_blank" style="top:5px;">Add School</a>
+                                
+                                     </div></div>
                 <?php get_template_part( 'partials/content', 'schools-admin' ); ?> 
             </div>
         </div>
 		<div class="col-lg-6">
             <div class="card mb-3">
-                <div class="card-header">Number of Video Entries Per School</div>
+                <div class="card-header">Number of Video Entries per School</div>
                 <?php get_template_part( 'partials/content', 'school-video-entries' ); ?>
         
             </div>

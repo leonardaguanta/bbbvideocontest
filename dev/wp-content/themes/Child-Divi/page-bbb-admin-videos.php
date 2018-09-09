@@ -42,6 +42,9 @@ $pendingVid_for_modal = new WP_Query( $args );
                     </a>
                 </div>
             </div>
+			<div class="col-lg-8">
+                <div class="card mb-3"><h2 style="padding-top: 55px;">PENDING VIDEOS</h2></div>
+            </div>
         </div>
         <div class="row">
 
@@ -55,14 +58,16 @@ $pendingVid_for_modal = new WP_Query( $args );
                     ?>
                                 <!-- MESSAGE STUDENT MODAL -->
                 <div class="modal fade student-messageModal2 bd-example-modal-lg" id="bbbAdminSendEmail<?php echo $post_id;?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">                                               
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">  
+							      <div class="modal-header">
+									
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
                             <div class="modal-body">
                                 <?php echo do_shortcode('[gravityform id="10" title="false" field_values="email='.$user_data->user_email.'"]')?>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -86,8 +91,10 @@ $pendingVid_for_modal = new WP_Query( $args );
                             <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_2">
                                 <div class="et_pb_text_inner">
                                     <div class="submitted-videoStatus submitted-pendingStatus">
-                                        <p class="action-buttons"><span class="toApprove"><a id="apprv" class="approve">Approve</a></span> <span class="toReject"><a href="">Reject</a></span>  <span class="toMessage"><a class="" href=""  data-toggle="modal" data-target="">Message</a></span>
+                                        <p class="action-buttons"><span class="toApprove"><a id="apprv" class="approve">Approve</a></span>  <span class="toMessage"><a class="" href=""  data-toggle="modal" data-target="">Message</a></span> <span class="toReject"><a href="">Reject</a></span>
+											
                                         </p>
+										
                                     </div>
                                     <p class="submitted-videoTitle"></p>
                                     <p class="submitted-videoAuthor"></p>
@@ -105,10 +112,10 @@ $pendingVid_for_modal = new WP_Query( $args );
                                             $extra_video_info = get_post_meta(get_the_ID);
                                             $post_id = get_the_ID(); 
                                             $user_data = get_user_by('id',get_the_author_meta('ID'));
-
+			 								$user_nickname = get_the_author_meta('nickname',get_the_author_meta('ID'));
                                             ?>
 
-                                            <div class="approved-videoData" video-url="<?php echo get_post_meta(get_the_ID(), 'fp5-mp4-video', TRUE); ?>" video-id="<?php the_ID(); ?>" video-title="<?php the_title(); ?>" video-author="<?php the_author(); ?>" video-delete="<?php echo get_delete_post_link($post_id); ?>" 
+                                            <div class="approved-videoData" video-url="<?php echo get_post_meta(get_the_ID(), 'fp5-mp4-video', TRUE); ?>" video-id="<?php the_ID(); ?>" video-title="<?php the_title(); ?>" video-author="<?php echo $user_nickname; ?>" video-delete="<?php echo get_delete_post_link($post_id); ?>" 
                                               video-approved-html="<form action='' class='approve-video-prompt' method='POST' name='front_end_publish'><input id='pid' type='hidden' name='pid' value='<?php echo $post_id;?>' /><input id='FE_PUBLISH' type='hidden' name='FE_PUBLISH' value='FE_PUBLISH' /><div class='col-two icon-desc'><input class='c-btn' type='image' src='http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/08/thumb-up-button-1.png' alt='Submit' id='submit' type='submit' name='submit'><a id='apprv' class='approve'> Approve</a></span></div></form>" video-send-message='#bbbAdminSendEmail<?php echo $post_id; ?>'>
                                               <span class="approvedPlay" data-icon="E"></span>
 												
@@ -116,8 +123,11 @@ $pendingVid_for_modal = new WP_Query( $args );
                                               <!--<a class="video-info-buttons video-icon thickbox" >
                                                  <div id="approvedSendEmail-<?php// echo $post_id;?>" style="display:none;"><?php // echo do_shortcode('[gravityform id="10" title="false" field_values="email='.$user_data->user_email.'"]')?></div>
                                              </a>-->
-
-                                             <img src="<?php echo get_post_meta(get_the_ID(), 'fp5-splash-image', TRUE); ?>" alt="<?php the_title(); ?>"/>
+                                            <?php if( get_post_meta(get_the_ID(), 'fp5-splash-image', TRUE) ): ?>
+                                                <img src="<?php echo get_post_meta(get_the_ID(), 'fp5-splash-image', TRUE); ?>" alt="<?php echo get_the_title(); ?>"/>
+                                            <?php else: ?>
+                                                <img src="<?php echo home_url(); ?>/wp-content/uploads/2018/09/school-default.png" alt="<?php echo get_the_title(); ?>">
+                                            <?php endif; ?>
                                          </div>
                                          <?php// echo videoStatsDisplay($post_id); ?>
 
@@ -132,9 +142,8 @@ $pendingVid_for_modal = new WP_Query( $args );
                <?php wp_reset_postdata(); ?>
   <?php else:?>
                            
-                <div class="card mb-3" style="padding: 15px;">
-                               <h2>No pending video entries.</h2>
-
+                <div class="card col-lg-8 no-pending" style="padding: 15px;">
+                               <p >No pending video entries.</p> 
                 
             </div>
 

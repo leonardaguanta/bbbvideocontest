@@ -105,7 +105,7 @@ class Platypus_GA {
 
 			$qParams = array(
 				'dimensions' => 'ga:eventAction',
-        			'filters' => 'ga:eventAction==html5/mp4,ga:eventAction==impression,ga:eventAction==click');
+        			'filters' => 'ga:eventAction==mp4,ga:eventAction==impression,ga:eventAction==click');
 			
 			return $analytics->data_ga->get(
                         	'ga:' . $profileId,
@@ -138,7 +138,7 @@ class Platypus_GA {
 		function getVideoViewsDay(&$analytics, $profileId) {
 			$qParams = array(
 				'dimensions' => 'ga:eventAction',
-                        	'filters' => 'ga:eventAction==html5/mp4');
+                        	'filters' => 'ga:eventAction==mp4');
 
 			return $analytics->data_ga->get(
                                 'ga:' . $profileId,
@@ -163,7 +163,7 @@ class Platypus_GA {
 
 	function getVideoNewVsReturningCountAll(&$analytics, $profileId) {
                 $qParams = array('dimensions' => 'ga:userType',
-                                'filters' => "ga:eventCategory==Video / Seconds played");
+                                'filters' => "ga:eventCategory==Video Played");
                 return $analytics->data_ga->get(
                         'ga:' . $profileId,
                         '7daysAgo',
@@ -199,7 +199,7 @@ class Platypus_GA {
 
 	function getVideoWatchAvgDurationAll(&$analytics, $profileId) {
                 $qParams = array('dimensions' => 'ga:eventCategory',
-                                'filters' => "ga:eventCategory==Video / Seconds played");
+                                'filters' => "ga:eventCategory==Video Played");
                 return $analytics->data_ga->get(
                         'ga:' . $profileId,
                         '7daysAgo',
@@ -217,14 +217,14 @@ class Platypus_GA {
                         'ga:' . $profileId,
                         "$fromDate",
                         "$toDate",
-                        'ga:uniqueEvents',
+                        'ga:totalEvents',
                         $qParams
                 );
         }
 
 	 function getVideoWatchCountPerDateAll(&$analytics, $profileId, $fromDate, $toDate) {
          	$qParams = array('dimensions' => 'ga:eventCategory',
-                                'filters' => "ga:eventCategory==Video / Seconds played");
+                                'filters' => "ga:eventCategory==Video Played");
                 return $analytics->data_ga->get(
                         'ga:' . $profileId,
                         "$fromDate",
@@ -262,7 +262,7 @@ class Platypus_GA {
 
 	function getVideoWatchCountHourlyAll(&$analytics, $profileId) {
                 $qParams = array('dimensions' => 'ga:hour',
-                                'filters' => "ga:eventCategory==Video / Seconds played");
+                                'filters' => "ga:eventCategory==Video Played");
                 return $analytics->data_ga->get(
                         'ga:' . $profileId,
                         'yesterday',
@@ -279,7 +279,7 @@ class Platypus_GA {
                         'ga:' . $profileId,
                         '2008-10-01',
                         'today',
-                        'ga:uniqueEvents',
+                        'ga:totalEvents',
                         $qParams
                 );
         }	
