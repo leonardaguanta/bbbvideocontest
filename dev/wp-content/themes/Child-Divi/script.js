@@ -1,5 +1,10 @@
 jQuery(document).ready(function($) {
 	
+
+	
+	
+	
+	console.log(home_url);
 	$('.checkbox.voting').click(function() {
 	console.log($('#toggle-event').prop('checked'))
 	//	var disable = $('#toggle-event').prop('checked');
@@ -54,6 +59,12 @@ jQuery(document).ready(function($) {
                 				}	
                 			});
 	
+	/*--------- FOOTER POSITION FIXED ---------*/
+
+	if ( $('#front-video').height() <= 700 ) {
+		$('.page-id-62 #main-footer').css({ 'position': 'fixed', 'width': '100%', 'bottom': '0' });
+	}
+	
 	/*--- BBB Student Scroll TOp----*/
 	  $('#backtotop').css('opacity', 0);
     
@@ -78,13 +89,22 @@ jQuery(document).ready(function($) {
     });
 	
 	/*-------- BBB Admin Pages Active Link ------*/
-
+/*
 	$(' #mainNav ul li a').each(function () {
 		if (window.location.href == $(this).attr('href')) {
 			$(this).addClass('active');
 		}
-	});
-	
+	});*/
+ var url = window.location.pathname, 
+        urlRegExp = new RegExp(url.replace(/\/$/,'') + "$"); 
+        // now grab every link from the navigation
+        $('#mainNav a').each(function(){
+            // and test its normalized href against the url pathname regexp
+            if(urlRegExp.test(this.href.replace(/\/$/,''))){
+                $(this).addClass('active');
+            }
+        });
+
 	/*-------- List Field Placeholder --------*/
 	/*$('#field_7_11 .gfield_list_group').each((i, el) => {
 		$(el).find('.gfield_list_cell').each((x, element) => {
@@ -266,7 +286,7 @@ if(lenContainer <= 1){
 			window.location.href = $(this).attr('data-href');
 		}else{
 					if( $url ){
-			window.history.pushState("popup_url", "", "/dev/" + $url);
+			window.history.pushState("popup_url", "", home_url + $url);
 						
 		}
 				
@@ -427,6 +447,7 @@ if(lenContainer <= 1){
 		
 		function filterVideos(usage, val){
 			var sort = $('#student-video-sort').val();
+			var dontdel = home_url + "/show-more-dont-delete/";
 			if( usage === "sort" ){
 				sort = val; 
 			}
@@ -440,7 +461,7 @@ if(lenContainer <= 1){
 				
 				type: "GET",
 				dataType: "html",
-				url: '//bbbvideocontest.platypustest.info/dev/show-more-dont-delete/',
+				url:  dontdel,
 				data: {
 					action: 'get_student_videos',
 					pageNumber: 1,
@@ -462,8 +483,8 @@ if(lenContainer <= 1){
 					} else {
 						$( ".loadmore" ).attr("disabled",true);
 					}
-					$( '.loadmore' ).show();
-
+					$( '.loadmore' ).hide();
+					
 					if( $('#ajax-posts').attr('data-page') == pageNumber ){
 						$('.loadmore').fadeOut();
 					}
@@ -494,16 +515,17 @@ if(lenContainer <= 1){
 			console.log("PN"+pageNumber);
 			pageNumber++;
 			var sort = $('#load-more').attr('data-sort');
+			var dontdel = home_url + "/show-more-dont-delete/";
 			$.ajax({
 				type: "GET",
 				dataType: "html",
-				url: '//bbbvideocontest.platypustest.info/dev/show-more-dont-delete/',
+				url: dontdel,
 				data: {
 					
 					pageNumber: pageNumber,
 					sort: sort,
 					action: 'load_more_videos',
-					security: '<?php echo wp_create_nonce("load_more_posts");?>'
+					
 
 				},
 				beforeSend: function(){

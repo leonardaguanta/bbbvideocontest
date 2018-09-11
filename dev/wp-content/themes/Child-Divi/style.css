@@ -11,7 +11,110 @@
 /*********************************
  * Theme Customization Starts here 
  ********************************/
-
+/*-- 9 - 10 - 18 --*/
+.export-header:hover:before {
+    content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/09/export-orange.png);
+}
+a.export-csv-btn:hover {
+    text-decoration: none;
+    color: #ed8b00 !important;
+}
+.student-infoModal2 .modal-dialog.modal-lg {
+    min-width: 400px;
+}
+.vid-stats span.yellow {
+    color: #036594;
+    font-size: 16px;
+    font-weight: 700;
+}
+p.header-tab-3-total {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+.student-messageModal2 h2 {
+    color: #ed8b00;
+    font-size: 16px;
+}
+a.edit-ad:hover {
+    color: #ed8b00 !important;
+	text-decoration: none !important;
+}
+a.edit-ad {
+    font-size: 16px;
+}
+tr.campaignHeader th {
+    font-weight: 700 !important;
+}
+span.ad-title {
+    color: #036594 !important;
+}
+td.actions a {
+    font-size: 16px;
+	
+}
+td.actions a:hover {
+    color: #ed8b00 !important;
+    text-decoration: none !important;
+}
+a.campaign-btn {
+    color: #036594;
+}
+#new-ad a.campaign-btn {
+    color: #036594;
+	font-size:16px;
+    font-weight: 700;
+}
+#new-ad a.campaign-btn:hover {
+    color: #ED8b00;
+}
+a.campaign-btn:hover,a.advertiser-btn:hover {
+    color: #ED8b00;
+    text-decoration: none!important;
+}
+.campaign-btn:hover:before, .advertiser-btn:hover:before {
+    content: url(http://bbbvideocontest.platypustest.info/dev/wp-content/uploads/2018/09/add-btn-orange.png);
+	text-decoration:none;
+}
+a.nav-link.active {
+    background: #014358;
+}
+h3.info-header {
+    font-size: 16px !important;
+    color: #ed8b00;
+}
+button.msc-ok:hover {
+    border: none;
+}
+p#wppb_form_success_message {
+    padding: 10px 25px;
+    margin: 25px auto 25px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: #6c3;
+    border: 1px solid #6c3;
+    color: #fff;
+}
+.editProfile > a:hover, .editProfile > span:hover {
+    color: #ed8b00;
+    text-decoration: none;
+}
+span.detail {
+    font-size: 14px;
+    font-weight: 500;
+}
+h3.export-header a {
+    color: #036594;
+}
+.student-infoModal2 p {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    font-size: 16px;
+    line-height: 28px;
+    font-weight: 700;
+    color: #036594;
+    font-size: 16px;
+}
 /*-- 9 -7- 2018 ---*/
 .wppb-form-field input#username {
     background-color: #eee;
@@ -68,6 +171,7 @@ video::-webkit-media-controls{
     border-radius: 3px;
     padding: 10px 20px;
     font-size: 16px;
+	border:none;
 }
 
 .msc-overlay {
@@ -103,9 +207,7 @@ button.msc-ok:hover {
     }
 
 
-a#visitorsday {
-    padding: 18px 10px;
-}
+
 .logged-in footer#main-footer {
     padding: 0 !important;
 }
@@ -137,10 +239,12 @@ a.campaign-btn:hover {
     color: #036594;
 }
 .editProfile-module .wppb-form-field label{
-	    font-size: 16px;
+font-size: 16px;
     text-align: left;
     margin-right: 10px;
     width: 27.2%;
+    color: #036594;
+    font-weight: 700;
 }
 
 .wppb-form-field input {
@@ -377,7 +481,7 @@ button {border: 0; background: #ed7818; padding: 5px 22px; color: #fff; font-siz
 .school-admin .et_pb_blurb_description { line-height: 25px; }
 .school-video-entry .et_pb_blurb_description { line-height: 25px; color: #036594; }
 
-.visitorsTable { padding: 20px 20px 10px 20px; width: 100%; }
+.visitorsTable { padding: 20px 20px 12px 20px; width: 100%; }
 .vistorsTableRow { line-height: 33px; }
 .vistorsTableRow > td:first-child { width: 85%; }
 .vistorsTableRow > td:last-child { width: 15%; }
@@ -407,8 +511,12 @@ button {border: 0; background: #ed7818; padding: 5px 22px; color: #fff; font-siz
 .approved-divider { padding: 0 3px; font-size: 15px; vertical-align: top; }
 .submitted-videoStatus p .approved-remove, ul.slick-dots li.slick-active > a { color: #ED8B00; cursor: pointer;  }
 ul.slick-dots li.slick-active > a { font-weight: 600; }
-.submitted-videoTitle { font-size: 17px; color: #444; font-weight: 600; padding-bottom: 0; margin-bottom: 0; }
-.submitted-videoAuthor { font-size: 15px; color: #036594; }
+.submitted-videoTitle { font-size: 16px;
+    color: #036594;
+    font-weight: 600;
+    padding-bottom: 0;
+    margin-bottom: 0; }
+.submitted-videoAuthor { font-size: 16px; color: #036594; }
 .approved-videoData .approvedPlay { position: absolute; margin-left: -25px; margin-top: 7px; }
 .approved-videoData .approvedPlay:before { 
 	content: attr(data-icon);
@@ -427,15 +535,19 @@ ul.slick-dots li.slick-active > a { font-weight: 600; }
 }
 
 .toApprove > a:before { content: url(/dev/wp-content/uploads/2018/08/thumb-up-button-1.png); vertical-align: middle; margin-right: 5px; }
+
 .toReject > a:before { content: url(/dev/wp-content/uploads/2018/08/rubbish-bin-1.png); vertical-align: middle; margin-right: 5px; }
+.toReject > a:hover:before { content: url(/dev/wp-content/uploads/2018/09/rubbish-bin-orange.png); }
+
 .toMessage > a:before { content: url(/dev/wp-content/uploads/2018/08/chat-1.png); vertical-align: middle; margin-right: 5px; }
+.toMessage > a:hover:before { content: url(/dev/wp-content/uploads/2018/09/chat-1-orange.png); }
+.toMessage > a:hover, .toReject > a:hover { color: #ED8B00; }
 
 ul.slick-dots, ul.slick-dots li { display: inline-block !important; padding-bottom: 0; }
 ul.slick-dots li { padding: 0 10px; }
 
 .et_pb_section.pop-videosSection { padding: 0; }
 .et_pb_section.pop-videosSection .et_pb_row { width: 100%; padding: 0; }
-.et_pb_section.pop-videosSection .et_pb_row.et_pb_row_5 { padding-top: 10px; }
 .fancybox-overlay { z-index: 99999; }
 .pop-videosSection div.simplevotemeWrapper { text-align: right; }
 .pop-videosSection div.simplevotemeWrapper img { width: 40px; }
@@ -457,8 +569,8 @@ ul.slick-dots li { padding: 0 10px; }
 .info-header, .ad-header { float: left }
 .export-header, .ads-btns { float: right; }
 .uname-info { color: #F16122; padding-bottom: 0 !important; margin-bottom: 0; }
-.uname-school { color: #036594; font-size: 15px; margin-bottom: 0; }
-.editProfile > a, .editProfile > span { font-size: 14px; color: #B2B2B2; }
+.uname-school { color: #036594; font-size: 16px; margin-bottom: 0; }
+.editProfile > a, .editProfile > span { font-size: 16px; color: #B2B2B2; }
 .editProfile > a.bbbAdminDeleteUser { color: #ff0000; }
 
 .ad-header { color: #ED8B00; padding-top: 5px; }
@@ -498,12 +610,11 @@ ul.slick-dots li { padding: 0 10px; }
     margin-right: 8px;
 }
 
-.student-infoModal2 p { color: #036594; margin-bottom: 0; padding-bottom: 0; font-size: 16px; line-height: 28px; }
-.student-infoModal2 p .studentInfo-school, .student-infoModal2 p .studentInfo-user, .student-infoModal2 p .studentInfo-members { color: #686868; }
+.student-infoModal2 p .studentInfo-school, .student-infoModal2 p .studentInfo-user, .student-infoModal2 p .studentInfo-members { color: #404040; }
 
 .student-infoModal2 .modal-footer { justify-content: flex-start; padding-top: 0; border: 0; }
 .student-infoModal2 .btn { background: #ED8B00; border: 0; border-radius: 50px; box-shadow: 0 3px 6px rgba(0, 0, 0, .2); padding: 6px 20px; }
-.student-infoModal2 .modal-content, .student-messageModal2 .modal-content { border-radius: 0; border: 0; box-shadow: 0 3px 6px rgba(12, 6, 14, .2); background: #f1f1f1; }
+.student-infoModal2 .modal-content, .student-messageModal2 .modal-content { border-radius: 0; border: 0; box-shadow: 0 3px 6px rgba(12, 6, 14, .2); background: #fff; }
 
 .modal-table th { color: #036594; font-weight: 600; }
 
@@ -621,7 +732,7 @@ div#footer-bottom { padding: 0px 0; }
  #createdby img { vertical-align: middle; }
 
 html .page h3 { font-size: 17px; padding-bottom:  15px; line-height: 23px; }
-html .page .contact-info h3 { font-size: 14px; padding-bottom: 10px; line-height: 20px; }
+html .page .contact-info h6 { font-size: 14px; padding-bottom: 10px; line-height: 20px; }
 .contact-address { padding-bottom: 5px; }
 body p { font-size: 14px; }
 .site-header h1 { font-size: 45px; line-height: 51px; }
@@ -977,8 +1088,13 @@ li#field_7_11.gfield_error {
     font-family: inherit;
     border-radius: 3px;
 	cursor: pointer;
-	box-shadow: 0 3px 8px 0 rgba(237, 139, 0, 0.6);
+    transition: all .3s;
 }
+
+#gform_submit_button_1:hover, #gform_submit_button_6:hover, input#gform_submit_button_4:hover {
+	box-shadow: 0px 5px 10px 0px rgba(237,139,0,1);
+}
+
 .gform_wrapper li.gfield_error input:not([type=radio]):not([type=checkbox]):not([type=submit]):not([type=button]):not([type=image]):not([type=file]), .gform_wrapper li.gfield_error textarea {
     border-color: #ff0000 ;
 }
@@ -1180,7 +1296,7 @@ div.indVid-section h2 { margin-bottom: 0; }
 .videoViews-container .sortStatsButton {     background: transparent;
     box-shadow: none;
     color: #404040;
-    padding: 16px 10px;
+    padding: 17px 10px;
     margin: 0 5px;
     font-size: 14px;}
 .videoViews-container .sortStatsButton:hover { color: #0f6692; }
@@ -1199,7 +1315,7 @@ div#approvalReminder {
 position: absolute;
     max-width: 400px;
     border: solid 2px;
-    box-shadow: 0px 0px 10px;
+    box-shadow: 0px 3px 6px 0 rgba(12,6,14,.2);
     background: #fff;
     padding: 30px;
     z-index: 9999;
@@ -1238,7 +1354,7 @@ position: absolute;
     right: 0;
     background: #f1f1f1;
     margin-right: 20px;
-    height: 300px;
+    height: 340px;
 }
 #field_7_6, #field_7_7, #field_7_9, #field_7_10 ,#field_7_12{ width: 47%; padding: 20px 0px 0px; float: left; margin-top: 0; }
 #input_7_7_1_container, #input_7_7_2_container { width: 100%; padding-right: 0; padding-left: 0; }

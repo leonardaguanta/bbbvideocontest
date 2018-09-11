@@ -132,7 +132,7 @@ $.extend(flowplayer, {
          'Video loading aborted',
          'Network error',
          'Video not properly encoded',
-         'Video file not found',
+         'Network error : Please reload',
 
          // player exceptions
          'Unsupported video',

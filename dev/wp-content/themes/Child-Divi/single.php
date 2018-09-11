@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_center  et_pb_text_12">
                                     <div class="et_pb_text_inner">
-                                        <p><a href="#" class="custom-link">View this year’s participants</a></p>
+                                        <p><a href="/dev/schools/" class="custom-link">View this year’s participants</a></p>
                                     </div>
                                 </div>
                                 <ul class="et_pb_social_media_follow et_pb_module et_pb_bg_layout_dark contact-social et_pb_social_media_follow_0 clearfix et_pb_text_align_center">

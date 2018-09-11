@@ -140,8 +140,22 @@ if ( $user ) :
       <ul class="navbar-nav ml-auto">
  
               <li class="nav-item">
-                <a class="nav-link">
-                  <i class="fa fa-fw fa-sign-out" href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/admin-edit-profile' ) ); ?>"></i>Edit Profile</a>
+
+				  
+				  
+				  
+				  
+          <a class="nav-link" href="<?php echo esc_url( home_url( '/bbb-admin-dashboard/admin-edit-profile' ) ); ?>">
+            <i class="fa fa-fw fa-link"></i>
+            <span class="nav-link-text">Edit Profile</span>
+          </a>				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
                 </li>
 		   
               <li class="nav-item">

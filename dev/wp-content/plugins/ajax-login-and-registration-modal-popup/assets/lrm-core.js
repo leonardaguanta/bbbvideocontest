@@ -244,10 +244,10 @@ $.ajax({
 							 console.log(response.data.admin);
 							 if(response.data.admin == true){
 								 console.log('admin');
-								window.location="/dev/bbb-admin-dashboard";
+								window.location= home_url+"/bbb-admin-dashboard";
 							 }else{
 								 console.log('student');
-								 window.location="/dev/student-home";
+								 window.location= home_url+"/student-home";
 							 }
 							
 							//console.log('hello');

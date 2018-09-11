@@ -24,8 +24,13 @@
                                                 'post_type' => 'flowplayer5',
                                                 'posts_per_page' => -1,
                                                 'public' => true,
-                                                'post_status' => 'publish, draft'
-                                            );
+                                                'post_status' => 'publish',
+												'meta_query' => array(
+												array(
+												  'key' => 'video-user-role',
+												  'value' => 'student',
+												))
+											);
 
                                             $approvedVid = new WP_Query( $args );
                                         $approvedVidModals = new WP_Query( $args );

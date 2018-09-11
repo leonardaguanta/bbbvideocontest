@@ -36,7 +36,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                         $members = get_user_meta( $authid, 'student' , true );
                         $someArray = json_decode($members, true);
                     ?>
-                    <div class=" et_pb_row et_pb_row_1 school-admin-row">
+                    <div class=" et_pb_row et_pb_row_1 ">
                         <div class="et_pb_column et_pb_column_4_4  et_pb_column_2 et_pb_css_mix_blend_mode_passthrough">
 							<div class="group-info">
 							<div class="username"><div class="heading">Group Name</div>

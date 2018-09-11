@@ -1,18 +1,41 @@
 /*----------- QA FIXES CSS -----------*/
 
 @media only screen and (min-width : 981px) {
-    .single-student_schools #main-footer, .page-id-64 #main-footer {
+    .single-student_schools #main-footer /*, .page-id-64 #main-footer*/ {
         position: fixed;
         width: 100%;
         bottom: 0;
     }
+
+    #top-menu li.get-started { height: 48px; }
+    #contact-section { padding-bottom: 150px; }
+
+    .page-id-44 .et_pb_module_header { line-height: 88px; }
+    .page-id-44 .et_pb_fullwidth_header_subhead { line-height: 41px; }
 }
 
 @media only screen and (max-width : 980px) {
     #copyright, #createdby { float: none; text-align: center; }
 }
 
+@media only screen and (max-width : 767px) {
+    div.participate-module { position: unset; padding: 40px 25px; }
+    div.videos-home-row { padding-top: 0 !important; }
+}
 
+@media only screen and (max-width : 479px) {
+    div.schools-container .et_pb_text_inner { height: auto; }
+    .schools-container { margin-bottom: 0 !important; }
+
+    li#field_1_5, li#field_1_2 { margin-top: 16px; }
+
+    #footer-bottom .container { width: 95%; }
+    #footer-bottom p { font-size: 12px; }
+}
+
+div.fts-jal-fb-description-wrap { padding: 15px 0 0 !important; }
+
+body h2 { font-size: 40px; line-height: 46px; }
 #mobile_menu li.current-menu-item > a { border-bottom: 2px solid #ED8B00; font-weight: bold; }
 
 .videos-home .et_pb_image_wrap  { cursor: pointer; }
@@ -20,13 +43,20 @@
 .popvideo-row .video-title { font-size: 16px; }
 div.et_pb_blurb.user-log .et_pb_main_blurb_image { width: 140px; }
 .video-votes span.result { color: #b2b2b2; }
-#top-menu li a { font-weight: normal; }
+#top-menu li a { font-weight: normal; line-height: 26px; }
 #top-menu li a:hover { color: #ED8B00; opacity: 1 !important;}
 html body.page h3 { font-size: 22px; padding-bottom: 15px; line-height: 28px; }
 .button-filter { margin-bottom: 30px; }
 #video-filter { transition: all .5s; }
-#video-filter:hover { box-shadow: 0px 5px 10px 0px rgba(237,139,0,1); }
-body.page-template-default footer#main-footer, .single-student_schools footer#main-footer  { padding: 20px 0 !important; }
+#video-filter:hover, .et_pb_fullwidth_header a.et_pb_button:hover { box-shadow: 0px 5px 10px 0px rgba(237,139,0,1); }
+.et_pb_fullwidth_header a.et_pb_button:hover { padding: .3em 2em .3em .3em !important; }
+body.page-template-default footer#main-footer, body.single-student_schools footer#main-footer  { padding: 20px 0 !important; }
+
+body.page-template-default h2, body.page-template-default h3, body.page-template-default h6,
+body.single-student_schools h1, body.single-student_schools h2, body.single-student_schools h3 {
+    color: #3F8EA6;
+}
+
 
 html .page .schools-container h4 { font-size: 17px; padding-bottom: 15px; line-height: 23px; }
 html body.page-template-default p { font-size: 16px; line-height: 22px; }
@@ -57,7 +87,8 @@ a.et_pb_button {
     font-weight: 600;
 }
 
-#mobile_menu li  a:hover { color: #ED8B00; }
+#mobile_menu li  a:hover, #footer-bottom a:hover,
+.videos-home .video-title a:hover, .schools-home a:hover, #apprv:hover  { color: #ED8B00; }
 div.lrm-user-modal-container {
     position: absolute;
     margin: auto;
@@ -67,6 +98,12 @@ div.lrm-user-modal-container {
     left: 0;
     right: 0;
 }
+
+.schools-list a.custom-link, .theme-text a { font-size: 18px; line-height: 24px; }
+.page-id-62 .video-title a { color: #3F8EA6; }
+
+#top-menu li.get-started, .button.button-filter, #gform_submit_button_1, #gform_submit_button_6, input#gform_submit_button_4 { background-color: #ED8B00 !important; }
+.videos-home-row .custom-link:hover, .theme-text a:hover { color: #404040; }
 
 /*------------- ADMIN CSS -----------*/
 
@@ -141,6 +178,8 @@ div.msc-confirm { z-index: 9999; }
 
 /*------ FORM FIXES ------*/
 
+#field_6_4 .validation_message { color: #ff0000; }
+#gform_wrapper_1 { margin: 0 !important; }
 div.gform_wrapper label.gfield_label { color: #036594 !important; }
 
 #field_7_6 .gfield_description { font-size: 14px; color: #404040; }

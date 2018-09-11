@@ -46,47 +46,53 @@ if($schools){
     $authors = 0;
 }
 
+$role = array(
+          'key' => 'video-user-role',
+          'value' => 'student',
+        );
+
+
 if($sort == 'likes'){
-    //unset($_SESSION['seed']);
-   // remove_filter('posts_orderby', 'edit_posts_orderby');
     $likes = array(
         'key'     => '_vid_liked',
         'compare' => 'IN',
         'type' => 'NUMERIC'
     );
 	$ppp = -1;
-}
-elseif($sort == 'views'){
-   // unset($_SESSION['seed']);
-    //remove_filter('posts_orderby', 'edit_posts_orderby');
-    $views = array(
-        'key'     => '_custom_video_view',
-        'compare' => 'IN',
-        'type' => 'NUMERIC'
-    );
-		$ppp = -1;
-}else{
-    if(isset($_SESSION['seed'])){
-    //    $views = $_SESSION['seed'];
-    }
-}
-$role = array(
-          'key' => 'video-user-role',
-          'value' => 'student',
-        );
 
 $args = array( 
-	'post_type' => 'flowplayer5',
-	'author' => ($authors), 
-	'posts_per_page' => $ppp,
-	'paged' =>  $page, 
-	'post_status' => 'publish',
-	'order' => 'DESC', 
-	'orderby' => 'meta_value_num'
-	,'meta_query' => array(
+    'post_type' => 'flowplayer5',
+    'author' => ($authors), 
+    'posts_per_page' => $ppp,
+    'paged' =>  $page, 
+    'post_status' => 'publish',
+    'order' => 'DESC', 
+    'orderby' => 'meta_value_num'
+    ,'meta_query' => array(
         'relation' => 'AND',$likes
     )
-			 );
+             );
+
+
+}
+else{
+$args = array( 
+    'post_type' => 'flowplayer5',
+    'author' => ($authors), 
+    'posts_per_page' => $ppp,
+    'paged' =>  $page, 
+    'post_status' => 'publish',
+    'meta_query' => array(
+          array(
+          'key' => 'video-user-role',
+          'value' => 'student',
+        )  
+    )
+             );
+}
+
+
+
 $videos = new WP_Query( $args );
 $videoCounter = 1;
 echo '<input type="hidden" value="'. $videos->max_num_pages .'" id="video_max_page"/>';

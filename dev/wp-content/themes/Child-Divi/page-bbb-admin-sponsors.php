@@ -201,14 +201,24 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
             <td data-th='Campaign Status'><span>".$cStatus['name']."</span></td>
             <td data-th='Impressions/Views'><span>$cTotalImpressions</span></td>
             <td data-th='Clicks'><span>$cTotalClicks</span></td>
-            <td data-th='Actions'><a href='#'  data-toggle='modal' data-target='#campaignBanners".$campaign->ID."'>View</a>| <a href='".MARKETNAME_DIR."/wp-admin/post.php?post=".$campaign->ID."&action=edit'  target='_blank'>Edit</a></td>
+            <td class='actions' data-th='Actions'><a href='#'  data-toggle='modal' data-target='#campaignBanners".$campaign->ID."'>View</a>| <a href='".MARKETNAME_DIR."/wp-admin/post.php?post=".$campaign->ID."&action=edit'  target='_blank'>Edit</a></td>
             <td>
 
                 <div id='campaignBanners".$campaign->ID."' class='modal fade student-messageModal2 bd-example-modal-lg' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
                     <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
-                        <div class='modal-content'>                                               
+                        <div class='modal-content'>  
+						 <div class='modal-header'>
+        <button type='button' class='close' data-dismiss='modal'>&times;</button>
+
+      </div>
                             <div class='modal-body'>
-                                <a class='new-ad' target='_blank'  href='/wp-admin/post-new.php?post_type=banners'>New Ad</a>
+							
+							  <div id='new-ad' class='ads-btns'>
+                                <a href='/dev/wp-admin/post-new.php?post_type=banners' target='_blank' class='campaign-btn' style='position:static;'>New Ad</a>
+                                
+                            </div>
+							
+                                
                                 <h2>$campaign->post_title</h2><br>
                                 <div style='float: right; margin-right: 15px;'></div><br><br>
                                 <table class='table modal-table'>
@@ -232,20 +242,17 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                                     $bStatus = Pro_Ads_Banners::get_status($bStatusRequest);
                                     $output .="
                                     <tr class='$class2'>
-                                        <td><span>$banner->post_title</span></td>
-                                        <td><span>".get_the_title($campaignAdvertiserId)."</span></td>
+                                        <td><span class='ad-title'>$banner->post_title</span></td>
+                                        <td><span class='campaign-title'>".get_the_title($campaignAdvertiserId)."</span></td>
                                         <td><span>".$bStatus['name']."</span></td>
                                         <td><span>$banner_impressions</span></td>
                                         <td><span>$banner_clicks</span></td>
-                                        <td><a href='".MARKETNAME_DIR."/wp-admin/post.php?post=".$banner->ID."&action=edit'  target='_blank'>Edit Ads</a></td>
+                                        <td><a href='".MARKETNAME_DIR."/wp-admin/post.php?post=".$banner->ID."&action=edit'  target='_blank' class='edit-ad'>Edit</a></td>
                                     </tr>";
                                     }
                                 
                                 $output .="
                                 </table>
-                            </div>
-                            <div class='modal-footer'>
-                                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close Window</button>
                             </div>
                         </div>
                     </div>

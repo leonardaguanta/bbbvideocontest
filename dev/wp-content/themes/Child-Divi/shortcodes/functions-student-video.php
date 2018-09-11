@@ -6,7 +6,7 @@
 		global $post;
 		$args = array(
 			'post_type' => 'student_schools',
-			'posts_per_page' => -1,
+			'posts_per_page' => 6,
 			'post_status' => 'publish'
 			);
 		$schools = get_posts($args);

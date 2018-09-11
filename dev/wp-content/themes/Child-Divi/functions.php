@@ -40,22 +40,21 @@ function my_scripts_method() {
 		 is_page_template( 'page-student-edit-profile.php' )		||
 		 is_page_template( 'page-admin-edit-profile.php' )		
 		)  {
-  wp_enqueue_style('bootstrap', get_stylesheet_directory_uri() . '/vendor/bootstrap/css/bootstrap.min.css');
-	wp_enqueue_style('fa', get_stylesheet_directory_uri() . '/vendor/font-awesome/css/font-awesome.min.css');
-	wp_enqueue_style('sb', get_stylesheet_directory_uri() . '/css/sb-admin.css');
-		wp_enqueue_script( 'sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js' );
+  				wp_enqueue_style('bootstrap', get_stylesheet_directory_uri() . '/vendor/bootstrap/css/bootstrap.min.css');
+				wp_enqueue_style('fa', get_stylesheet_directory_uri() . '/vendor/font-awesome/css/font-awesome.min.css');
+				wp_enqueue_style('sb', get_stylesheet_directory_uri() . '/css/sb-admin.css');
+				wp_enqueue_script( 'sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js' );
 
-	wp_enqueue_script('sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js', '', '1.0.0', true);
-	wp_enqueue_script('sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js', '', '1.0.0', true);
-	wp_enqueue_script('sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js', '', '1.0.0', true);
-	wp_enqueue_script('sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js', '', '1.0.0', true);
+				wp_enqueue_script('sb0-js', get_stylesheet_directory_uri() . '/vendor/jquery/jquery.min.js', '', '1.0.0', true);
+				wp_enqueue_script('sb1-js', get_stylesheet_directory_uri() . '/vendor/bootstrap/js/bootstrap.bundle.min.js', '', '1.0.0', true);
+				wp_enqueue_script('sb2-js', get_stylesheet_directory_uri() . '/vendor/jquery-easing/jquery.easing.min.js', '', '1.0.0', true);
+				wp_enqueue_script('sb3-js', get_stylesheet_directory_uri() . '/js/sb-admin.min.js', '', '1.0.0', true);
+
+				wp_enqueue_script('admin-nav-js', get_stylesheet_directory_uri() . '/js/admin-nav.js', '', '1.0.0', true);
 		 
-		wp_enqueue_script('msc-js', get_stylesheet_directory_uri() . '/js/msc-script.js', '', '1.0.0', true);	 
-		 	wp_enqueue_style('msc-css', get_stylesheet_directory_uri() . '/css/msc-style.css');
-
-		 
-
-  }
+				wp_enqueue_script('msc-js', get_stylesheet_directory_uri() . '/js/msc-script.js', '', '1.0.0', true);	 
+		 		wp_enqueue_style('msc-css', get_stylesheet_directory_uri() . '/css/msc-style.css');
+  		}
 	
 	
     wp_enqueue_script('custom-script',get_stylesheet_directory_uri() . '/script.js',
@@ -963,9 +962,25 @@ function get_voting_status () {
 	wp_send_json( get_option( 'voting_status' ) );
 }
 
+add_action ( 'wp_head', 'my_js_variables' );
+function my_js_variables(){ ?>
+  <script type="text/javascript">
+    var ajaxurl = <?php echo json_encode( admin_url( "admin-ajax.php" ) ); ?>;      
+    var ajaxnonce = <?php echo json_encode( wp_create_nonce( "itr_ajax_nonce" ) ); ?>;
+    var home_url = <?php echo json_encode( home_url( "/" ) ); ?>;
 
+	var myarray = <?php echo json_encode( array( 
+         'foo' => 'bar',
+         'available' => TRUE,
+         'ship' => array( 1, 2, 3, ),
+       ) ); ?>
+  </script><?php
+}
 
-
-
-
+function ajax_check_user_logged_in() {
+    echo in_array('administrator',  wp_get_current_user()->roles);
+    die();
+}
+add_action('wp_ajax_is_user_logged_in', 'ajax_check_user_logged_in');
+add_action('wp_ajax_nopriv_is_user_logged_in', 'ajax_check_user_logged_in');
 ?>

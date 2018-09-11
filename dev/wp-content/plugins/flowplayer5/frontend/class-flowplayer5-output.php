@@ -96,16 +96,16 @@ class Flowplayer5_Output {
 			$html = ob_get_clean();
 			return $html;*/
 		} elseif( isset( $atts['pre-post-ad-video'] ) ) {
-                       // var_dump('pre post ad');
+                      //  var_dump('pre post ad');
                        $pre_adzone_id =  344;
                         $post_azone_id = 349;
-                      //  var_dump($post_azone_id);
+                       //var_dump($post_azone_id);
                        // print('hekk');
                        // print_r( $post_azone_id );
 			$adzone_data = $pro_ads_codex->wpproads_load_adzone_data( $pre_adzone_id );
                         $ad = array_rand($adzone_data['linked_banner_ids'],1);
                         $pre_banner_id = $adzone_data['linked_banner_ids'][$ad];
-                     //   var_dump($adzone_data);
+                      // print_r($pre_banner_id );
 			if (!$pre_banner_id) {
 				error_log('No pre_banner_id found');
 				return self::single_video_output( $atts );
@@ -183,14 +183,14 @@ class Flowplayer5_Output {
 					'banner_id' => $post->ID, 
 					'url' => get_post_meta($player_id,'fp5-mp4-video', true)
 				);
-			//	var_dump($adzone_array );
+				//var_dump($adzone_array );
 			}
 		}
 		
 
 		$rand_key = array_rand($adzone_array,1);
 	//	$pre_ad = $adzone_array[$rand_key]['url'];
-		// var_dump($pre_ad);
+	//	 var_dump($pre_ad);
 		$current_url = home_url().$_SERVER['REQUEST_URI'];
 		$pre_banner_id = intval($adzone_array[$rand_key]['banner_id']);
 		$pro_ads_statistics->save_impression($pre_banner_id,intval(FP5_WPPAS_ID),$current_url);

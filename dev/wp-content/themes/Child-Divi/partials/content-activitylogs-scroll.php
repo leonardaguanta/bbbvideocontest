@@ -31,7 +31,7 @@ global $wpdb;
         ';
         foreach ($rows as $row) {
    // if ( ($row->action == "flowplayer5 deleted") || ($row->action == "insert comment") || ($row->action == "flowplayer5 updated")) {
-     if (($row->action == "added attachment") && ($row->user_role = "Subscriber")) {
+     if (($row->action == "added attachment") && ($row->user_role == "Subscriber")) {
 
             $loggedUser = $row->user_name;
       $loggedTime = $row->modified_date;

@@ -82,9 +82,9 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
                                         <!-- FOR THICKBOX POPUP -->
 
                                         <div id="bbbAdminViewProfile-<?php echo $user->ID; ?>" class="thickbox" style="display:none;">
-                                            <p>School Name: <span class="studentInfo-school"><?php echo $school->post_title; ?></span></p>
-                                            <p>User/Group Name: <span class="studentInfo-user"><?php echo $username; ?></span></p>
-                                            <p>Members: <span class="studentInfo-members"> </span></p>
+                                            <p>School Name: <span class="studentInfo-school detail"><?php echo $school->post_title; ?></span></p>
+                                            <p>User/Group Name: <span class="studentInfo-user detail"><?php echo $username; ?></span></p>
+                                            <p>Members: <span class="studentInfo-members detail"> </span></p>
                                         </div>
 
                                         <div id="bbbAdminSendEmail-<?php echo $user->ID; ?>" style="display:none;"><?php echo do_shortcode('[gravityform id="21" title="false" field_values="email='.$user_info->data->user_email.'"]'); ?></div>
@@ -93,26 +93,36 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 
                                         <!-- STUDENT INFO MODAL -->
                                         <div class="modal fade student-infoModal2 bd-example-modal-lg" id="bbbAdminViewProfile<?php echo $user->ID; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog " role="document">
+                                            <div class="modal-dialog modal-lg" role="document">
                                                 <div class="modal-content">  
 													      <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
 
       </div>
                                                     <div class="modal-body">
-                                                        <p><span class="label">School Name: </span> <span class="studentInfo-school"><?php echo $school->post_title; ?></span></p>
-                                                        <p><span class="label">User/Group Name: </span><span class="studentInfo-user"><?php echo $username; ?></span></p>
-                                                        <p><span class="label">Members: </span> <br><span class="studentInfo-members"><?php
+														<div class="grp-info">
+															
+														
+														<p><span class="label">User/Group Name: </span><br><span class="studentInfo-user detail"><?php echo $username; ?></span></p>
+                                                        <p><br><span class="label">School Name: </span> <br><span class="studentInfo-school detail"><?php echo $school->post_title; ?></span></p>
+                                                        
+                                                        <p><br><span class="label">Members: </span> <br><span class="studentInfo-members detail"><?php
                                     foreach ($someArray as $key => $value) {
                                         echo $value["Name"] . " - " . $value["Email"] . "<br>";
                                     }
-                                ?></span></p>
+                                ?></span></p></div>
                                                     </div>
      
                                                 </div>
                                             </div>
                                         </div>
                                         
+										
+										
+										
+										
+										
+										
                                         <!-- MESSAGE STUDENT MODAL -->
                                         <div class="modal fade student-messageModal2 bd-example-modal-lg" id="bbbAdminSendEmail<?php echo $user->ID; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog" role="document">

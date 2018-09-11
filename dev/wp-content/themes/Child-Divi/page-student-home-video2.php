@@ -130,7 +130,7 @@ $logo = ( $user_logo = et_get_option( 'divi_logo' ) ) && '' != $user_logo
 
                                                     <?php 
                                                         if($postVideo->post_status == 'publish') {
-                                                            echo '<p><a class="studentVid-stats" href="#" data-toggle="modal" data-target="#ApprovedVideoStatPopup_'.$postVideo->ID.'">View Stats</a></p>';
+                                                            echo '<p><a class="studentVid-stats" href="#" data-toggle="modal" data-target="#ApprovedVideoStatPopup_'.$postVideo->ID.'"><!--View Stats--></a></p>';
                                                            
                                                         }
                                                     ?>

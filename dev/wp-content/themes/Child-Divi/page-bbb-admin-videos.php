@@ -23,7 +23,12 @@ global $post;
 $args = array(
     'post_type' => 'flowplayer5',
     'posts_per_page' => -1,
-    'post_status' => 'pending'
+    'post_status' => 'pending',
+												'meta_query' => array(
+												array(
+												  'key' => 'video-user-role',
+												  'value' => 'student',
+												))
     );
 
 $pendingVid = new WP_Query( $args );

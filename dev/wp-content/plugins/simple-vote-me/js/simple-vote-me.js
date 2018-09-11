@@ -22,6 +22,7 @@ success:function(data, textStatus, XMLHttpRequest){
 }
 */
 // CHECK VIDEOS INSIDE PAGE AND REFER TO COOKIES ============================
+
 function checkVotedVids() {
     jQuery('.simplevotemeWrapper').each(function(index){
         console.log('checking...');
