@@ -7,7 +7,13 @@
                         <div class=" et_pb_row et_pb_row_8 et_pb_gutters2">
                             <div class="et_pb_column et_pb_column_2_3  et_pb_column_12 et_pb_css_mix_blend_mode_passthrough">
                                 <div class="et_pb_module et_pb_image et_pb_image_2 et_always_center_on_mobile">
-                                    <span class="et_pb_image_wrap"><img src="<?php the_post_thumbnail_url('full'); ?>" alt="<?php the_title(); ?>"></span>
+                                    <span class="et_pb_image_wrap">
+                                        <?php if( has_post_thumbnail() ) : ?>
+                                            <img src="<?php the_post_thumbnail_url('full'); ?>" alt="<?php the_title(); ?>">
+                                        <?php else: ?>
+                                            <img src="<?php echo home_url(); ?>/wp-content/uploads/2018/09/school-default.png" alt="<?php the_title(); ?>">
+                                        <?php endif; ?>
+                                    </span>
                                 </div>
                                 <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_9">
                                     <div class="et_pb_text_inner">

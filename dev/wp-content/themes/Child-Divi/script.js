@@ -472,10 +472,15 @@ if(lenContainer <= 1){
 				beforeSend: function(){
 					$( "#ajax-posts" ).fadeOut('fast').html("");
 					$('.movie-loader').show();
+					$('.page-id-62 #main-footer').css({ 'position': 'fixed', 'width': '100%', 'bottom': '0' });
+					$('#video-filter').attr('disabled', 'disabled');
 				},
 				success: function(data){
 					$( "#ajax-posts" ).fadeIn('fast');
 					$('.movie-loader').hide();
+					$('#video-filter').removeAttr('disabled');
+					$('.page-id-62 #main-footer').css({ 'position': 'unset', 'width': 'unset', 'bottom': 'unset' });
+
 					var $data = $(data);
 					if( $data.length ){
 						$( "#ajax-posts" ).append($data);
